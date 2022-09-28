@@ -61,6 +61,11 @@ public class ARPLayer implements BaseLayer{
 		_IP_ADDR target_ip = new _IP_ADDR();
 	}
 
+	public ARPLayer(String pName) { 
+		// ARPLayer class constructor
+		pLayerName = pName;
+
+	}
 
 	public boolean Send(byte[] input, int length) {
 		// <!> additional implementation required later
