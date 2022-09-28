@@ -6,15 +6,45 @@ public class ARPLayer implements BaseLayer{
 	public BaseLayer p_UnderLayer = null;
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
 	
+	private class _IP_ADDR {
+		/* Data structure for representing IP Address, Will be used for ARP Packet structure.
+		4 bytes are required to represent the IP Address. */
+		private byte[] addr = new byte[4];
+
+		// Initialize values ​​to 0x00
+		public _IP_ADDR() {
+			this.addr[0] = (byte) 0x00;
+			this.addr[1] = (byte) 0x00;
+			this.addr[2] = (byte) 0x00;
+			this.addr[3] = (byte) 0x00;
+		}
+	}
 	
-	
+	private class _MAC_ADDR {
+		/* Data structure for representing Mac Address, Will be used for ARP Packet structure.
+		8 bytes are required to represent the MAC Address. */
+		private byte[] addr = new byte[6];
+		
+		// Initialize values ​​to 0x00
+		public _MAC_ADDR() {
+			this.addr[0] = (byte) 0x00;
+			this.addr[1] = (byte) 0x00;
+			this.addr[2] = (byte) 0x00;
+			this.addr[3] = (byte) 0x00;
+			this.addr[4] = (byte) 0x00;
+			this.addr[5] = (byte) 0x00;
+		}
+	}
+
 	public boolean Send(byte[] input, int length) {
+		// <!> additional implementation required later
 		this.GetUnderLayer().Send(input,length);
 		return false;
 	}
 
 
 	public boolean Receive(byte[] input) {
+		// <!> additional implementation required later 
 		this.GetUpperLayer(0).Receive(input);
 		return true;
 	}
