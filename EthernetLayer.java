@@ -50,16 +50,19 @@ public class EthernetLayer implements BaseLayer {
 
 
 	public boolean Send(byte[] input, int length) {
-	
-
+		/* <!> additional implementation required later 
+		Temporarily implemented to test whether the inter-layer data forwarding function is performed smoothly */
+		this.GetUnderLayer().Send(input,length);
 		return false;
 	}
 
 	
 
 	public boolean Receive(byte[] input) {
-		
-		return true;
+		/* <!> additional implementation required later 
+		Temporarily implemented to test whether the inter-layer data forwarding function is performed smoothly */
+		this.GetUpperLayer(0).Receive(input);
+		return true;	
 	}
 
 	@Override
