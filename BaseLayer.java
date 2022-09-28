@@ -1,5 +1,3 @@
-package chat_file;
-
 import java.util.ArrayList;
 
 interface BaseLayer {

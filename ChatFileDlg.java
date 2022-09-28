@@ -1,5 +1,3 @@
-package chat_file;
-
 import java.awt.Container;
 import java.awt.FileDialog;
 import java.awt.event.ActionEvent;
