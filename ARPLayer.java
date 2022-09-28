@@ -6,6 +6,20 @@ public class ARPLayer implements BaseLayer{
 	public BaseLayer p_UnderLayer = null;
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
 	
+	
+	
+	public boolean Send(byte[] input, int length) {
+		this.GetUnderLayer().Send(input,length);
+		return false;
+	}
+
+
+	public boolean Receive(byte[] input) {
+		this.GetUpperLayer(0).Receive(input);
+		return true;
+	}
+	
+
 	@Override
 	public String GetLayerName() {
 		// TODO Auto-generated method stub
