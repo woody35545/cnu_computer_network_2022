@@ -35,6 +35,32 @@ public class ARPLayer implements BaseLayer{
 			this.addr[5] = (byte) 0x00;
 		}
 	}
+	
+	private class _ARP_HEADER { 
+		/* Data structure for representing ARP Message Format 
+		 * 
+		 * ARP Header Structure Specification (in order)
+		 * # [Hardware Type] - 2 Bytes
+		 * # [Protocol Type] - 2 Bytes
+		 * # [Length of hardware address] - 1 Byte
+		 * # [Length of Protocol address] - 1 Byte
+		 * # [Opcode] - 2 Bytes
+		 * # [Sender hardware address] - 6 Bytes
+		 * # [Sender protocol address] - 4 Bytes
+		 * # [Target hardware address] - 6 Bytes
+		 * # [Target protocol address] - 4 Bytes
+		 */
+		byte[] hardware_type = new byte[2];
+		byte[] protocol_type = new byte[2];
+		byte length_of_hardware_addr = 0x06;
+		byte length_of_protocol_addr = 0x04;
+		byte[] opcode = new byte[2];
+		_MAC_ADDR sender_mac = new _MAC_ADDR();
+		_MAC_ADDR target_mac = new _MAC_ADDR();
+		_IP_ADDR sender_ip = new _IP_ADDR();
+		_IP_ADDR target_ip = new _IP_ADDR();
+	}
+
 
 	public boolean Send(byte[] input, int length) {
 		// <!> additional implementation required later
