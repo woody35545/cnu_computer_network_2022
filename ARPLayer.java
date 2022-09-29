@@ -1,11 +1,14 @@
 import java.util.ArrayList;
 
 public class ARPLayer implements BaseLayer {
+	private static byte LENGTH_OF_MAC_ADDRESS = (byte)0x06;
+	private static byte LENGTH_OF_IP_ADDRESS = (byte)0x04;
+
 	public int nUpperLayerCount = 0;
 	public String pLayerName = null;
 	public BaseLayer p_UnderLayer = null;
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
-
+	
 	private class _IP_ADDR {
 		/*
 		 * Data structure for representing IP Address, Will be used for ARP
@@ -71,6 +74,8 @@ public class ARPLayer implements BaseLayer {
 		
 		@SuppressWarnings("unused")
 		public _ARP_HEADER(byte[] pHardwareType, byte[] pProtocolType,
+				byte pLengthOfMacAddr,
+				byte pLengthOfProtocolAddr, 
 				byte[] pOpcode, _MAC_ADDR pSenderMacAddress,
 				_MAC_ADDR pTargetMacAddress, _IP_ADDR pSenderIpAddress,
 				_IP_ADDR pTargetIpAddress) {
@@ -78,8 +83,8 @@ public class ARPLayer implements BaseLayer {
 			// _ARP_HEADER constructor with Parameters
 			this.hardware_type = pHardwareType;
 			this.protocol_type = pProtocolType;
-			this.length_of_hardware_addr = (byte) 0x06;
-			this.length_of_protocol_addr = (byte) 0x04;
+			this.length_of_hardware_addr = pLengthOfMacAddr;
+			this.length_of_protocol_addr = pLengthOfProtocolAddr;
 			this.opcode = pOpcode;
 			this.sender_mac = pSenderMacAddress;
 			this.target_mac = pTargetMacAddress;
@@ -88,7 +93,10 @@ public class ARPLayer implements BaseLayer {
 		}
 	}
 
-	private byte[] Encapsulate() {
+	private byte[] Encapsulate(byte[] input) {
+		/*
+		 * A function that encapsulates the data to be transmitted when transmitting data to a lower layer.
+		 */
 		
 		_ARP_HEADER test = new _ARP_HEADER();
 		byte[] res = new byte[10];
