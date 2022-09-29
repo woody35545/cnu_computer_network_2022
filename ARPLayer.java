@@ -1,9 +1,16 @@
 import java.util.ArrayList;
 
 public class ARPLayer implements BaseLayer {
-	private static byte LENGTH_OF_MAC_ADDRESS = (byte)0x06;
-	private static byte LENGTH_OF_IP_ADDRESS = (byte)0x04;
+	// Default hardware type = Ethernet(0x0001)
+	private static final byte[] DEFAULT_HARDWARE_TYPE = new byte[]{0x00, 0x01};
+	// Default protocol type = IPv4(0x0800)
+	private static final byte[] DEFAULT_PROTOCOL_TYPE = new byte[]{0x08, 0x00};
+	// Default length of hardware address = 0x06 (MAC Address)
+	private static final byte DEFAULT_LENGTH_OF_HARDWARE_ADDRESS = (byte)0x06;
+	// Default length of protocol address = 0x04 (IP Address)
+	private static final byte DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS = (byte)0x04;
 
+	
 	public int nUpperLayerCount = 0;
 	public String pLayerName = null;
 	public BaseLayer p_UnderLayer = null;
@@ -93,7 +100,7 @@ public class ARPLayer implements BaseLayer {
 		}
 	}
 
-	private byte[] Encapsulate(byte[] input) {
+	private byte[] Encapsulate(byte[] payload) {
 		/*
 		 * A function that encapsulates the data to be transmitted when transmitting data to a lower layer.
 		 */
