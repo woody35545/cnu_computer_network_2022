@@ -3,6 +3,8 @@ public final class Utils {
 	 * This class implements useful functions that can be used in general for
 	 * implementing layer logic.
 	 */
+	
+	private static final boolean DEBUG_MODE = true; 
 	public static boolean compareAddress(byte[] address_1, byte[] address_2) {
 		/*
 		 * Address comparison function defined in byte array format. 
@@ -17,7 +19,7 @@ public final class Utils {
 	}
 	
 	public static void showPacket(byte[] packet) {
-		if (packet != null) {
+		if (DEBUG_MODE && packet != null) {
 			for (int i = 0; i < packet.length; i++) {
 				System.out.print("[" + i + "]"
 						+ String.format("%02X ", packet[i]));
