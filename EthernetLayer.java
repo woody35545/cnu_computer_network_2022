@@ -149,7 +149,7 @@ public class EthernetLayer implements BaseLayer {
 		 * to test whether the inter-layer data forwarding function is performed
 		 * smoothly
 		 */
-
+		Utils.showPacket(input);
 		boolean isFrameISent = true;
 		boolean isFrameForMe = true;
 		boolean isBroadcastFrame = true;
@@ -160,7 +160,7 @@ public class EthernetLayer implements BaseLayer {
 				isBroadcastFrame = false;
 			}
 			/* Check whether received frame is the frame I sent */
-			if (this.GetEthernetHeader().get_source_address().addr[i + 6] != input[i]) {
+			if (this.GetEthernetHeader().get_source_address().addr[i] != input[i+6]) {
 				isFrameISent = false;
 			}
 
