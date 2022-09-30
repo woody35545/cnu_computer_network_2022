@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class ARPLayer implements BaseLayer {
-	
+
 	// Default hardware type = Ethernet(0x0001)
 	private static final byte[] DEFAULT_HARDWARE_TYPE = new byte[]{0x00, 0x01};
 	// Default protocol type = IPv4(0x0800)
@@ -16,7 +16,7 @@ public class ARPLayer implements BaseLayer {
 	public String pLayerName = null;
 	public BaseLayer p_UnderLayer = null;
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
-	
+	_ARP_HEADER m_sHeader = new _ARP_HEADER();
 	private class _IP_ADDR {
 		/*
 		 * Data structure for representing IP Address, Will be used for ARP
@@ -178,8 +178,10 @@ public class ARPLayer implements BaseLayer {
 	public boolean Send(byte[] input, int length) {
 		// <!> additional implementation required later
 		_ARP_HEADER header = new _ARP_HEADER();
-		byte[] encapsulated = this.Encapsulate(header, input);
+		byte[] encapsulated =this.Encapsulate(this.m_sHeader, input);
+		//this.GetUnderLayer().Send(encapsulated, length);
 		this.GetUnderLayer().Send(encapsulated, length);
+
 		return false;
 	}
 
