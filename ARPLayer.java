@@ -23,6 +23,7 @@ public class ARPLayer implements BaseLayer {
 		 * Packet structure. 4 bytes are required to represent the IP Address.
 		 */
 		private byte[] addr = new byte[4];
+		private int length_of_addr = 4;
 
 		// Initialize values ​​to 0x00
 		public _IP_ADDR() {
@@ -31,6 +32,9 @@ public class ARPLayer implements BaseLayer {
 			this.addr[2] = (byte) 0x00;
 			this.addr[3] = (byte) 0x00;
 		}
+		public int get_length_of_addr(){
+			return this.length_of_addr;
+		}
 	}
 
 	private class _MAC_ADDR {
@@ -38,8 +42,9 @@ public class ARPLayer implements BaseLayer {
 		 * Data structure for representing Mac Address, Will be used for ARP
 		 * Packet structure. 8 bytes are required to represent the MAC Address.
 		 */
+		
 		private byte[] addr = new byte[6];
-
+		private int length_of_addr = 6;
 		// Initialize values ​​to 0x00
 		public _MAC_ADDR() {
 			this.addr[0] = (byte) 0x00;
@@ -49,9 +54,13 @@ public class ARPLayer implements BaseLayer {
 			this.addr[4] = (byte) 0x00;
 			this.addr[5] = (byte) 0x00;
 		}
+		public int get_length_of_addr(){
+			return this.length_of_addr;
+		}
 	}
 
 	private class _ARP_HEADER {
+		private int length_of_header = 28;
 		/*
 		 * Data structure for representing ARP Message Format
 		 * 
@@ -66,6 +75,8 @@ public class ARPLayer implements BaseLayer {
 		 * # [Target hardware address] - 6 Bytes 
 		 * # [Target protocol address] - 4 Bytes
 		 */
+		
+		
 		byte[] hardware_type = new byte[2];
 		byte[] protocol_type = new byte[2];
 		byte length_of_hardware_addr;
@@ -99,6 +110,11 @@ public class ARPLayer implements BaseLayer {
 			this.sender_ip = pSenderIpAddress;
 			this.target_ip = pTargetIpAddress;
 		}
+		
+		public int get_length_of_header(){
+			return this.length_of_header;
+		}
+		
 	}
 
 
@@ -107,7 +123,46 @@ public class ARPLayer implements BaseLayer {
 		pLayerName = pName;
 
 	}
+	
+	public byte[] Encapsulate(_ARP_HEADER pHeader, byte[] pPayload ){
+		// <!> Need to check
+		//  Encapsulate function to create byte array type ARP Packet
+		int idx_ptr = 0;
+		byte[] encapsulated = new byte[pHeader.get_length_of_header() + pPayload.length];
+		for (int i = 0; i < pHeader.hardware_type.length; i++) {
+			encapsulated[idx_ptr++] = pHeader.hardware_type[i];
+		}
 
+		for (int i = 0; i < pHeader.protocol_type.length; i++) {
+			encapsulated[idx_ptr++] = pHeader.protocol_type[i];
+		}
+
+		encapsulated[idx_ptr++] = pHeader.length_of_hardware_addr;
+		encapsulated[idx_ptr++] = pHeader.length_of_protocol_addr;
+
+		for (int i = 0; i < pHeader.opcode.length; i++) {
+			encapsulated[idx_ptr++] = pHeader.opcode[i];
+		}
+
+		for (int i = 0; i < pHeader.sender_mac.get_length_of_addr(); i++) {
+			encapsulated[idx_ptr++] = pPayload[i];
+		}
+		for (int i = 0; i < pHeader.target_mac.get_length_of_addr(); i++) {
+			encapsulated[idx_ptr++] = pPayload[i];
+		}
+		for (int i = 0; i < pHeader.sender_ip.get_length_of_addr(); i++) {
+			encapsulated[idx_ptr++] = pPayload[i];
+		}
+		for (int i = 0; i < pHeader.target_ip.get_length_of_addr(); i++) {
+			encapsulated[idx_ptr++] = pPayload[i];
+		}
+		for (int i = 0; i < pPayload.length; i++) {
+			encapsulated[idx_ptr++] = pPayload[i];
+		}
+		
+		return encapsulated;
+		
+	}
 	public boolean Send(byte[] input, int length) {
 		// <!> additional implementation required later
 		this.GetUnderLayer().Send(input, length);
@@ -116,6 +171,9 @@ public class ARPLayer implements BaseLayer {
 
 	public boolean Receive(byte[] input) {
 		// <!> additional implementation required later
+		
+		
+		
 		this.GetUpperLayer(0).Receive(input);
 		return true;
 	}
