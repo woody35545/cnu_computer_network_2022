@@ -163,9 +163,23 @@ public class ARPLayer implements BaseLayer {
 		return encapsulated;
 		
 	}
+	
+	public byte[] Decapsulate(byte[] pARPPacket){
+		// <!> Need to check
+		
+		int offset=28;
+		byte[] decapsulated = new byte[pARPPacket.length - 28];
+		for (int i=0; i<decapsulated.length; i++){
+			decapsulated[i] = pARPPacket[offset+i];
+		}
+		return decapsulated;
+	}
+	
 	public boolean Send(byte[] input, int length) {
 		// <!> additional implementation required later
-		this.GetUnderLayer().Send(input, length);
+		_ARP_HEADER header = new _ARP_HEADER();
+		byte[] encapsulated = this.Encapsulate(header, input);
+		this.GetUnderLayer().Send(encapsulated, length);
 		return false;
 	}
 
