@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 public class ARPLayer implements BaseLayer {
+	
 	// Default hardware type = Ethernet(0x0001)
 	private static final byte[] DEFAULT_HARDWARE_TYPE = new byte[]{0x00, 0x01};
 	// Default protocol type = IPv4(0x0800)
@@ -100,16 +101,6 @@ public class ARPLayer implements BaseLayer {
 		}
 	}
 
-	private byte[] Encapsulate(byte[] payload) {
-		/*
-		 * A function that encapsulates the data to be transmitted when transmitting data to a lower layer.
-		 */
-		
-		_ARP_HEADER test = new _ARP_HEADER();
-		byte[] res = new byte[10];
-		return res;
-
-	}
 
 	public ARPLayer(String pName) {
 		// ARPLayer class constructor
