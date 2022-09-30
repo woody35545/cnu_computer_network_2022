@@ -43,8 +43,9 @@ public class ChatAppLayer implements BaseLayer{
 		return null;		
 	}
 	
-    public boolean Send(byte[] input, int length) {     	 
-    	
+    public boolean Send(byte[] input, int length) {   
+		/* <!> additional implementation required later */
+    	this.GetUnderLayer().Send(input,length);
 		return false;
 	}
 //    
@@ -53,7 +54,6 @@ public class ChatAppLayer implements BaseLayer{
 //    }
            
 	public boolean Receive(byte[] input){
-	
 		return true;
 	}
 
