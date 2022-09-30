@@ -59,7 +59,7 @@ public class EthernetLayer implements BaseLayer {
 		}
 
 		public byte[] get_enet_type() {
-			return this.enet_type;
+			return this.enet_type;	
 		}
 
 		public void set_enet_type(byte[] pEnet_type) {
@@ -157,6 +157,7 @@ public class EthernetLayer implements BaseLayer {
 		return true;	
 	}
 	public _ETHERNET_HEADER GetEthernetHeader(){
+		/* Getter for the ethernet header object declared as a member variable in the ethernet layer. */
 		return this.m_sHeader;
 	}
 	
