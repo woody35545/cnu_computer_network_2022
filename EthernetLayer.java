@@ -117,6 +117,28 @@ public class EthernetLayer implements BaseLayer {
 		 * to test whether the inter-layer data forwarding function is performed
 		 * smoothly
 		 */
+		boolean isFromARPLayer = true;
+		byte[] arrToCompare = new byte[]{0x00,0x01,0x08,0x00};
+		//boolean isFromIPLayer = true;
+		
+		/* Check which upper layer the packet came from */ 
+		for (int i=0; i<4; i++){
+			if(input[i] != arrToCompare[i]){
+				isFromARPLayer =false;
+			}
+		}
+		
+
+		 /* if ARP Layer, The first 4 bytes will have the same value as this. {0x00, 0x01, 0x08, 0x00}*/
+		if (isFromARPLayer){
+			
+		}
+			
+		/* else, This is from the IP layer */
+		else{
+			
+			
+		}
 		this.GetUnderLayer().Send(input, length);
 		return false;
 	}
