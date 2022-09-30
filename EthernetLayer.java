@@ -121,40 +121,47 @@ public class EthernetLayer implements BaseLayer {
 	
 
 	public boolean Receive(byte[] input) {
-		/* <!> additional implementation required later 
-		Temporarily implemented to test whether the inter-layer data forwarding function is performed smoothly */
-		
 		/*
-		 * When the destination mac address of the frame is not the same as its own address
+		 * <!> additional implementation required later Temporarily implemented
+		 * to test whether the inter-layer data forwarding function is performed
+		 * smoothly
 		 */
-		boolean isMyFrame = false;
-		boolean isBroadcastFrame=false;
 		
-		/* Check whether received frame is Broadcast Frame */
-		for (int i =0; i<6; i++){
-			if (input[i] == (byte)0xff){
-				isBroadcastFrame = true;
+		boolean isMyFrame = true;
+		boolean isBroadcastFrame = true;
+
+		for (int i = 0; i < 6; i++) {
+			/* Check whether received frame is Broadcast Frame */
+			if (input[i] != (byte) 0xff) {
+				isBroadcastFrame = false;
+			}
+			/* Check whether received frame is for me */
+			if (this.GetEthernetHeader().get_source_address().addr[i] != input[i]) {
+				isMyFrame = false;
 			}
 		}
-		for(int i=0; i<6; i++){
+
+		if (isBroadcastFrame || isMyFrame) {
+			/*
+			 * When the destination mac address of the frame is not the same as its own address
+			 */
 			
+			if (input[12] == (byte) 0x08 && input[13] == (byte) 0x00) {
+				// if protocol type == IPv4
+				// call IPLayer.send(..);
+				//
+			}
+
+			else if (input[12] == (byte) 0x08 && input[13] == (byte) 0x06) {
+				// if protocol type == ARP
+				byte[] decapsulated = this.Decapsulate(input);
+				// call ARPLayer.Recevie(..);
+				this.GetUpperLayer(0).Receive(decapsulated);
+			}
+			return true;
 		}
-		if (isBroadcastFrame || isMyFrame){ 
-		if(input[12]==(byte)0x08 && input[13] == (byte)0x00){
-			// if protocol type == IPv4
-			// call IPLayer.send(..);
-			// 
-		}
-		
-		else if(input[12]==(byte)0x08 && input[13] == (byte)0x06){
-			// if protocol type == ARP
-			byte[] decapsulated = this.Decapsulate(input);
-			// call ARPLayer.Recevie(..); 
-			this.GetUpperLayer(0).Receive(decapsulated); 
-		}
-		}
-		
-		return true;	
+
+		return false;
 	}
 	public _ETHERNET_HEADER GetEthernetHeader(){
 		/* Getter for the ethernet header object declared as a member variable in the ethernet layer. */
