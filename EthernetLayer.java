@@ -14,6 +14,7 @@ public class EthernetLayer implements BaseLayer {
 
 	private class _ETHERNET_ADDR {
 		private byte[] addr = new byte[6];
+		private int length_of_addr = 6;
 
 		public _ETHERNET_ADDR() {
 			this.addr[0] = (byte) 0x00;
@@ -22,6 +23,9 @@ public class EthernetLayer implements BaseLayer {
 			this.addr[3] = (byte) 0x00;
 			this.addr[4] = (byte) 0x00;
 			this.addr[5] = (byte) 0x00;
+		}
+		public int get_length_of_addr(){
+			return this.length_of_addr;
 		}
 	}
 
@@ -47,7 +51,40 @@ public class EthernetLayer implements BaseLayer {
 		pLayerName = pName;
 		
 	}
-
+	
+	
+	public byte[] Encapsulate(_ETHERNET_HEADER pHeader, byte[] pPayload ){
+		// <!> Need to check
+		// header length - header.data length = 14
+		int idx_ptr = 0;
+		byte[] encapsulated = new byte[14 + pPayload.length];
+		for (int i=0; i<pHeader.enet_dstaddr.get_length_of_addr(); i++){
+			encapsulated[idx_ptr++] = pHeader.enet_dstaddr.addr[i];
+			}
+		for (int i=0; i<pHeader.enet_srcaddr.get_length_of_addr(); i++){
+			encapsulated[idx_ptr++] = pHeader.enet_srcaddr.addr[i];
+		}
+		for (int i=0; i<pHeader.enet_type.length; i++){
+			encapsulated[idx_ptr++] = pHeader.enet_type[i];
+		}
+		for (int i=0; i<pPayload.length; i++){
+			encapsulated[idx_ptr++] = pPayload[i];
+		}
+		
+		return encapsulated;
+		
+	}
+	
+	public byte[] Decapsulate(byte[] pEthFrame){
+		// <!> Need to check
+		// offset(header length - header.data length)
+		int offset=14;
+		byte[] decapsulated = new byte[pEthFrame.length - offset];
+		for (int i=0; i<decapsulated.length; i++){
+			decapsulated[i] = pEthFrame[offset+i];
+		}
+		return decapsulated;
+	}
 
 	public boolean Send(byte[] input, int length) {
 		/* <!> additional implementation required later 
