@@ -177,7 +177,6 @@ public class ARPLayer implements BaseLayer {
 	
 	public boolean Send(byte[] input, int length) {
 		// <!> additional implementation required later
-		_ARP_HEADER header = new _ARP_HEADER();
 		byte[] encapsulated =this.Encapsulate(this.m_sHeader, input);
 		//this.GetUnderLayer().Send(encapsulated, length);
 		this.GetUnderLayer().Send(encapsulated, length);

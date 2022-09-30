@@ -16,7 +16,7 @@ public final class Utils {
 		return true;
 	}
 	
-	public static void showPacket(byte[] packet) { // 바이트 배열 16진수로 print 하는 메서드
+	public static void showPacket(byte[] packet) {
 		if (packet != null) {
 			for (int i = 0; i < packet.length; i++) {
 				System.out.print("[" + i + "]"
