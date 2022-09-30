@@ -34,13 +34,38 @@ public class EthernetLayer implements BaseLayer {
 		_ETHERNET_ADDR enet_srcaddr;
 		byte[] enet_type;
 		byte[] enet_data;
-
+		
 		public _ETHERNET_HEADER() {
 			this.enet_dstaddr = new _ETHERNET_ADDR();
 			this.enet_srcaddr = new _ETHERNET_ADDR();
 			this.enet_type = new byte[2];
 			this.enet_data = null;
 		}
+		
+		public _ETHERNET_ADDR get_destination_address() {
+			return this.enet_dstaddr;
+		}
+
+		public void set_destination_address(_ETHERNET_ADDR pEnet_dstaddr) {
+			this.enet_dstaddr = pEnet_dstaddr;
+		}
+
+		public _ETHERNET_ADDR get_source_address() {
+			return this.enet_srcaddr;
+		}
+
+		public void set_source_address(_ETHERNET_ADDR pEnet_srcaddr) {
+			this.enet_srcaddr = pEnet_srcaddr;
+		}
+
+		public byte[] get_enet_type() {
+			return this.enet_type;
+		}
+
+		public void set_enet_type(byte[] pEnet_type) {
+			this.enet_type = pEnet_type;
+		}
+
 	}
 
 	_ETHERNET_HEADER m_sHeader = new _ETHERNET_HEADER();
@@ -99,6 +124,22 @@ public class EthernetLayer implements BaseLayer {
 		/* <!> additional implementation required later 
 		Temporarily implemented to test whether the inter-layer data forwarding function is performed smoothly */
 		
+		/*
+		 * When the destination mac address of the frame is not the same as its own address
+		 */
+		boolean isMyFrame = false;
+		boolean isBroadcastFrame=false;
+		
+		/* Check whether received frame is Broadcast Frame */
+		for (int i =0; i<6; i++){
+			if (input[i] == (byte)0xff){
+				isBroadcastFrame = true;
+			}
+		}
+		for(int i=0; i<6; i++){
+			
+		}
+		if (isBroadcastFrame || isMyFrame){ 
 		if(input[12]==(byte)0x08 && input[13] == (byte)0x00){
 			// if protocol type == IPv4
 			// call IPLayer.send(..);
@@ -111,10 +152,14 @@ public class EthernetLayer implements BaseLayer {
 			// call ARPLayer.Recevie(..); 
 			this.GetUpperLayer(0).Receive(decapsulated); 
 		}
+		}
 		
 		return true;	
 	}
-
+	public _ETHERNET_HEADER GetEthernetHeader(){
+		return this.m_sHeader;
+	}
+	
 	@Override
 	public void SetUnderLayer(BaseLayer pUnderLayer) {
 		if (pUnderLayer == null)
