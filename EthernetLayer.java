@@ -98,7 +98,20 @@ public class EthernetLayer implements BaseLayer {
 	public boolean Receive(byte[] input) {
 		/* <!> additional implementation required later 
 		Temporarily implemented to test whether the inter-layer data forwarding function is performed smoothly */
-		this.GetUpperLayer(0).Receive(input);
+		
+		if(input[12]==(byte)0x08 && input[13] == (byte)0x00){
+			// if protocol type == IPv4
+			// call IPLayer.send(..);
+			// 
+		}
+		
+		else if(input[12]==(byte)0x08 && input[13] == (byte)0x06){
+			// if protocol type == ARP
+			byte[] decapsulated = this.Decapsulate(input);
+			// call ARPLayer.Recevie(..); 
+			this.GetUpperLayer(0).Receive(decapsulated); 
+		}
+		
 		return true;	
 	}
 
