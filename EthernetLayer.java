@@ -24,7 +24,8 @@ public class EthernetLayer implements BaseLayer {
 			this.addr[4] = (byte) 0x00;
 			this.addr[5] = (byte) 0x00;
 		}
-		public int get_length_of_addr(){
+
+		public int get_length_of_addr() {
 			return this.length_of_addr;
 		}
 	}
@@ -34,14 +35,14 @@ public class EthernetLayer implements BaseLayer {
 		_ETHERNET_ADDR enet_srcaddr;
 		byte[] enet_type;
 		byte[] enet_data;
-		
+
 		public _ETHERNET_HEADER() {
 			this.enet_dstaddr = new _ETHERNET_ADDR();
 			this.enet_srcaddr = new _ETHERNET_ADDR();
 			this.enet_type = new byte[2];
 			this.enet_data = null;
 		}
-		
+
 		public _ETHERNET_ADDR get_destination_address() {
 			return this.enet_dstaddr;
 		}
@@ -59,7 +60,7 @@ public class EthernetLayer implements BaseLayer {
 		}
 
 		public byte[] get_enet_type() {
-			return this.enet_type;	
+			return this.enet_type;
 		}
 
 		public void set_enet_type(byte[] pEnet_type) {
@@ -74,51 +75,51 @@ public class EthernetLayer implements BaseLayer {
 		// super(pName);
 		// TODO Auto-generated constructor stub
 		pLayerName = pName;
-		
+
 	}
-	
-	
-	public byte[] Encapsulate(_ETHERNET_HEADER pHeader, byte[] pPayload ){
+
+	public byte[] Encapsulate(_ETHERNET_HEADER pHeader, byte[] pPayload) {
 		// <!> Need to check
 		// header length - header.data length = 14
 		int idx_ptr = 0;
 		byte[] encapsulated = new byte[14 + pPayload.length];
-		for (int i=0; i<pHeader.enet_dstaddr.get_length_of_addr(); i++){
+		for (int i = 0; i < pHeader.enet_dstaddr.get_length_of_addr(); i++) {
 			encapsulated[idx_ptr++] = pHeader.enet_dstaddr.addr[i];
-			}
-		for (int i=0; i<pHeader.enet_srcaddr.get_length_of_addr(); i++){
+		}
+		for (int i = 0; i < pHeader.enet_srcaddr.get_length_of_addr(); i++) {
 			encapsulated[idx_ptr++] = pHeader.enet_srcaddr.addr[i];
 		}
-		for (int i=0; i<pHeader.enet_type.length; i++){
+		for (int i = 0; i < pHeader.enet_type.length; i++) {
 			encapsulated[idx_ptr++] = pHeader.enet_type[i];
 		}
-		for (int i=0; i<pPayload.length; i++){
+		for (int i = 0; i < pPayload.length; i++) {
 			encapsulated[idx_ptr++] = pPayload[i];
 		}
-		
+
 		return encapsulated;
-		
+
 	}
-	
-	public byte[] Decapsulate(byte[] pEthFrame){
+
+	public byte[] Decapsulate(byte[] pEthFrame) {
 		// <!> Need to check
 		// offset(header length - header.data length)
-		int offset=14;
+		int offset = 14;
 		byte[] decapsulated = new byte[pEthFrame.length - offset];
-		for (int i=0; i<decapsulated.length; i++){
-			decapsulated[i] = pEthFrame[offset+i];
+		for (int i = 0; i < decapsulated.length; i++) {
+			decapsulated[i] = pEthFrame[offset + i];
 		}
 		return decapsulated;
 	}
 
 	public boolean Send(byte[] input, int length) {
-		/* <!> additional implementation required later 
-		Temporarily implemented to test whether the inter-layer data forwarding function is performed smoothly */
-		this.GetUnderLayer().Send(input,length);
+		/*
+		 * <!> additional implementation required later Temporarily implemented
+		 * to test whether the inter-layer data forwarding function is performed
+		 * smoothly
+		 */
+		this.GetUnderLayer().Send(input, length);
 		return false;
 	}
-
-	
 
 	public boolean Receive(byte[] input) {
 		/*
@@ -126,8 +127,9 @@ public class EthernetLayer implements BaseLayer {
 		 * to test whether the inter-layer data forwarding function is performed
 		 * smoothly
 		 */
-		
-		boolean isMyFrame = true;
+
+		boolean isFrameISent = true;
+		boolean isFrameForMe = true;
 		boolean isBroadcastFrame = true;
 
 		for (int i = 0; i < 6; i++) {
@@ -135,21 +137,29 @@ public class EthernetLayer implements BaseLayer {
 			if (input[i] != (byte) 0xff) {
 				isBroadcastFrame = false;
 			}
-			/* Check whether received frame is for me */
+			/* Check whether received frame is the frame I sent */
+			if (this.GetEthernetHeader().get_source_address().addr[i + 6] != input[i]) {
+				isFrameISent = false;
+			}
+
+			/* Check whether I am the destination of this frame */
 			if (this.GetEthernetHeader().get_source_address().addr[i] != input[i]) {
-				isMyFrame = false;
+				isFrameForMe = false;
 			}
 		}
 
-		if (isBroadcastFrame || isMyFrame) {
+		if (!(isFrameISent) && (isBroadcastFrame || isFrameForMe)) {
 			/*
-			 * When the destination mac address of the frame is not the same as its own address
+			 * Receive only when the above conditions are satisfied If the above
+			 * conditions are satisfied, the sending layer is determined
+			 * according to the protocol type in the frame.
 			 */
-			
+
 			if (input[12] == (byte) 0x08 && input[13] == (byte) 0x00) {
 				// if protocol type == IPv4
 				// call IPLayer.send(..);
-				//
+				
+				// <!> This part will be filled when IPLayer implementation is completed.
 			}
 
 			else if (input[12] == (byte) 0x08 && input[13] == (byte) 0x06) {
@@ -160,14 +170,17 @@ public class EthernetLayer implements BaseLayer {
 			}
 			return true;
 		}
-
 		return false;
 	}
-	public _ETHERNET_HEADER GetEthernetHeader(){
-		/* Getter for the ethernet header object declared as a member variable in the ethernet layer. */
+
+	public _ETHERNET_HEADER GetEthernetHeader() {
+		/*
+		 * Getter for the ethernet header object declared as a member variable
+		 * in the ethernet layer.
+		 */
 		return this.m_sHeader;
 	}
-	
+
 	@Override
 	public void SetUnderLayer(BaseLayer pUnderLayer) {
 		if (pUnderLayer == null)
