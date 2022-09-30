@@ -129,10 +129,11 @@ public class ARPLayer implements BaseLayer {
 		//  Encapsulate function to create byte array type ARP Packet
 		int idx_ptr = 0;
 		byte[] encapsulated = new byte[pHeader.get_length_of_header() + pPayload.length];
+
 		for (int i = 0; i < pHeader.hardware_type.length; i++) {
 			encapsulated[idx_ptr++] = pHeader.hardware_type[i];
 		}
-
+		
 		for (int i = 0; i < pHeader.protocol_type.length; i++) {
 			encapsulated[idx_ptr++] = pHeader.protocol_type[i];
 		}
@@ -145,21 +146,20 @@ public class ARPLayer implements BaseLayer {
 		}
 
 		for (int i = 0; i < pHeader.sender_mac.get_length_of_addr(); i++) {
-			encapsulated[idx_ptr++] = pPayload[i];
+			encapsulated[idx_ptr++] = pHeader.sender_mac.addr[i];
 		}
 		for (int i = 0; i < pHeader.target_mac.get_length_of_addr(); i++) {
-			encapsulated[idx_ptr++] = pPayload[i];
+			encapsulated[idx_ptr++] = pHeader.target_mac.addr[i];
 		}
 		for (int i = 0; i < pHeader.sender_ip.get_length_of_addr(); i++) {
-			encapsulated[idx_ptr++] = pPayload[i];
+			encapsulated[idx_ptr++] = pHeader.sender_ip.addr[i];
 		}
 		for (int i = 0; i < pHeader.target_ip.get_length_of_addr(); i++) {
-			encapsulated[idx_ptr++] = pPayload[i];
+			encapsulated[idx_ptr++] = pHeader.target_ip.addr[i];
 		}
 		for (int i = 0; i < pPayload.length; i++) {
 			encapsulated[idx_ptr++] = pPayload[i];
 		}
-		
 		return encapsulated;
 		
 	}
