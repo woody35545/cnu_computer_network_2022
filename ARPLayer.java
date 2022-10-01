@@ -20,7 +20,7 @@ public class ARPLayer implements BaseLayer {
 	
 	private class _ARP_CACHE_TABLE{
 		private final static int Capacity = 30;
-		private static int size = 0;
+		private int size = 0;
 		private _IP_ADDR[]  ip_addr = new _IP_ADDR[Capacity];
 		private _MAC_ADDR[] mac_addr = new _MAC_ADDR[Capacity];
 		
