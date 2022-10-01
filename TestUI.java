@@ -159,25 +159,43 @@ public class TestUI extends JFrame implements BaseLayer {
 					btn_set.setText("set");
 					textarea_dstMacAddr.setEditable(true);
 				} else {
-					byte[] srcAddress = new byte[6];
-					byte[] dstAddress = new byte[6];
-
-					String src = textarea_srcMacAddr.getText();
-					String dst = textarea_dstMacAddr.getText();
-
-					String[] byte_src = src.split("-");
-					for (int i = 0; i < 6; i++) {
-						srcAddress[i] = (byte) Integer.parseInt(byte_src[i], 16);
-					}
-
-					String[] byte_dst = dst.split("-");
-					for (int i = 0; i < 6; i++) {
-						dstAddress[i] = (byte) Integer.parseInt(byte_dst[i], 16);
-					}
-					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderType(new byte[]{0x08, 0x00});
-					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderSrcMacAddr(srcAddress);
-					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderDstMacAddr(dstAddress);
+					byte[] srcMacAddress = new byte[6];
+					byte[] dstMacAddress = new byte[6];
+					byte[] srcIPAddress = new byte[6];
+					byte[] dstIPAddress = new byte[6];
+					String srcMac = textarea_srcMacAddr.getText();
+					String dstMac = textarea_dstMacAddr.getText();
+					String srcIP  = textarea_srcIpAddr.getText();
+					String dstIP = textarea_dstIpAddr.getText();
 					
+					String[] byte_srcIP = dstMac.split(".");
+					String[] byte_dstIP = dstMac.split(".");
+					
+					
+					String[] byte_src = srcMac.split("-");
+					String[] byte_dst = dstMac.split("-");
+
+					for (int i = 0; i < 6; i++) {
+						srcMacAddress[i] = (byte) Integer.parseInt(byte_src[i], 16);
+					}
+
+					for (int i = 0; i < 6; i++) {
+						dstMacAddress[i] = (byte) Integer.parseInt(byte_dst[i], 16);
+					}
+					for (int i = 0; i < 4; i++) {
+						srcIPAddress[i] = (byte) Integer.parseInt(byte_srcIP[i], 16);
+					}
+
+					for (int i = 0; i < 4; i++) {
+						dstIPAddress[i] = (byte) Integer.parseInt(byte_dstIP[i], 16);
+					}
+					
+					
+					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderType(new byte[]{0x08, 0x00});
+					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderSrcMacAddr(srcMacAddress);
+					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderDstMacAddr(dstMacAddress);
+					((IPLayer)m_LayerMgr.GetLayer("IP")).setIpHeaderSrcIPAddr(srcIPAddress);
+					((IPLayer)m_LayerMgr.GetLayer("IP")).setIpHeaderDstIPAddr(dstIPAddress);
 					
 					((NILayer) m_LayerMgr.GetLayer("NI")).SetAdapterNumber(selected_index);
 
