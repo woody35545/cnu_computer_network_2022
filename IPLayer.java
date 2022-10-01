@@ -130,6 +130,14 @@ public class IPLayer implements BaseLayer {
 		return true;
 	}
 	
+	
+	public void setIpHeaderSrcIPAddr(byte[] pSrcAddr) {
+		this.m_sHeader.ip_srcaddr=pSrcAddr;
+	}
+	public void setIpHeaderDstIPAddr(byte[] pDstAddr) {
+		this.m_sHeader.ip_dstaddr=pDstAddr;
+
+	}
 	@Override
 	public String GetLayerName() {
 		// TODO Auto-generated method stub
