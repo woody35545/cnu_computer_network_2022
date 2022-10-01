@@ -4,4 +4,6 @@
 ### <b>:pushpin: Ethernet Header Structure</b>  
 ![image](https://user-images.githubusercontent.com/84436996/192966990-14ad8e9b-dad1-4b4f-bb55-9ea9889f0b6f.png)
 ### <b>:pushpin: ARP Header Structure</b>  
-![image](https://user-images.githubusercontent.com/84436996/193278286-75ef7d0c-6698-4753-88ca-842d8107d45f.png)
+![image](https://user-images.githubusercontent.com/84436996/193411032-9833ea8e-f726-4301-ad29-e7ba7a256332.png)  
+### <b>:pushpin: ARP Request</b>  
+![image](https://user-images.githubusercontent.com/84436996/193410997-b8c47c48-5245-4e5d-a2b4-65deaddf14f8.png)
