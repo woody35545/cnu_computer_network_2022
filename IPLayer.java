@@ -5,6 +5,7 @@ public class IPLayer implements BaseLayer {
 	public String p_LayerName = null;
 	public ArrayList<BaseLayer> p_UnderLayer = new ArrayList<BaseLayer>();
 	public BaseLayer p_UpperLayer = null;
+	public final static int IPHEADER = 20;
 	
 	private class _IPLayer_HEADER {
 		byte[] ip_versionLen;	// ip version -> IPv4 : 4
@@ -56,24 +57,63 @@ public class IPLayer implements BaseLayer {
 		buf[9] = m_sHeader2.ip_protocol[0];
 		buf[10] = m_sHeader2.ip_cksum[0];
 		buf[11] = m_sHeader2.ip_cksum[1];
+		// addr
 		for (int i = 0; i < 4; i++) {
 			buf[12 + i] = m_sHeader2.ip_srcaddr[i];
 			buf[16 + i] = m_sHeader2.ip_dstaddr[i];
 		}
+		// data
 		for (int i = 0; i < length; i++) {
 			buf[20 + i] = input[i];
 		}
 		return buf;
 	}
-	 
+	// Ethernet 계층으로 전송 
 	public boolean Send(byte[] input, int length) {
 		byte[] bytes = ObjToByte(m_sHeader,input,length);
 		
 		//((ARPLayer)this.GetUnderLayer()).Send(m_sHeader.ip_srcaddr, m_sHeader.ip_dstaddr);
 		return true;
 	}
+	
+	public byte[] RemoveCappHeader(byte[] input, int length) {
+		//캡슐화 했던 IP 헤더들을 제거한다. 
+		byte[] remvHeader = new byte[length-IPHEADER];
+		for(int i=0;i<length-IPHEADER;i++) {
+			remvHeader[i] = input[i+IPHEADER];
+		}
+		return remvHeader;
+		
+	}
+	
+	
+	//Receive 함수
+	public synchronized boolean Receive(byte[] input) {
+		System.out.println("IP receive input length : "+input.length);
+		byte[] data = RemoveCappHeader(input, input.length);
+		
+		if(me_equals_dst_Addr(input)) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	public boolean me_equals_dst_Addr(byte[] input) {//패킷의 dst 주소랑 내 주소랑 같은지 확인
+		for(int i = 0;i<4;i++) {
+			if(input[i+16]!=m_sHeader.ip_srcaddr[i]) return false;
+		}
 
+		return true;
+	}
+	public boolean me_equals_src_Addr(byte[] input) {//패킷의 src 주소랑 내 주소랑 같은지 확인
+		for(int i = 0;i<4;i++) {
+			if(input[i+12]!=m_sHeader.ip_srcaddr[i]) return false;
+		}
 
+		return true;
+	}
+	
 	@Override
 	public String GetLayerName() {
 		// TODO Auto-generated method stub
@@ -122,5 +162,7 @@ public class IPLayer implements BaseLayer {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	
 
 }
