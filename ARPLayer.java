@@ -16,7 +16,7 @@ public class ARPLayer implements BaseLayer {
 	public String pLayerName = null;
 	public BaseLayer p_UnderLayer = null;
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
-	_ARP_HEADER m_sHeader = new _ARP_HEADER();
+	private _ARP_HEADER m_sHeader = new _ARP_HEADER();
 	
 	private class _ARP_CACHE_TABLE{
 		private final static int Capacity = 30;
@@ -154,7 +154,6 @@ public class ARPLayer implements BaseLayer {
 		 * # [Target protocol address] - 4 Bytes
 		 */
 		
-		
 		byte[] hardware_type = new byte[2];
 		byte[] protocol_type = new byte[2];
 		byte length_of_hardware_addr;
@@ -189,6 +188,23 @@ public class ARPLayer implements BaseLayer {
 			this.target_ip = pTargetIpAddress;
 		}
 		
+		public void SetHardwareType(byte[] pHardwareType ) {
+			this.hardware_type=pHardwareType;
+		}
+		public void SetProtocolType(byte[] pProtocolType ) {
+			this.protocol_type=pProtocolType;
+		}
+		public void SetLengthOfHardwareAddress(byte _pLengthOfHardwareAddress)
+		{
+			this.length_of_hardware_addr = _pLengthOfHardwareAddress;
+		}
+		
+		public void SetLengthOfProtocolAddress(byte pLengthOfProtocolAddress) {
+			this.length_of_protocol_addr =pLengthOfProtocolAddress ;
+		}
+		public void SetOpCode(byte[] pOpCode) {
+			this.opcode = pOpCode;
+		}
 		public int get_length_of_header(){
 			return this.length_of_header;
 		}
@@ -255,6 +271,16 @@ public class ARPLayer implements BaseLayer {
 	
 	public boolean Send(byte[] input, int length) {
 		// <!> additional implementation required later
+		
+		/*
+		 * Send ARP Request
+		 */
+		
+		// OpCode of ARP Request = 0x0001
+		byte[] opCode = new byte[] {0x00,0x01};
+		this.m_sHeader.SetOpCode(opCode);
+		
+		
 		byte[] encapsulated =this.Encapsulate(this.m_sHeader, input);
 		//this.GetUnderLayer().Send(encapsulated, length);
 		this.GetUnderLayer().Send(encapsulated, length);
