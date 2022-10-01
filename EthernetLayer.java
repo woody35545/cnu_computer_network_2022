@@ -47,16 +47,16 @@ public class EthernetLayer implements BaseLayer {
 			return this.enet_dstaddr;
 		}
 
-		public void set_destination_address(_ETHERNET_ADDR pEnet_dstaddr) {
-			this.enet_dstaddr = pEnet_dstaddr;
+		public void set_destination_address(byte[] pDstaddr) {
+			this.enet_dstaddr.addr = pDstaddr;
 		}
 
 		public _ETHERNET_ADDR get_source_address() {
 			return this.enet_srcaddr;
 		}
 
-		public void set_source_address(_ETHERNET_ADDR pEnet_srcaddr) {
-			this.enet_srcaddr = pEnet_srcaddr;
+		public void set_source_address(byte[] pSrcaddr) {
+			this.enet_srcaddr.addr = pSrcaddr;
 		}
 
 		public byte[] get_enet_type() {
@@ -128,19 +128,20 @@ public class EthernetLayer implements BaseLayer {
 			}
 		}
 		
-
 		 /* if ARP Layer, The first 4 bytes will have the same value as this. {0x00, 0x01, 0x08, 0x00}*/
 		if (isFromARPLayer){
 			// ARP Request Packet should be sent as broadcast
-		
-		}
 			
-		/* else, This is from the IP layer */
+			// Make BroadCast Frame
+			this.m_sHeader.set_destination_address(new byte[]{(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff});
+			byte[] encapsulated = Encapsulate(this.m_sHeader,input);
+			this.GetUnderLayer().Send(encapsulated, length);
+			return true;
+		}	
 		else{
-			
+			/* else, This is from the IP layer */		
 			
 		}
-		this.GetUnderLayer().Send(input, length);
 		return false;
 	}
 
@@ -180,7 +181,7 @@ public class EthernetLayer implements BaseLayer {
 
 			if (input[12] == (byte) 0x08 && input[13] == (byte) 0x00) {
 				// if protocol type == IPv4
-				// call IPLayer.send(..);
+				// call IPLayer.receive(..);
 				
 				// <!> This part will be filled when IPLayer implementation is completed.
 			}
