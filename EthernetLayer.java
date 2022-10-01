@@ -227,6 +227,9 @@ public class EthernetLayer implements BaseLayer {
 	public void setEthernetHeaderDstMacAddr(byte[] pDstAddress) {
 		this.m_sHeader.enet_dstaddr.addr = pDstAddress;
 	}
+	public void setEthernetHeaderType(byte[] pHeaderType) {
+		this.m_sHeader.set_enet_type(pHeaderType);
+	}
 	@Override
 	public void SetUnderLayer(BaseLayer pUnderLayer) {
 		if (pUnderLayer == null)
