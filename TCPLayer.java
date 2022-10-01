@@ -123,36 +123,32 @@ public class TCPLayer implements BaseLayer {
 	@Override
 	public BaseLayer GetUnderLayer() {
 		// TODO Auto-generated method stub
-		if(this.p_UnderLayer == null){
+		if(this.p_UnderLayer == null) 
 			return null;
-		}
 		return this.p_UnderLayer;
 	}
 
 	@Override
 	public BaseLayer GetUpperLayer(int nindex) {
 		// TODO Auto-generated method stub
-		if (nindex < 0 || this.p_UpperLayerCount < 0 || nindex > this.p_UpperLayerCount){
+		if (nindex > this.p_UpperLayerCount) 
 			return null;
-		}
 		return this.p_UpperLayer.get(nindex); //ChatAppLayer, FileAppLayer
 	}
 
 	@Override
 	public void SetUnderLayer(BaseLayer pUnderLayer) {
 		// TODO Auto-generated method stub
-		if(this.p_UpperLayer == null){
+		if(this.p_UpperLayer == null)
 			return;
-		}
 		this.p_UnderLayer = pUnderLayer;
 	}
 
 	@Override
 	public void SetUpperLayer(BaseLayer pUpperLayer) {
 		// TODO Auto-generated method stub
-		if(this.p_UpperLayer == null){
+		if(this.p_UpperLayer == null)
 			return;
-		}
 		this.p_UpperLayer.add(p_UpperLayerCount++, pUpperLayer); //ChatAppLayer, FileAppLayer
 	}
 
