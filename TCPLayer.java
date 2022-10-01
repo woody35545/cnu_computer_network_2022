@@ -83,7 +83,36 @@ public class TCPLayer implements BaseLayer {
 
 	}
 
+	public byte[] RemoveCappHeader(byte[] input, int length){
+		byte[] headerRemoved = new byte[length-24];
+		for(int i =0; i<length-24; i++){
+			headerRemoved[i] = input[24+i];
+		}
+		
+		return headerRemoved;
+	}
 	
+	public boolean Receive(byte[] input){
+		byte[] data;
+		
+		if(input[2]==(byte)0x20 && input[3]==(byte)0x80){
+			//ChatAppLayer : 0
+			data = RemoveCappHeader(input, input.length);
+			this.GetUpperLayer(0).Receive();
+			
+			return true;
+		}
+		else if(input[2]==(byte)0x20 && input[3]==(byte)0x80){
+			//FileAppLayer : 1
+			data = RemoveCappHeader(input, input.length);
+			this.GetUpperLayer(1).Receive();
+			
+			return true;
+		}
+	
+		
+		return false;
+	}
 	
 	@Override
 	public String GetLayerName() {
