@@ -263,11 +263,11 @@ public class ARPLayer implements BaseLayer {
 		for (int i = 0; i < pHeader.sender_mac.get_length_of_addr(); i++) {
 			encapsulated[idx_ptr++] = pHeader.sender_mac.addr[i];
 		}
-		for (int i = 0; i < pHeader.target_mac.get_length_of_addr(); i++) {
-			encapsulated[idx_ptr++] = pHeader.target_mac.addr[i];
-		}
 		for (int i = 0; i < pHeader.sender_ip.get_length_of_addr(); i++) {
 			encapsulated[idx_ptr++] = pHeader.sender_ip.addr[i];
+		}
+		for (int i = 0; i < pHeader.target_mac.get_length_of_addr(); i++) {
+			encapsulated[idx_ptr++] = pHeader.target_mac.addr[i];
 		}
 		for (int i = 0; i < pHeader.target_ip.get_length_of_addr(); i++) {
 			encapsulated[idx_ptr++] = pHeader.target_ip.addr[i];
