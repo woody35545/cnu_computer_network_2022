@@ -303,9 +303,10 @@ public class ARPLayer implements BaseLayer {
 		this.m_sHeader.SetOpCode(opCode);
 		
 		byte[] encapsulated =this.Encapsulate(this.m_sHeader, input);
-		//this.GetUnderLayer().Send(encapsulated, length);
 		this.GetUnderLayer().Send(encapsulated, length);
 
+		
+		
 		return true;
 	}
 
