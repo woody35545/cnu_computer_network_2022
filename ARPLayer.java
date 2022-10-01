@@ -17,7 +17,7 @@ public class ARPLayer implements BaseLayer {
 	public BaseLayer p_UnderLayer = null;
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
 	private _ARP_HEADER m_sHeader = new _ARP_HEADER();
-	
+	private _ARP_CACHE_TABLE arp_cache_table = new _ARP_CACHE_TABLE(); 
 	private class _ARP_CACHE_TABLE{
 		private final static int Capacity = 30;
 		private int size = 0;
@@ -42,6 +42,7 @@ public class ARPLayer implements BaseLayer {
 		}
 		
 		public boolean is_exist(_IP_ADDR ip_addr) {
+			//<!> 수정해야함. 이렇게 구현하면 incomplete 상태에 있는 값도 mac 주소를 아는 것으로 판단하게 됨
 			//check mac_addr in cache table by ip_addr
 			for(int i = 0;i < size;i++) {
 				if(this.ip_addr[i] == ip_addr) {
@@ -291,19 +292,24 @@ public class ARPLayer implements BaseLayer {
 	public boolean Send(byte[] input, int length) {
 		// <!> additional implementation required later
 		
-		/*
-		 * Send ARP Request
-		 */
+		if (!this.arp_cache_table.is_exist(this.m_sHeader.target_ip)) {
+			/*
+			 * If there is no Mac address for the destination IP in the ARP cache table,
+			 * then Send ARP Request
+			 */
+			
+			// OpCode of ARP Request = 0x0001
+			byte[] opCode = new byte[] {0x00,0x01};
+			this.m_sHeader.SetHardwareType(DEFAULT_HARDWARE_TYPE);
+			this.m_sHeader.SetHardwareType(DEFAULT_PROTOCOL_TYPE);
+			this.m_sHeader.SetTargetMacAddress(new byte[] {0x00,0x00,0x00,0x00,0x00,0x00});
+			this.m_sHeader.SetOpCode(opCode);
+			
+			byte[] encapsulated =this.Encapsulate(this.m_sHeader, input);
+			this.GetUnderLayer().Send(encapsulated, length);
+			
+		}
 		
-		// OpCode of ARP Request = 0x0001
-		byte[] opCode = new byte[] {0x00,0x01};
-		this.m_sHeader.SetHardwareType(DEFAULT_HARDWARE_TYPE);
-		this.m_sHeader.SetHardwareType(DEFAULT_PROTOCOL_TYPE);
-		this.m_sHeader.SetTargetMacAddress(new byte[] {0x00,0x00,0x00,0x00,0x00,0x00});
-		this.m_sHeader.SetOpCode(opCode);
-		
-		byte[] encapsulated =this.Encapsulate(this.m_sHeader, input);
-		this.GetUnderLayer().Send(encapsulated, length);
 
 		
 		
