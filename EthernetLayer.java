@@ -131,19 +131,14 @@ public class EthernetLayer implements BaseLayer {
 		 /* if ARP Layer, The first 4 bytes will have the same value as this. {0x00, 0x01, 0x08, 0x00}*/
 		if (isFromARPLayer){
 			// ARP Request Packet should be sent as broadcast
-			
 			// Make BroadCast Frame
 			this.m_sHeader.set_destination_address(new byte[]{(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff});
-			byte[] encapsulated = Encapsulate(this.m_sHeader,input);
-			this.GetUnderLayer().Send(encapsulated, length);
-			return true;
 		}	
-		else{
-			/* else, This is from the IP layer */		
+		/* else, This is from the IP layer */		
 			byte[] encapsulated = Encapsulate(this.m_sHeader,input);
 			this.GetUnderLayer().Send(encapsulated, length);
 			return true;
-		}
+		
 		
 	}
 
