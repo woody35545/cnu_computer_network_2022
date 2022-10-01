@@ -81,6 +81,15 @@ public class EthernetLayer implements BaseLayer {
 	public byte[] Encapsulate(_ETHERNET_HEADER pHeader, byte[] pPayload) {
 		// <!> Need to check
 		// header length - header.data length = 14
+		if (pPayload == null) {
+			// Padding
+			byte[] padding = new byte[46];
+			for(int i =0; i<46; i++) {
+				padding[i]=(byte)0x00;
+			}
+			pPayload = padding;
+		}
+		
 		int idx_ptr = 0;
 		byte[] encapsulated = new byte[14 + pPayload.length];
 		for (int i = 0; i < pHeader.enet_dstaddr.get_length_of_addr(); i++) {
@@ -143,7 +152,6 @@ public class EthernetLayer implements BaseLayer {
 		/*
 		 * This function sends empty packet for test 
 		 */
-
 		int idx_ptr = 0;
 		byte[] encapsulated = new byte[14+46];
 		for (int i = 0; i < this.m_sHeader.enet_dstaddr.get_length_of_addr(); i++) {
@@ -159,7 +167,7 @@ public class EthernetLayer implements BaseLayer {
 			// Just Padding 0x00 * 46
 			encapsulated[idx_ptr++] = (byte)0x00;
 		} 
-			this.GetUnderLayer().Send(encapsulated,14);
+			this.GetUnderLayer().Send(encapsulated,encapsulated.length);
 			return true;
 	}
 	
