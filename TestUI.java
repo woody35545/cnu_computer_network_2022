@@ -49,10 +49,10 @@ public class TestUI extends JFrame implements BaseLayer {
 		setTitle("Packet Debugger");
 		pLayerName = pName;
 		getContentPane().setLayout(null);
-		setBounds(250, 250, 385, 331);
+		setBounds(250, 250, 386, 416);
 
 		JPanel panel = new JPanel();
-		panel.setBounds(12, 10, 354, 182);
+		panel.setBounds(12, 10, 354, 231);
 		getContentPane().add(panel);
 		panel.setLayout(null);
 		
@@ -69,34 +69,48 @@ public class TestUI extends JFrame implements BaseLayer {
 		panel.add(lblDestinationMac);
 		
 		textarea_dstMacAddr = new JTextArea();
-		textarea_dstMacAddr.setBounds(57, 93, 222, 21);
+		textarea_dstMacAddr.setBounds(57, 93, 285, 21);
 		panel.add(textarea_dstMacAddr);
 		textarea_dstMacAddr.setColumns(10);
 		
 		textarea_srcMacAddr = new JTextArea();
-		textarea_srcMacAddr.setBounds(57, 62, 222, 21);
+		textarea_srcMacAddr.setBounds(57, 62, 285, 21);
 		panel.add(textarea_srcMacAddr);
 		textarea_srcMacAddr.setColumns(10);
 		
 		comboBox_NIC = new JComboBox();
-		comboBox_NIC.setBounds(57, 30, 145, 23);
+		comboBox_NIC.setBounds(57, 30, 197, 23);
 		this.SetCombobox();
 		panel.add(comboBox_NIC);
 		
 		JButton NIC_select_button = new JButton("Select");
-		NIC_select_button.setBounds(203, 29, 76, 25);
+		NIC_select_button.setBounds(266, 31, 76, 25);
 		panel.add(NIC_select_button);
 		
 		JButton btn_set = new JButton("Set");
-		btn_set.setBounds(284, 29, 57, 85);
+		btn_set.setBounds(57, 190, 285, 31);
 		panel.add(btn_set);
 		
-		JButton btn_send = new JButton("Send");
-		btn_send.setBounds(0, 133, 340, 23);
-		panel.add(btn_send);
+		JTextArea textarea_srcIpAddr = new JTextArea();
+		textarea_srcIpAddr.setColumns(10);
+		textarea_srcIpAddr.setBounds(57, 122, 285, 21);
+		panel.add(textarea_srcIpAddr);
+		
+		JLabel lblDstIp = new JLabel("Dst IP");
+		lblDstIp.setBounds(0, 157, 86, 15);
+		panel.add(lblDstIp);
+		
+		JTextArea textarea_dstIpAddr = new JTextArea();
+		textarea_dstIpAddr.setColumns(10);
+		textarea_dstIpAddr.setBounds(57, 153, 285, 21);
+		panel.add(textarea_dstIpAddr);
+		
+		JLabel lblSrcip = new JLabel("Src IP");
+		lblSrcip.setBounds(0, 127, 86, 15);
+		panel.add(lblSrcip);
 		
 		JPanel panel_1 = new JPanel();
-		panel_1.setBounds(12, 203, 354, 84);
+		panel_1.setBounds(12, 251, 354, 118);
 		getContentPane().add(panel_1);
 		panel_1.setLayout(null);
 		
@@ -105,20 +119,24 @@ public class TestUI extends JFrame implements BaseLayer {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnNewButton.setBounds(180, 10, 170, 23);
+		btnNewButton.setBounds(180, 51, 170, 23);
 		panel_1.add(btnNewButton);
 		
 		JButton btnSendArpPacket = new JButton("Send ARP Request");
-		btnSendArpPacket.setBounds(0, 10, 170, 23);
+		btnSendArpPacket.setBounds(0, 51, 170, 23);
 		panel_1.add(btnSendArpPacket);
 		
 		JButton btnSendArpReply = new JButton("Send ARP Reply");
-		btnSendArpReply.setBounds(0, 44, 170, 23);
+		btnSendArpReply.setBounds(0, 85, 170, 23);
 		panel_1.add(btnSendArpReply);
 		
 		JButton btnReceiveArpReply = new JButton("Receive ARP Reply");
-		btnReceiveArpReply.setBounds(180, 43, 170, 23);
+		btnReceiveArpReply.setBounds(180, 84, 170, 23);
 		panel_1.add(btnReceiveArpReply);
+		
+		JButton btn_send = new JButton("Send");
+		btn_send.setBounds(0, 10, 350, 31);
+		panel_1.add(btn_send);
 		btn_send.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (btn_set.getText() == "Reset") {
