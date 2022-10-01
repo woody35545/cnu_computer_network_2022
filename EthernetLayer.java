@@ -201,7 +201,13 @@ public class EthernetLayer implements BaseLayer {
 		 */
 		return this.m_sHeader;
 	}
-
+	
+	public void setEthernetHeaderSrcMacAddr(byte[] pSrcAddress) {
+		this.m_sHeader.enet_srcaddr.addr = pSrcAddress;
+	}
+	public void setEthernetHeaderDstMacAddr(byte[] pDstAddress) {
+		this.m_sHeader.enet_dstaddr.addr = pDstAddress;
+	}
 	@Override
 	public void SetUnderLayer(BaseLayer pUnderLayer) {
 		if (pUnderLayer == null)
