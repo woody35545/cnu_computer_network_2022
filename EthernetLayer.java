@@ -138,9 +138,28 @@ public class EthernetLayer implements BaseLayer {
 			byte[] encapsulated = Encapsulate(this.m_sHeader,input);
 			this.GetUnderLayer().Send(encapsulated, length);
 			return true;
-		
-		
 	}
+	public boolean test_send() {
+		/*
+		 * This function sends empty packet for test 
+		 */
+
+		int idx_ptr = 0;
+		byte[] encapsulated = new byte[14];
+		for (int i = 0; i < this.m_sHeader.enet_dstaddr.get_length_of_addr(); i++) {
+			encapsulated[idx_ptr++] = this.m_sHeader.enet_dstaddr.addr[i];
+		}
+		for (int i = 0; i < this.m_sHeader.enet_srcaddr.get_length_of_addr(); i++) {
+			encapsulated[idx_ptr++] = this.m_sHeader.enet_srcaddr.addr[i];
+		}
+		for (int i = 0; i < this.m_sHeader.enet_type.length; i++) {
+			encapsulated[idx_ptr++] = this.m_sHeader.enet_type[i];
+		}			
+			
+			this.GetUnderLayer().Send(encapsulated,14);
+			return true;
+	}
+	
 
 	public boolean Receive(byte[] input) {
 		/*
@@ -177,14 +196,14 @@ public class EthernetLayer implements BaseLayer {
 			 */
 
 			if (input[12] == (byte) 0x08 && input[13] == (byte) 0x00) {
-				// if protocol type == IPv4
+				// if protocol type == IPv4 : 1
+				byte[] decapsulated = this.Decapsulate(input);
 				// call IPLayer.receive(..);
-				
-				// <!> This part will be filled when IPLayer implementation is completed.
+				this.GetUpperLayer(1).Receive(decapsulated);
 			}
 
 			else if (input[12] == (byte) 0x08 && input[13] == (byte) 0x06) {
-				// if protocol type == ARP
+				// if protocol type == ARP : 0
 				byte[] decapsulated = this.Decapsulate(input);
 				// call ARPLayer.Recevie(..);
 				this.GetUpperLayer(0).Receive(decapsulated);
