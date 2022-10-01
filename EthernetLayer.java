@@ -145,7 +145,7 @@ public class EthernetLayer implements BaseLayer {
 		 */
 
 		int idx_ptr = 0;
-		byte[] encapsulated = new byte[14];
+		byte[] encapsulated = new byte[14+46];
 		for (int i = 0; i < this.m_sHeader.enet_dstaddr.get_length_of_addr(); i++) {
 			encapsulated[idx_ptr++] = this.m_sHeader.enet_dstaddr.addr[i];
 		}
@@ -155,7 +155,10 @@ public class EthernetLayer implements BaseLayer {
 		for (int i = 0; i < this.m_sHeader.enet_type.length; i++) {
 			encapsulated[idx_ptr++] = this.m_sHeader.enet_type[i];
 		}			
-			
+		for (int i=0; i< 46; i++) {
+			// Just Padding 0x00 * 46
+			encapsulated[idx_ptr++] = (byte)0x00;
+		} 
 			this.GetUnderLayer().Send(encapsulated,14);
 			return true;
 	}
