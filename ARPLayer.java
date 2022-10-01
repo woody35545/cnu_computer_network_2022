@@ -326,7 +326,7 @@ public class ARPLayer implements BaseLayer {
 	public void setARPHeaderSrcIp(byte[] pSrcIP) {
 		this.m_sHeader.sender_ip.addr=pSrcIP;
 	}
-	public void setARPHeaderDstIP(byte[] pTargetIP) {
+	public void setARPHeaderDstIp(byte[] pTargetIP) {
 		this.m_sHeader.target_ip.addr=pTargetIP;
 	}
 	
