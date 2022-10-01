@@ -74,10 +74,34 @@ public class TCPLayer implements BaseLayer {
 	}
 	
 	
-	public boolean Send(byte[] input, int length) {
+	public boolean Send(byte[] input, int length, Object app) {
 
 		byte[] data = objToByte(this.m_sHeader,input,length);
 		this.GetUnderLayer().Send(data, length+24);
+		
+		this.m_sHeader.tcp_data = input;
+		
+		if(app == this.GetUpperLayer(0).GetLayerName()){
+			//ChatAppLayer(0x2080) : 0
+			
+			this.m_sHeader.tcp_sport[0] = (byte)0x20; //source port
+			this.m_sHeader.tcp_sport[1] = (byte)0x80; 
+			this.m_sHeader.tcp_dport[0] = (byte)0x20; //destination port
+			this.m_sHeader.tcp_dport[1] = (byte)0x20;
+			
+			this.GetUnderLayer().Send(objToByte(this.m_sHeader, input, length), length+24);
+ 		}
+		else if(app == this.GetUpperLayer(1).GetLayerName()){
+			//FileAppLayer(0x2090) : 1
+			
+			this.m_sHeader.tcp_sport[0] = (byte)0x20; //source port
+			this.m_sHeader.tcp_sport[1] = (byte)0x90; 
+			this.m_sHeader.tcp_dport[0] = (byte)0x20; //destination port
+			this.m_sHeader.tcp_dport[1] = (byte)0x90;
+			
+			this.GetUnderLayer().Send(objToByte(this.m_sHeader, input, length), length+24);
+			
+		}
 		
 		return true;
 
@@ -96,14 +120,14 @@ public class TCPLayer implements BaseLayer {
 		byte[] data;
 		
 		if(input[2]==(byte)0x20 && input[3]==(byte)0x80){
-			//ChatAppLayer : 0
+			//ChatAppLayer(0x2080) : 0
 			data = RemoveCappHeader(input, input.length);
 			this.GetUpperLayer(0).Receive();
 			
 			return true;
 		}
 		else if(input[2]==(byte)0x20 && input[3]==(byte)0x80){
-			//FileAppLayer : 1
+			//FileAppLayer(0x2090) : 1
 			data = RemoveCappHeader(input, input.length);
 			this.GetUpperLayer(1).Receive();
 			

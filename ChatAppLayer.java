@@ -45,7 +45,7 @@ public class ChatAppLayer implements BaseLayer{
 	
     public boolean Send(byte[] input, int length) {   
 		/* <!> additional implementation required later */
-    	this.GetUnderLayer().Send(input,length);
+    	this.GetUnderLayer().Send(input,length, pLayerName);
 		return false;
 	}
 //    
