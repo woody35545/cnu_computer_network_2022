@@ -161,8 +161,8 @@ public class TestUI extends JFrame implements BaseLayer {
 				} else {
 					byte[] srcMacAddress = new byte[6];
 					byte[] dstMacAddress = new byte[6];
-					byte[] srcIPAddress = new byte[6];
-					byte[] dstIPAddress = new byte[6];
+					byte[] srcIPAddress = new byte[4];
+					byte[] dstIPAddress = new byte[4];
 					String srcMac = textarea_srcMacAddr.getText();
 					String dstMac = textarea_dstMacAddr.getText();
 					String srcIP  = textarea_srcIpAddr.getText();
@@ -172,8 +172,8 @@ public class TestUI extends JFrame implements BaseLayer {
 					String[] byte_dstIP = dstMac.split(".");
 					
 					
-					String[] byte_src = srcMac.split("-");
-					String[] byte_dst = dstMac.split("-");
+					String[] byte_src = srcIP.split("-");
+					String[] byte_dst = dstIP.split("-");
 
 					for (int i = 0; i < 6; i++) {
 						srcMacAddress[i] = (byte) Integer.parseInt(byte_src[i], 16);
@@ -196,7 +196,6 @@ public class TestUI extends JFrame implements BaseLayer {
 					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderDstMacAddr(dstMacAddress);
 					((IPLayer)m_LayerMgr.GetLayer("IP")).setIpHeaderSrcIPAddr(srcIPAddress);
 					((IPLayer)m_LayerMgr.GetLayer("IP")).setIpHeaderDstIPAddr(dstIPAddress);
-					
 					((NILayer) m_LayerMgr.GetLayer("NI")).SetAdapterNumber(selected_index);
 
 					btn_set.setText("Reset");
