@@ -197,7 +197,7 @@ public class TestUI extends JFrame implements BaseLayer {
 					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderType(new byte[]{0x08, 0x00});
 					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderSrcMacAddr(srcMacAddress);
 					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderDstMacAddr(dstMacAddress);
-					((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderDstMac(Utils.convertStrIpToByte(dstIP));
+					((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderDstIp(Utils.convertStrIpToByte(dstIP));
 					((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderSrcIp(Utils.convertStrIpToByte(srcIP));
 					((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderSrcMac(srcMacAddress);
 					((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderDstMac(dstMacAddress);
