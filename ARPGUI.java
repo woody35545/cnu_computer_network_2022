@@ -1,6 +1,7 @@
 
 
 import java.awt.EventQueue;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -10,7 +11,15 @@ import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
 
-public class ARPGUI {
+
+public class ARPGUI extends JFrame implements BaseLayer {
+
+	
+	public int nUpperLayerCount = 0;
+	public String pLayerName = null;
+	public BaseLayer p_UnderLayer = null;
+	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
+	private static LayerManager m_LayerMgr = new LayerManager();
 
 	private JFrame frmArpgui;
 	private JTextArea textField;
@@ -24,22 +33,24 @@ public class ARPGUI {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ARPGUI window = new ARPGUI();
-					window.frmArpgui.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		// TODO Auto-generated method stub
+
+		// Initialize layers
+		m_LayerMgr.AddLayer(new NILayer("NI"));
+		m_LayerMgr.AddLayer(new EthernetLayer("Ethernet"));
+		m_LayerMgr.AddLayer(new ARPLayer("ARP"));
+		m_LayerMgr.AddLayer(new ARPGUI("ARPGUI"));
+		m_LayerMgr.AddLayer(new TestUI("TestUI"));
+
+		// Connect all currently existing layers
+		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *Chat ( *TestUI ) )");
 	}
 
 	/**
 	 * Create the application.
 	 */
-	public ARPGUI() {
+	public ARPGUI(String pName) {
+		this.pLayerName = pName;
 		initialize();
 	}
 
@@ -193,5 +204,53 @@ public class ARPGUI {
 		JLabel ARP_1_2_1 = new JLabel("Address");
 		ARP_1_2_1.setBounds(763, 155, 109, 15);
 		frmArpgui.getContentPane().add(ARP_1_2_1);
+	}
+
+	@Override
+	public String GetLayerName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BaseLayer GetUnderLayer() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BaseLayer GetUnderLayer(int nindex) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BaseLayer GetUpperLayer() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BaseLayer GetUpperLayer(int nindex) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void SetUnderLayer(BaseLayer pUnderLayer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void SetUpperLayer(BaseLayer pUpperLayer) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void SetUpperUnderLayer(BaseLayer pUULayer) {
+		// TODO Auto-generated method stub
+		
 	}
 }

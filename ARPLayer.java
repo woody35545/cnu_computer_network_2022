@@ -42,7 +42,8 @@ public class ARPLayer implements BaseLayer {
 		}
 		
 		public boolean is_exist(_IP_ADDR ip_addr) {
-			//<!> 수정해야함. 이렇게 구현하면 incomplete 상태에 있는 값도 mac 주소를 아는 것으로 판단하게 됨
+			//<!> 수정해야함. 이렇게 구현하면 incomplete 상태에 있는 값도 mac 주소를 아는 것으로 판단하게 됨.
+			
 			//check mac_addr in cache table by ip_addr
 			for(int i = 0;i < size;i++) {
 				if(this.ip_addr[i] == ip_addr) {
