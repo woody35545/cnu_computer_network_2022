@@ -50,14 +50,6 @@ public class TCPLayer implements BaseLayer {
 		buf[1]=m_sHeader2.tcp_sport[1];
 		buf[2]=m_sHeader2.tcp_dport[0];
 		buf[3]=m_sHeader2.tcp_dport[1];
-		buf[4]=m_sHeader2.tcp_seq[0];
-		buf[5]=m_sHeader2.tcp_seq[1];
-		buf[6]=m_sHeader2.tcp_seq[2];
-		buf[7]=m_sHeader2.tcp_seq[3];
-		buf[8]=m_sHeader2.tcp_ack[0];
-		buf[9]=m_sHeader2.tcp_ack[1];
-		buf[10]=m_sHeader2.tcp_ack[2];
-		buf[11]=m_sHeader2.tcp_ack[3];
 		buf[12]=m_sHeader2.tcp_offset[0];
 		buf[13]=m_sHeader2.tcp_flag[0];
 		buf[14]=m_sHeader2.tcp_window[0];
@@ -66,13 +58,15 @@ public class TCPLayer implements BaseLayer {
 		buf[17]=m_sHeader2.tcp_cksum[1];
 		buf[18]=m_sHeader2.tcp_urgptr[0];
 		buf[19]=m_sHeader2.tcp_urgptr[1];
-		buf[20]=m_sHeader2.Padding[0];
-		buf[21]=m_sHeader2.Padding[1];
-		buf[22]=m_sHeader2.Padding[2];
-		buf[23]=m_sHeader2.Padding[3];
+		
+		for (int i = 0; i < 4; i++) {
+			buf[4 + i] = m_sHeader2.tcp_seq[i];
+			buf[8 + i] = m_sHeader2.tcp_ack[i];
+			buf[20 + i] = m_sHeader2.Padding[i];
+		}
 		
 		for(int i=0;i<length;i++){
-			buf[i+20]=input[i];
+			buf[i+24]=input[i];
 		}
 
 		return buf;
