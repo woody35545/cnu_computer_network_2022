@@ -1,4 +1,10 @@
+import java.util.ArrayList;
+
 public class IPLayer implements BaseLayer {
+	public int p_UnderLayerCount = 0;
+	public String p_LayerName = null;
+	public BaseLayer p_UnderLayer = null;
+	public ArrayList<BaseLayer> p_UpperLayer = new ArrayList<BaseLayer>();
 	
 	private class _IPLayer_HEADER {
 		byte[] ip_versionLen;	// ip version -> IPv4 : 4
@@ -30,40 +36,59 @@ public class IPLayer implements BaseLayer {
 
 	 _IPLayer_HEADER m_sHeader = new _IPLayer_HEADER();
 
+	 public IPLayer(String pName) {
+			p_LayerName = pName;
+			m_sHeader = new _IPLayer_HEADER(); 
+	}
+	
+	private byte[] ObjToByte(_IPLayer_HEADER m_sHeader2, byte[] input, int length) {
+
+		return null;
+	}
+	 
+	public boolean Send(byte[] input, int length) {
+		byte[] bytes = ObjToByte(m_sHeader,input,length);
+		
+			//((ARPLayer)this.GetUnderLayer()).Send(m_sHeader.ip_srcaddr, m_sHeader.ip_dstaddr);
+			return true;
+	}
+
+
 	@Override
 	public String GetLayerName() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.p_LayerName;
 	}
 
 	@Override
 	public BaseLayer GetUnderLayer() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.p_UnderLayer;
 	}
 
 	@Override
 	public BaseLayer GetUpperLayer(int nindex) {
 		// TODO Auto-generated method stub
-		return null;
+		return this.p_UpperLayer.get(nindex);
 	}
 
 	@Override
 	public void SetUnderLayer(BaseLayer pUnderLayer) {
 		// TODO Auto-generated method stub
-		
+		this.p_UnderLayer = pUnderLayer;
 	}
 
 	@Override
 	public void SetUpperLayer(BaseLayer pUpperLayer) {
 		// TODO Auto-generated method stub
-		
+		this.p_UpperLayer.add(p_UnderLayerCount++, pUpperLayer);
 	}
 
 	@Override
 	public void SetUpperUnderLayer(BaseLayer pUULayer) {
 		// TODO Auto-generated method stub
-		
+		this.SetUpperLayer(pUULayer);
+		pUULayer.SetUnderLayer(this);
 	}
 
 }
