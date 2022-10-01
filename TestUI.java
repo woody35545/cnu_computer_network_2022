@@ -38,8 +38,7 @@ public class TestUI extends JFrame implements BaseLayer {
 		m_LayerMgr.AddLayer(new NILayer("NI"));
 		m_LayerMgr.AddLayer(new EthernetLayer("Ethernet"));
 		m_LayerMgr.AddLayer(new ARPLayer("ARP"));
-		m_LayerMgr.AddLayer(new ARPLayer("IP"));
-
+		m_LayerMgr.AddLayer(new IPLayer("IP"));
 		m_LayerMgr.AddLayer(new ChatAppLayer("Chat"));
 		m_LayerMgr.AddLayer(new TestUI("TestUI"));
 
@@ -71,12 +70,15 @@ public class TestUI extends JFrame implements BaseLayer {
 		panel.add(lblDestinationMac);
 		
 		textarea_dstMacAddr = new JTextArea();
+		textarea_dstMacAddr.setText("0-50-56-C0-0-1");
 		textarea_dstMacAddr.setBounds(57, 93, 285, 21);
+			
 		panel.add(textarea_dstMacAddr);
 		textarea_dstMacAddr.setColumns(10);
 		
 		textarea_srcMacAddr = new JTextArea();
 		textarea_srcMacAddr.setBounds(57, 62, 285, 21);
+		textarea_srcMacAddr.setText("0-50-56-C0-0-8");
 		panel.add(textarea_srcMacAddr);
 		textarea_srcMacAddr.setColumns(10);
 		
@@ -95,6 +97,7 @@ public class TestUI extends JFrame implements BaseLayer {
 		
 		JTextArea textarea_srcIpAddr = new JTextArea();
 		textarea_srcIpAddr.setColumns(10);
+		textarea_srcIpAddr.setText("192.168.0.1");
 		textarea_srcIpAddr.setBounds(57, 122, 285, 21);
 		panel.add(textarea_srcIpAddr);
 		
@@ -104,6 +107,7 @@ public class TestUI extends JFrame implements BaseLayer {
 		
 		JTextArea textarea_dstIpAddr = new JTextArea();
 		textarea_dstIpAddr.setColumns(10);
+		textarea_dstIpAddr.setText("192.168.0.2");
 		textarea_dstIpAddr.setBounds(57, 153, 285, 21);
 		panel.add(textarea_dstIpAddr);
 		
@@ -156,6 +160,8 @@ public class TestUI extends JFrame implements BaseLayer {
 				if (btn_set.getText() == "Reset") {
 					textarea_srcMacAddr.setText("");
 					textarea_dstMacAddr.setText("");
+					textarea_srcIpAddr.setText("");
+					textarea_dstIpAddr.setText("");
 					btn_set.setText("set");
 					textarea_dstMacAddr.setEditable(true);
 				} else {
@@ -168,34 +174,23 @@ public class TestUI extends JFrame implements BaseLayer {
 					String srcIP  = textarea_srcIpAddr.getText();
 					String dstIP = textarea_dstIpAddr.getText();
 					
-					String[] byte_srcIP = dstMac.split(".");
-					String[] byte_dstIP = dstMac.split(".");
-					
-					
-					String[] byte_src = srcIP.split("-");
-					String[] byte_dst = dstIP.split("-");
+
+					String[] byte_srcMac = srcMac.split("-");
+					String[] byte_dstMac = dstMac.split("-");
 
 					for (int i = 0; i < 6; i++) {
-						srcMacAddress[i] = (byte) Integer.parseInt(byte_src[i], 16);
+						srcMacAddress[i] = (byte) Integer.parseInt(byte_srcMac[i], 16);
 					}
 
 					for (int i = 0; i < 6; i++) {
-						dstMacAddress[i] = (byte) Integer.parseInt(byte_dst[i], 16);
+						dstMacAddress[i] = (byte) Integer.parseInt(byte_dstMac[i], 16);
 					}
-					for (int i = 0; i < 4; i++) {
-						srcIPAddress[i] = (byte) Integer.parseInt(byte_srcIP[i], 16);
-					}
-
-					for (int i = 0; i < 4; i++) {
-						dstIPAddress[i] = (byte) Integer.parseInt(byte_dstIP[i], 16);
-					}
-					
 					
 					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderType(new byte[]{0x08, 0x00});
 					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderSrcMacAddr(srcMacAddress);
 					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderDstMacAddr(dstMacAddress);
-					((IPLayer)m_LayerMgr.GetLayer("IP")).setIpHeaderSrcIPAddr(srcIPAddress);
-					((IPLayer)m_LayerMgr.GetLayer("IP")).setIpHeaderDstIPAddr(dstIPAddress);
+					((IPLayer)m_LayerMgr.GetLayer("IP")).setIpHeaderSrcIPAddr(Utils.convertStrIpToByte(srcIP));
+					((IPLayer)m_LayerMgr.GetLayer("IP")).setIpHeaderDstIPAddr(Utils.convertStrIpToByte(dstIP));
 					((NILayer) m_LayerMgr.GetLayer("NI")).SetAdapterNumber(selected_index);
 
 					btn_set.setText("Reset");
