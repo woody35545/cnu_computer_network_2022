@@ -131,7 +131,8 @@ public class EthernetLayer implements BaseLayer {
 
 		 /* if ARP Layer, The first 4 bytes will have the same value as this. {0x00, 0x01, 0x08, 0x00}*/
 		if (isFromARPLayer){
-			
+			// ARP Request Packet should be sent as broadcast
+		
 		}
 			
 		/* else, This is from the IP layer */
