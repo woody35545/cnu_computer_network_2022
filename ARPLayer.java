@@ -187,28 +187,47 @@ public class ARPLayer implements BaseLayer {
 			this.sender_ip = pSenderIpAddress;
 			this.target_ip = pTargetIpAddress;
 		}
-		
-		public void SetHardwareType(byte[] pHardwareType ) {
-			this.hardware_type=pHardwareType;
+
+		public void SetHardwareType(byte[] pHardwareType) {
+			this.hardware_type = pHardwareType;
 		}
-		public void SetProtocolType(byte[] pProtocolType ) {
-			this.protocol_type=pProtocolType;
+
+		public void SetProtocolType(byte[] pProtocolType) {
+			this.protocol_type = pProtocolType;
 		}
-		public void SetLengthOfHardwareAddress(byte _pLengthOfHardwareAddress)
-		{
+
+		public void SetLengthOfHardwareAddress(byte _pLengthOfHardwareAddress) {
 			this.length_of_hardware_addr = _pLengthOfHardwareAddress;
 		}
-		
+
 		public void SetLengthOfProtocolAddress(byte pLengthOfProtocolAddress) {
-			this.length_of_protocol_addr =pLengthOfProtocolAddress ;
+			this.length_of_protocol_addr = pLengthOfProtocolAddress;
 		}
+
 		public void SetOpCode(byte[] pOpCode) {
 			this.opcode = pOpCode;
 		}
-		public int get_length_of_header(){
+
+		public void SetSenderMacAddress(byte[] pSenderMacAddress) {
+			this.sender_mac.addr = pSenderMacAddress;
+		}
+
+		public void SetTargetMacAddress(byte[] pTargetMacAddress) {
+			this.target_mac.addr = pTargetMacAddress;
+		}
+
+		public void SetSenderIPAddress(byte[] pSenderIPAddress) {
+			this.sender_ip.addr = pSenderIPAddress;
+		}
+
+		public void SetTargetIPAddress(byte[] pTargetIPAddress) {
+			this.target_ip.addr = pTargetIPAddress;
+		}
+
+		public int get_length_of_header() {
 			return this.length_of_header;
 		}
-		
+
 	}
 
 
@@ -278,14 +297,16 @@ public class ARPLayer implements BaseLayer {
 		
 		// OpCode of ARP Request = 0x0001
 		byte[] opCode = new byte[] {0x00,0x01};
+		this.m_sHeader.SetHardwareType(DEFAULT_HARDWARE_TYPE);
+		this.m_sHeader.SetHardwareType(DEFAULT_PROTOCOL_TYPE);
+		this.m_sHeader.SetTargetMacAddress(new byte[] {0x00,0x00,0x00,0x00,0x00,0x00});
 		this.m_sHeader.SetOpCode(opCode);
-		
 		
 		byte[] encapsulated =this.Encapsulate(this.m_sHeader, input);
 		//this.GetUnderLayer().Send(encapsulated, length);
 		this.GetUnderLayer().Send(encapsulated, length);
 
-		return false;
+		return true;
 	}
 
 	public boolean Receive(byte[] input) {
