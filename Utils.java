@@ -31,5 +31,16 @@ public final class Utils {
 			System.out.println("\n");
 		}
 	}
+	
+	public static byte[] convertStrIpToByte(String strFormatIp) { 
+		// "0.0.0.0" -> byte[] 
+		String[] strFormatIp_splited = strFormatIp.split(Pattern.quote("."));
+		byte[] res_byte = new byte[4];
+		for (int i = 0; i < 4; i++) {
+			res_byte[i] = (byte) (Integer.parseInt(strFormatIp_splited[i]));
+		}
+		return res_byte;
+	}
+	
 
 }
