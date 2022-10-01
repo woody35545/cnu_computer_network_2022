@@ -77,7 +77,7 @@ public class TCPLayer implements BaseLayer {
 	public boolean Send(byte[] input, int length) {
 
 		byte[] data = objToByte(this.m_sHeader,input,length);
-		this.GetUnderLayer().Send(data, length+20);
+		this.GetUnderLayer().Send(data, length+24);
 		
 		return true;
 
