@@ -319,6 +319,21 @@ public class ARPLayer implements BaseLayer {
 		return true;
 	}
 
+	
+	public void setARPHeaderSrcIp(byte[] pSrcIP) {
+		this.m_sHeader.sender_ip.addr=pSrcIP;
+	}
+	public void setARPHeaderDstIP(byte[] pTargetIP) {
+		this.m_sHeader.target_ip.addr=pTargetIP;
+	}
+	
+	public void setARPHeaderSrcMac(byte[] pSrcMac) {
+		this.m_sHeader.sender_mac.addr=pSrcMac;
+	}
+	public void setARPHeaderDstMac(byte[] pTargetMac) {
+		this.m_sHeader.sender_mac.addr=pTargetMac;
+	}
+
 	public boolean Receive(byte[] input) {
 		// <!> additional implementation required later
 		
