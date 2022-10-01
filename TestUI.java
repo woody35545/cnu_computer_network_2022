@@ -154,7 +154,7 @@ public class TestUI extends JFrame implements BaseLayer {
 					for (int i = 0; i < 6; i++) {
 						dstAddress[i] = (byte) Integer.parseInt(byte_dst[i], 16);
 					}
-
+					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderType(new byte[]{0x08, 0x00});
 					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderSrcMacAddr(srcAddress);
 					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderDstMacAddr(dstAddress);
 
