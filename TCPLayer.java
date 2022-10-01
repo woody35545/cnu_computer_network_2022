@@ -44,7 +44,7 @@ public class TCPLayer implements BaseLayer {
 	}
 	
 	public byte[] objToByte(TCPLayer_HEADER m_sHeader2, byte[] input, int length){
-		byte[] buf = new byte[length+20];
+		byte[] buf = new byte[length+24];
 
 		buf[0]=m_sHeader2.tcp_sport[0];
 		buf[1]=m_sHeader2.tcp_sport[1];
@@ -100,7 +100,7 @@ public class TCPLayer implements BaseLayer {
 	@Override
 	public BaseLayer GetUpperLayer(int nindex) {
 		// TODO Auto-generated method stub
-		return this.p_UpperLayer.get(nindex);
+		return this.p_UpperLayer.get(nindex); //ChatAppLayer, FileAppLayer
 	}
 
 	@Override
@@ -112,7 +112,7 @@ public class TCPLayer implements BaseLayer {
 	@Override
 	public void SetUpperLayer(BaseLayer pUpperLayer) {
 		// TODO Auto-generated method stub
-		this.p_UpperLayer.add(p_UpperLayerCount++, pUpperLayer);
+		this.p_UpperLayer.add(p_UpperLayerCount++, pUpperLayer); //ChatAppLayer, FileAppLayer
 	}
 
 	@Override
@@ -120,6 +120,18 @@ public class TCPLayer implements BaseLayer {
 		// TODO Auto-generated method stub
 		this.SetUpperLayer(pUULayer);
 		pUULayer.SetUnderLayer(this);
+	}
+
+	@Override
+	public BaseLayer GetUnderLayer(int nindex) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BaseLayer GetUpperLayer() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

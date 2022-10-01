@@ -323,4 +323,16 @@ public class ChatFileDlg extends JFrame implements BaseLayer {
 		pUULayer.SetUnderLayer(this);
 
 	}
+
+	@Override
+	public BaseLayer GetUnderLayer(int nindex) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BaseLayer GetUpperLayer() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

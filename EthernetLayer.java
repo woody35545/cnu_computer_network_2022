@@ -242,4 +242,16 @@ public class EthernetLayer implements BaseLayer {
 		this.SetUpperLayer(pUULayer);
 		pUULayer.SetUnderLayer(this);
 	}
+
+	@Override
+	public BaseLayer GetUnderLayer(int nindex) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BaseLayer GetUpperLayer() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

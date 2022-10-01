@@ -9,6 +9,10 @@ interface BaseLayer {
 	public String GetLayerName();
 
 	public BaseLayer GetUnderLayer();
+	
+	public BaseLayer GetUnderLayer(int nindex);
+	
+	public BaseLayer GetUpperLayer();
 
 	public BaseLayer GetUpperLayer(int nindex);
 
