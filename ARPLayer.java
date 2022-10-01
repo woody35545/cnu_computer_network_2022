@@ -17,6 +17,84 @@ public class ARPLayer implements BaseLayer {
 	public BaseLayer p_UnderLayer = null;
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
 	_ARP_HEADER m_sHeader = new _ARP_HEADER();
+	
+	private class _ARP_CACHE_TABLE{
+		private final static int Capacity = 30;
+		private static int size = 0;
+		private _IP_ADDR[]  ip_addr = new _IP_ADDR[Capacity];
+		private _MAC_ADDR[] mac_addr = new _MAC_ADDR[Capacity];
+		
+		public _ARP_CACHE_TABLE() {
+			// _ARP_CACHE_TABLE constructor
+		}
+		
+		public void add(_IP_ADDR ip_addr, _MAC_ADDR mac_addr) {
+			if (is_exist(ip_addr)) {
+				// if ip_addr already exist in cache table, update mac_addr
+				update_cache_table(ip_addr, mac_addr);
+			}
+			else {
+				// if ip_addr not exist in cache table, add ip_addr, mac_addr
+				this.ip_addr[size] = ip_addr;
+				this.mac_addr[size] = mac_addr;
+				size++;
+			}
+		}
+		
+		public boolean is_exist(_IP_ADDR ip_addr) {
+			//check mac_addr in cache table by ip_addr
+			for(int i = 0;i < size;i++) {
+				if(this.ip_addr[i] == ip_addr) {
+					// if ip_addr is in cache table
+					return true;
+				}
+			}
+			// if ip_addr is not in cache table
+			return false;
+		}
+		
+		public _MAC_ADDR get_mac_address(_IP_ADDR ip_addr) {
+			//find mac_addr in cache table by ip_addr
+			for(int i = 0;i < size;i++) {
+				if(this.ip_addr[i] == ip_addr) {
+					// if ip_addr is in cache table, return its mac_addr
+					return this.mac_addr[i];
+				}
+			}
+			// if ip_addr is not in cache table, return null
+			return null;
+		}
+		
+		public boolean update_cache_table(_IP_ADDR ip_addr, _MAC_ADDR mac_addr) {
+			// function for update mac_addr in cache table by ip_addr
+			for(int i = 0;i < size;i++) {
+				if(this.ip_addr[i] == ip_addr) {
+					// if ip_addr is in cache table, update mac_addr and return true
+					this.mac_addr[i] = mac_addr;
+					return true;
+				}
+			}
+			// if ip_addr is not in cache table, return false
+			return false;
+		}
+		
+		public boolean delete_cache_table(_IP_ADDR ip_addr) {
+			// function for delete ip_addr in cache table
+			for(int i = 0;i < size;i++) {
+				if(this.ip_addr[i] == ip_addr) {
+					// find ip_addr index in cache table
+					for(int j = i; j<size-1 ; j++) {
+						// pull elements one step since found index
+							this.ip_addr[j] = this.ip_addr[j+1];
+							return true;
+					}
+				}
+			}
+			// if ip_addr is not in cache table, return false
+			return false;
+		}
+	}
+	
 	private class _IP_ADDR {
 		/*
 		 * Data structure for representing IP Address, Will be used for ARP
