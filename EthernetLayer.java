@@ -140,9 +140,11 @@ public class EthernetLayer implements BaseLayer {
 		}	
 		else{
 			/* else, This is from the IP layer */		
-			
+			byte[] encapsulated = Encapsulate(this.m_sHeader,input);
+			this.GetUnderLayer().Send(encapsulated, length);
+			return true;
 		}
-		return false;
+		
 	}
 
 	public boolean Receive(byte[] input) {
