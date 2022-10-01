@@ -2,8 +2,10 @@ import java.util.ArrayList;
 
 public class IPLayer implements BaseLayer {
 	public int p_UnderLayerCount = 0;
+	public int p_UpperLayerCount = 0;
 	public String p_LayerName = null;
 	public ArrayList<BaseLayer> p_UnderLayer = new ArrayList<BaseLayer>();
+	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
 	public BaseLayer p_UpperLayer = null;
 	public final static int IPHEADER = 20;
 	
@@ -43,7 +45,7 @@ public class IPLayer implements BaseLayer {
 	}
 	
 	private byte[] ObjToByte(_IPLayer_HEADER m_sHeader2, byte[] input, int length) {
-		byte[] buf = new byte[length + 20];
+		byte[] buf = new byte[length + IPHEADER];
 
 		buf[0] = m_sHeader2.ip_versionLen[0];
 		buf[1] = m_sHeader2.ip_serviceType[0];
@@ -70,8 +72,21 @@ public class IPLayer implements BaseLayer {
 	}
 	// Ethernet 계층으로 전송 
 	public boolean Send(byte[] input, int length) {
-		byte[] bytes = ObjToByte(m_sHeader,input,length);
-		
+		//port 0x2080 : Chat App Layer , port 0x2090 : File App Layer
+		if((input[2]==(byte)0x20 && input[3]==(byte)0x80) || (input[2]==(byte)0x20 && input[3]==(byte)0x90) ) {
+			m_sHeader.ip_offset[0] = 0x00;
+			m_sHeader.ip_offset[1] = 0x03;
+			
+			byte[] bytes = ObjToByte(m_sHeader,input,length);	//IP 헤더 추가 (EnCapsulate)
+			
+			this.GetUnderLayer(1).Send(bytes,length+IPHEADER);	//IP 헤더 길이만큼 추가된 데이터를 아래 레이어에 전송
+
+			return true;
+			
+		}
+		else {
+			System.out.println("GARP");
+		}
 		//((ARPLayer)this.GetUnderLayer()).Send(m_sHeader.ip_srcaddr, m_sHeader.ip_dstaddr);
 		return true;
 	}
@@ -93,6 +108,7 @@ public class IPLayer implements BaseLayer {
 		byte[] data = RemoveCappHeader(input, input.length);
 		
 		if(me_equals_dst_Addr(input)) {
+			this.GetUpperLayer(0).Receive(data);
 			return true;
 		}else {
 			return false;
@@ -125,6 +141,7 @@ public class IPLayer implements BaseLayer {
 		// TODO Auto-generated method stub
 		return this.p_UnderLayer.get(nindex); //ARPLayer, EthernetLayer
 	}
+	
 
 	@Override
 	public BaseLayer GetUpperLayer() {
@@ -157,14 +174,14 @@ public class IPLayer implements BaseLayer {
 		return null;
 	}
 
+	
 	@Override
 	public BaseLayer GetUpperLayer(int nindex) {
 		// TODO Auto-generated method stub
-		return null;
+		if (nindex < 0 || nindex > p_UpperLayerCount || p_UpperLayerCount < 0)
+			return null;
+		return p_aUpperLayer.get(nindex);
 	}
-	
 	
 
 }
-
-
