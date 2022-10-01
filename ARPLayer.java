@@ -239,11 +239,11 @@ public class ARPLayer implements BaseLayer {
 
 	}
 	
-	public byte[] Encapsulate(_ARP_HEADER pHeader, byte[] pPayload ){
+	public byte[] Encapsulate(_ARP_HEADER pHeader ){
 		// <!> Need to check
 		//  Encapsulate function to create byte array type ARP Packet
 		int idx_ptr = 0;
-		byte[] encapsulated = new byte[pHeader.get_length_of_header() + pPayload.length];
+		byte[] encapsulated = new byte[pHeader.get_length_of_header()];
 
 		for (int i = 0; i < pHeader.hardware_type.length; i++) {
 			encapsulated[idx_ptr++] = pHeader.hardware_type[i];
@@ -272,9 +272,7 @@ public class ARPLayer implements BaseLayer {
 		for (int i = 0; i < pHeader.target_ip.get_length_of_addr(); i++) {
 			encapsulated[idx_ptr++] = pHeader.target_ip.addr[i];
 		}
-		for (int i = 0; i < pPayload.length; i++) {
-			encapsulated[idx_ptr++] = pPayload[i];
-		}
+	
 		return encapsulated;
 		
 	}
@@ -290,7 +288,7 @@ public class ARPLayer implements BaseLayer {
 		return decapsulated;
 	}
 	
-	public boolean Send(byte[] input, int length) {
+	public boolean Send() {
 		// <!> additional implementation required later
 		
 		if (!this.arp_cache_table.is_exist(this.m_sHeader.target_ip)) {
@@ -300,14 +298,18 @@ public class ARPLayer implements BaseLayer {
 			 */
 			
 			// OpCode of ARP Request = 0x0001
+			
+			
 			byte[] opCode = new byte[] {0x00,0x01};
 			this.m_sHeader.SetHardwareType(DEFAULT_HARDWARE_TYPE);
-			this.m_sHeader.SetHardwareType(DEFAULT_PROTOCOL_TYPE);
+			this.m_sHeader.SetProtocolType(DEFAULT_PROTOCOL_TYPE);
 			this.m_sHeader.SetTargetMacAddress(new byte[] {0x00,0x00,0x00,0x00,0x00,0x00});
 			this.m_sHeader.SetOpCode(opCode);
 			
-			byte[] encapsulated =this.Encapsulate(this.m_sHeader, input);
-			this.GetUnderLayer().Send(encapsulated, length);
+			byte[] encapsulated =this.Encapsulate(this.m_sHeader);
+			System.out.println("ARPLayer Send: ");
+			Utils.showPacket(encapsulated);
+			this.GetUnderLayer().Send(encapsulated, encapsulated.length);
 			
 		}
 		
@@ -319,7 +321,6 @@ public class ARPLayer implements BaseLayer {
 
 	public boolean Receive(byte[] input) {
 		// <!> additional implementation required later
-		
 		
 		
 		this.GetUpperLayer(0).Receive(input);

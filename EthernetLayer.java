@@ -131,6 +131,7 @@ public class EthernetLayer implements BaseLayer {
 		//boolean isFromIPLayer = true;
 		
 		/* Check which upper layer the packet came from */ 
+		if(input.length > 4)
 		for (int i=0; i<4; i++){
 			if(input[i] != arrToCompare[i]){
 				isFromARPLayer =false;
@@ -139,38 +140,23 @@ public class EthernetLayer implements BaseLayer {
 		
 		 /* if ARP Layer, The first 4 bytes will have the same value as this. {0x00, 0x01, 0x08, 0x00}*/
 		if (isFromARPLayer){
+			System.out.println("Ethernet Send: ");
+
 			// ARP Request Packet should be sent as broadcast
 			// Make BroadCast Frame
+			System.out.println("This is ARP Packet");
 			this.m_sHeader.set_destination_address(new byte[]{(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff});
 		}	
 		/* else, This is from the IP layer */		
+		else{
+		}
 			byte[] encapsulated = Encapsulate(this.m_sHeader,input);
+			
+			Utils.showPacket(encapsulated);
 			this.GetUnderLayer().Send(encapsulated, length);
 			return true;
 	}
-	public boolean test_send() {
-		/*
-		 * This function sends empty packet for test 
-		 */
-		int idx_ptr = 0;
-		byte[] encapsulated = new byte[14+46];
-		for (int i = 0; i < this.m_sHeader.enet_dstaddr.get_length_of_addr(); i++) {
-			encapsulated[idx_ptr++] = this.m_sHeader.enet_dstaddr.addr[i];
-		}
-		for (int i = 0; i < this.m_sHeader.enet_srcaddr.get_length_of_addr(); i++) {
-			encapsulated[idx_ptr++] = this.m_sHeader.enet_srcaddr.addr[i];
-		}
-		for (int i = 0; i < this.m_sHeader.enet_type.length; i++) {
-			encapsulated[idx_ptr++] = this.m_sHeader.enet_type[i];
-		}			
-		for (int i=0; i< 46; i++) {
-			// Just Padding 0x00 * 46
-			encapsulated[idx_ptr++] = (byte)0x00;
-		} 
-			this.GetUnderLayer().Send(encapsulated,encapsulated.length);
-			return true;
-	}
-	
+
 
 	public boolean Receive(byte[] input) {
 		/*
@@ -178,7 +164,7 @@ public class EthernetLayer implements BaseLayer {
 		 * to test whether the inter-layer data forwarding function is performed
 		 * smoothly
 		 */
-		Utils.showPacket(input);
+	
 		boolean isFrameISent = true;
 		boolean isFrameForMe = true;
 		boolean isBroadcastFrame = true;
@@ -205,6 +191,8 @@ public class EthernetLayer implements BaseLayer {
 			 * conditions are satisfied, the sending layer is determined
 			 * according to the protocol type in the frame.
 			 */
+			System.out.println("Ethernet Received: ");
+			Utils.showPacket(input);
 
 			if (input[12] == (byte) 0x08 && input[13] == (byte) 0x00) {
 				// if protocol type == IPv4 : 1

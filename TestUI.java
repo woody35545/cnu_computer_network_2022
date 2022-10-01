@@ -129,6 +129,13 @@ public class TestUI extends JFrame implements BaseLayer {
 		panel_1.add(btnNewButton);
 		
 		JButton btnSendArpPacket = new JButton("Send ARP Request");
+		btnSendArpPacket.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				byte[] testPacket= GetTestPacket();
+				((ARPLayer) m_LayerMgr.GetLayer("ARP")).Send();	
+			}
+		});
 		btnSendArpPacket.setBounds(0, 51, 170, 23);
 		panel_1.add(btnSendArpPacket);
 		
@@ -147,8 +154,8 @@ public class TestUI extends JFrame implements BaseLayer {
 			public void actionPerformed(ActionEvent e) {
 				if (btn_set.getText() == "Reset") {
 
-					byte[] bytes = new byte[]{(byte)0x99};
-					((EthernetLayer) m_LayerMgr.GetLayer("IP")).Send(bytes,bytes.length);	
+					byte[] testPacket= GetTestPacket();
+					((EthernetLayer) m_LayerMgr.GetLayer("Ethernet")).Send(testPacket,testPacket.length);	
 
 					//((IPLayer) m_LayerMgr.GetLayer("IP")).Send(bytes,bytes.length);	
 					// p_UnderLayer.Send(bytes, bytes.length);
@@ -239,7 +246,14 @@ public class TestUI extends JFrame implements BaseLayer {
 			this.comboBox_NIC.addItem(m_pAdapterList.get(i).getDescription());
 	}
 
-
+	public byte[] GetTestPacket() {
+		byte[] testPacket= new byte[46];
+		for (int i=0; i<46; i++) {
+			testPacket[i] = (byte)0x00;
+		}
+		return testPacket;
+		
+	}
 	@Override
 	public void SetUnderLayer(BaseLayer pUnderLayer) {
 		// TODO Auto-generated method stub
