@@ -124,7 +124,7 @@ public class TestUI extends JFrame implements BaseLayer {
 				if (btn_set.getText() == "Reset") {
 
 					byte[] bytes = new byte[]{(byte)0x99};
-					m_LayerMgr.GetLayer("Ethernet").Send(bytes, bytes.length);
+					((EthernetLayer) m_LayerMgr.GetLayer("Ethernet")).test_send();	
 					// p_UnderLayer.Send(bytes, bytes.length);
 				} else {
 					JOptionPane.showMessageDialog(null, "�ּ� ���� ����");
