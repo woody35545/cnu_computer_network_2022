@@ -304,6 +304,9 @@ public class ARPLayer implements BaseLayer {
 			this.m_sHeader.SetHardwareType(DEFAULT_HARDWARE_TYPE);
 			this.m_sHeader.SetProtocolType(DEFAULT_PROTOCOL_TYPE);
 			this.m_sHeader.SetTargetMacAddress(new byte[] {0x00,0x00,0x00,0x00,0x00,0x00});
+			this.m_sHeader.SetLengthOfHardwareAddress(DEFAULT_LENGTH_OF_HARDWARE_ADDRESS);
+			this.m_sHeader.SetLengthOfProtocolAddress(DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS);
+
 			this.m_sHeader.SetOpCode(opCode);
 			
 			byte[] encapsulated =this.Encapsulate(this.m_sHeader);
@@ -331,7 +334,7 @@ public class ARPLayer implements BaseLayer {
 		this.m_sHeader.sender_mac.addr=pSrcMac;
 	}
 	public void setARPHeaderDstMac(byte[] pTargetMac) {
-		this.m_sHeader.sender_mac.addr=pTargetMac;
+		this.m_sHeader.target_mac.addr=pTargetMac;
 	}
 
 	public boolean Receive(byte[] input) {

@@ -63,8 +63,8 @@ public class EthernetLayer implements BaseLayer {
 			return this.enet_type;
 		}
 
-		public void set_enet_type(byte[] pEnet_type) {
-			this.enet_type = pEnet_type;
+		public void set_enet_type(byte[] bytes) {
+			this.enet_type = bytes;
 		}
 
 	}
@@ -145,6 +145,7 @@ public class EthernetLayer implements BaseLayer {
 			// ARP Request Packet should be sent as broadcast
 			// Make BroadCast Frame
 			System.out.println("This is ARP Packet");
+			this.m_sHeader.set_enet_type(new byte[] {0x08,0x06});
 			this.m_sHeader.set_destination_address(new byte[]{(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff});
 		}	
 		/* else, This is from the IP layer */		

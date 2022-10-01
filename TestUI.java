@@ -97,7 +97,7 @@ public class TestUI extends JFrame implements BaseLayer {
 		
 		JTextArea textarea_srcIpAddr = new JTextArea();
 		textarea_srcIpAddr.setColumns(10);
-		textarea_srcIpAddr.setText("192.168.0.1");
+		textarea_srcIpAddr.setText("192.168.139.1");
 		textarea_srcIpAddr.setBounds(57, 122, 285, 21);
 		panel.add(textarea_srcIpAddr);
 		
@@ -107,7 +107,7 @@ public class TestUI extends JFrame implements BaseLayer {
 		
 		JTextArea textarea_dstIpAddr = new JTextArea();
 		textarea_dstIpAddr.setColumns(10);
-		textarea_dstIpAddr.setText("192.168.0.2");
+		textarea_dstIpAddr.setText("192.168.139.2");
 		textarea_dstIpAddr.setBounds(57, 153, 285, 21);
 		panel.add(textarea_dstIpAddr);
 		
@@ -176,8 +176,7 @@ public class TestUI extends JFrame implements BaseLayer {
 				} else {
 					byte[] srcMacAddress = new byte[6];
 					byte[] dstMacAddress = new byte[6];
-					byte[] srcIPAddress = new byte[4];
-					byte[] dstIPAddress = new byte[4];
+
 					String srcMac = textarea_srcMacAddr.getText();
 					String dstMac = textarea_dstMacAddr.getText();
 					String srcIP  = textarea_srcIpAddr.getText();
@@ -198,6 +197,10 @@ public class TestUI extends JFrame implements BaseLayer {
 					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderType(new byte[]{0x08, 0x00});
 					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderSrcMacAddr(srcMacAddress);
 					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderDstMacAddr(dstMacAddress);
+					((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderDstMac(Utils.convertStrIpToByte(dstIP));
+					((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderSrcIp(Utils.convertStrIpToByte(srcIP));
+					((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderSrcMac(srcMacAddress);
+					((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderDstMac(dstMacAddress);
 					((IPLayer)m_LayerMgr.GetLayer("IP")).setIpHeaderSrcIPAddr(Utils.convertStrIpToByte(srcIP));
 					((IPLayer)m_LayerMgr.GetLayer("IP")).setIpHeaderDstIPAddr(Utils.convertStrIpToByte(dstIP));
 					((NILayer) m_LayerMgr.GetLayer("NI")).SetAdapterNumber(selected_index);
