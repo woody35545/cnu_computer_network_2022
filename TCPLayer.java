@@ -43,33 +43,33 @@ public class TCPLayer implements BaseLayer {
 		m_sHeader = new TCPLayer_HEADER();
 	}
 	
-	public byte[] objToByte(TCPLayer_HEADER Header,byte[] input,int length){
+	public byte[] objToByte(TCPLayer_HEADER m_sHeader2, byte[] input, int length){
 		byte[] buf = new byte[length+20];
 
-		buf[0]=Header.tcp_sport[0];
-		buf[1]=Header.tcp_sport[1];
-		buf[2]=Header.tcp_dport[0];
-		buf[3]=Header.tcp_dport[1];
-		buf[4]=Header.tcp_seq[0];
-		buf[5]=Header.tcp_seq[1];
-		buf[6]=Header.tcp_seq[2];
-		buf[7]=Header.tcp_seq[3];
-		buf[8]=Header.tcp_ack[0];
-		buf[9]=Header.tcp_ack[1];
-		buf[10]=Header.tcp_ack[2];
-		buf[11]=Header.tcp_ack[3];
-		buf[12]=Header.tcp_offset[0];
-		buf[13]=Header.tcp_flag[0];
-		buf[14]=Header.tcp_window[0];
-		buf[15]=Header.tcp_window[1];
-		buf[16]=Header.tcp_cksum[0];
-		buf[17]=Header.tcp_cksum[1];
-		buf[18]=Header.tcp_urgptr[0];
-		buf[19]=Header.tcp_urgptr[1];
-		buf[20]=Header.Padding[0];
-		buf[21]=Header.Padding[1];
-		buf[22]=Header.Padding[2];
-		buf[23]=Header.Padding[3];
+		buf[0]=m_sHeader2.tcp_sport[0];
+		buf[1]=m_sHeader2.tcp_sport[1];
+		buf[2]=m_sHeader2.tcp_dport[0];
+		buf[3]=m_sHeader2.tcp_dport[1];
+		buf[4]=m_sHeader2.tcp_seq[0];
+		buf[5]=m_sHeader2.tcp_seq[1];
+		buf[6]=m_sHeader2.tcp_seq[2];
+		buf[7]=m_sHeader2.tcp_seq[3];
+		buf[8]=m_sHeader2.tcp_ack[0];
+		buf[9]=m_sHeader2.tcp_ack[1];
+		buf[10]=m_sHeader2.tcp_ack[2];
+		buf[11]=m_sHeader2.tcp_ack[3];
+		buf[12]=m_sHeader2.tcp_offset[0];
+		buf[13]=m_sHeader2.tcp_flag[0];
+		buf[14]=m_sHeader2.tcp_window[0];
+		buf[15]=m_sHeader2.tcp_window[1];
+		buf[16]=m_sHeader2.tcp_cksum[0];
+		buf[17]=m_sHeader2.tcp_cksum[1];
+		buf[18]=m_sHeader2.tcp_urgptr[0];
+		buf[19]=m_sHeader2.tcp_urgptr[1];
+		buf[20]=m_sHeader2.Padding[0];
+		buf[21]=m_sHeader2.Padding[1];
+		buf[22]=m_sHeader2.Padding[2];
+		buf[23]=m_sHeader2.Padding[3];
 		
 		for(int i=0;i<length;i++){
 			buf[i+20]=input[i];

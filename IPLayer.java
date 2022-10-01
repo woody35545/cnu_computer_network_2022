@@ -34,23 +34,43 @@ public class IPLayer implements BaseLayer {
 		}
 	}
 
-	 _IPLayer_HEADER m_sHeader = new _IPLayer_HEADER();
+	_IPLayer_HEADER m_sHeader = new _IPLayer_HEADER();
 
-	 public IPLayer(String pName) {
-			p_LayerName = pName;
-			m_sHeader = new _IPLayer_HEADER(); 
+	public IPLayer(String pName) {
+		p_LayerName = pName;
+		m_sHeader = new _IPLayer_HEADER(); 
 	}
 	
 	private byte[] ObjToByte(_IPLayer_HEADER m_sHeader2, byte[] input, int length) {
+		byte[] buf = new byte[length + 20];
 
-		return null;
+		buf[0] = m_sHeader2.ip_versionLen[0];
+		buf[1] = m_sHeader2.ip_serviceType[0];
+		buf[2] = m_sHeader2.ip_packetLen[0];
+		buf[3] = m_sHeader2.ip_packetLen[1];
+		buf[4] = m_sHeader2.ip_datagramID[0];
+		buf[5] = m_sHeader2.ip_datagramID[1];
+		buf[6] = m_sHeader2.ip_offset[0];
+		buf[7] = m_sHeader2.ip_offset[1];
+		buf[8] = m_sHeader2.ip_ttl[0];
+		buf[9] = m_sHeader2.ip_protocol[0];
+		buf[10] = m_sHeader2.ip_cksum[0];
+		buf[11] = m_sHeader2.ip_cksum[1];
+		for (int i = 0; i < 4; i++) {
+			buf[12 + i] = m_sHeader2.ip_srcaddr[i];
+			buf[16 + i] = m_sHeader2.ip_dstaddr[i];
+		}
+		for (int i = 0; i < length; i++) {
+			buf[20 + i] = input[i];
+		}
+		return buf;
 	}
 	 
 	public boolean Send(byte[] input, int length) {
 		byte[] bytes = ObjToByte(m_sHeader,input,length);
 		
-			//((ARPLayer)this.GetUnderLayer()).Send(m_sHeader.ip_srcaddr, m_sHeader.ip_dstaddr);
-			return true;
+		//((ARPLayer)this.GetUnderLayer()).Send(m_sHeader.ip_srcaddr, m_sHeader.ip_dstaddr);
+		return true;
 	}
 
 
