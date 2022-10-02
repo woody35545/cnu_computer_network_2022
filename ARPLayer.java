@@ -2,7 +2,8 @@ import java.util.ArrayList;
 
 public class ARPLayer implements BaseLayer {
 
-	private static final byte[] UNKNOWN_DESTINATION_MAC_ADDR = new byte[] { (byte)0x00,(byte) 0x00, (byte)0x00,(byte)0x00,(byte) 0x00,(byte) 0x00};
+	private static final byte[] UNKNOWN_DESTINATION_MAC_ADDR = new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00,
+			(byte) 0x00, (byte) 0x00, (byte) 0x00 };
 	private static final byte[] OPCODE_ARP_REQUEST = new byte[] { 0x00, 0x01 };
 	// Default hardware type = Ethernet(0x0001)
 	private static final byte[] DEFAULT_HARDWARE_TYPE = new byte[] { 0x00, 0x01 };
@@ -19,29 +20,23 @@ public class ARPLayer implements BaseLayer {
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
 	private _ARP_HEADER m_sHeader = new _ARP_HEADER();
 	private _ARP_CACHE_TABLE arpCacheTable = new _ARP_CACHE_TABLE();
-	
-	
+
 	public ARPLayer(String pName) {
 		// ARPLayer class constructor
 		pLayerName = pName;
 
 	}
-	
+
 	private class _ARP_HEADER {
 		private int length_of_header = 28;
 		/*
 		 * Data structure for representing ARP Message Format
 		 * 
-		 * ARP Header Structure Specification (in order) 
-		 * # [Hardware Type] - 2 Bytes 
-		 * # [Protocol Type] - 2 Bytes 
-		 * # [Length of hardware address] - 1 Byte 
-		 * # [Length of Protocol address] - 1 Byte 
-		 * # [Opcode] - 2 Bytes 
-		 * # [Sender hardware address] - 6 Bytes 
-		 * # [Sender protocol address] - 4 Bytes 
-		 * # [Target hardware address] - 6 Bytes 
-		 * # [Target protocol address] - 4 Bytes
+		 * ARP Header Structure Specification (in order) # [Hardware Type] - 2 Bytes #
+		 * [Protocol Type] - 2 Bytes # [Length of hardware address] - 1 Byte # [Length
+		 * of Protocol address] - 1 Byte # [Opcode] - 2 Bytes # [Sender hardware
+		 * address] - 6 Bytes # [Sender protocol address] - 4 Bytes # [Target hardware
+		 * address] - 6 Bytes # [Target protocol address] - 4 Bytes
 		 */
 
 		byte[] hardwareType = new byte[2];
@@ -117,12 +112,11 @@ public class ARPLayer implements BaseLayer {
 
 	}
 
-
 	private class _ARP_CACHE_TABLE {
 		private final static int Capacity = 30;
 		private int size = 0;
-		private byte[] ipAddr = new byte[Capacity];
-		private byte[] macAddr = new byte[Capacity];
+		private String[] ipAddr = new String[Capacity];
+		private String[] macAddr = new String[Capacity];
 		private String[] state = new String[Capacity];
 
 		public _ARP_CACHE_TABLE() {
@@ -130,17 +124,26 @@ public class ARPLayer implements BaseLayer {
 		}
 
 		public boolean addArpCacheTableElement(byte[] pIpAddr, byte[] pMacAddr, String pState) {
-			/*
-			if (this.size < this.Capacity && !(this.isExist(pIpAddr))) {
-				Utils.showPacket(pIpAddr);
-				
-				this.ipAddr[size++] = pIpAddr;
-				this.macAddr[size++] =pMacAddr;
-				this.state[size++] = pState;
 
+			if (this.size < this.Capacity && !this.isExist(pIpAddr)) {
+				ipAddr[size] = Utils.convertByteFormatIpToStrFormat(pIpAddr);
+				macAddr[size] = Utils.convertByteFormatIpToStrFormat(pMacAddr);
+				state[size] = pState;
+				size++;
 				return true;
+
 			}
-			*/
+			return false;
+		}
+		public boolean addArpCacheTableElement(byte[] pIpAddr) {
+			if (this.size < this.Capacity && !this.isExist(pIpAddr)) {
+				ipAddr[size] = Utils.convertByteFormatIpToStrFormat(pIpAddr);
+				macAddr[size] = "??:??:??:??:??:??";
+				state[size] = "incomplete";
+				size++;
+				return true;
+
+			}
 			return false;
 		}
 
@@ -156,15 +159,17 @@ public class ARPLayer implements BaseLayer {
 		}
 
 		public void showArpTable() {
-			/*
-			for (int i = 0; i < this.size - 1; i++) {
-				for (int j = 0; j < 4; j++) {
-					System.out.print(this.ipAddr[i].getAddr()[j] + ".");
-				}
+			for(int i =0; i<this.size; i++) {
+				System.out.print(ipAddr[i] + " | ");
+				System.out.print(macAddr[i] +" | ");
+				System.out.println(state[i]);
+
 			}
-		*/
+			/*
+			 * for (int i = 0; i < this.size - 1; i++) { for (int j = 0; j < 4; j++) {
+			 * System.out.print(this.ipAddr[i].getAddr()[j] + "."); } }
+			 */
 		}
-		
 
 	}
 
@@ -179,7 +184,7 @@ public class ARPLayer implements BaseLayer {
 		// Initialize values ​​to 0x00
 		public _IP_ADDR() {
 			for (int i = 0; i < this.lengthOfAddr; i++) {
-				this.addr[i] = (byte)0x00;
+				this.addr[i] = (byte) 0x00;
 			}
 		}
 
@@ -192,10 +197,11 @@ public class ARPLayer implements BaseLayer {
 		public byte[] getAddrByte() {
 			return this.addr;
 		}
+
 		public String getAddrStr() {
 			return null;
 		}
-		
+
 		public int getLengthOfAddr() {
 			return this.lengthOfAddr;
 		}
@@ -213,7 +219,7 @@ public class ARPLayer implements BaseLayer {
 		// Initialize values ​​to 0x00
 		public _MAC_ADDR() {
 			for (int i = 0; i < this.lengthOfAddr; i++) {
-				this.addr[i] =(byte)0x00;
+				this.addr[i] = (byte) 0x00;
 			}
 		}
 
@@ -226,6 +232,7 @@ public class ARPLayer implements BaseLayer {
 		public byte[] getAddrByte() {
 			return this.addr;
 		}
+
 		public String getAddrStr() {
 			return null;
 		}
@@ -283,36 +290,38 @@ public class ARPLayer implements BaseLayer {
 		}
 		return decapsulated;
 	}
-	
+
 	public _ARP_HEADER MakeARPRequestHeader() {
-		
+
 		_ARP_HEADER header = new _ARP_HEADER(DEFAULT_HARDWARE_TYPE, DEFAULT_PROTOCOL_TYPE,
 				DEFAULT_LENGTH_OF_HARDWARE_ADDRESS, DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS, OPCODE_ARP_REQUEST,
 				this.m_sHeader.senderMac, new _MAC_ADDR(UNKNOWN_DESTINATION_MAC_ADDR), this.m_sHeader.senderIp,
-				this.m_sHeader.targetIp);	
+				this.m_sHeader.targetIp);
 		return header;
-		
+
 	}
+
 	public boolean Send() {
 		// <!> additional implementation required later
 
-		//if (!this.arpCacheTable.isExist(this.m_sHeader.target_ip.getByteAddr())) {
-			/*
-			 * If there is no Mac address for the destination IP in the ARP cache table,
-			 * then Send ARP Request
-			 */
+		// if (!this.arpCacheTable.isExist(this.m_sHeader.target_ip.getByteAddr())) {
+		/*
+		 * If there is no Mac address for the destination IP in the ARP cache table,
+		 * then Send ARP Request
+		 */
 
-			// OpCode of ARP Request = 0x0001
-			_ARP_HEADER ARPRequestHeader = this.MakeARPRequestHeader();
-			//System.out.println(this.arpCacheTable.addArpCacheTableElement(this.m_sHeader.target_ip));
-			//this.arpCacheTable.showArpTable();
-			byte[] encapsulated = this.Encapsulate(ARPRequestHeader);
+		// OpCode of ARP Request = 0x0001
+		_ARP_HEADER ARPRequestHeader = this.MakeARPRequestHeader();
+		// System.out.println(this.arpCacheTable.addArpCacheTableElement(this.m_sHeader.target_ip));
+		// this.arpCacheTable.showArpTable();
+		byte[] encapsulated = this.Encapsulate(ARPRequestHeader);
+		this.arpCacheTable.addArpCacheTableElement(ARPRequestHeader.targetIp.addr);
+		this.arpCacheTable.showArpTable();
+		System.out.println("ARPLayer Send: ");
+		Utils.showPacket(encapsulated);
+		this.GetUnderLayer().Send(encapsulated, encapsulated.length);
 
-			System.out.println("ARPLayer Send: ");
-			Utils.showPacket(encapsulated);
-			this.GetUnderLayer().Send(encapsulated, encapsulated.length);
-
-		//}
+		// }
 
 		return true;
 	}

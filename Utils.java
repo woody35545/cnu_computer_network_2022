@@ -49,12 +49,12 @@ public final class Utils {
 		byte[] byteFormatMacAddr = new byte[6];
 		String[] splitedStrFormatMac = pMacStr.split(Pattern.quote(":"));
 		for (int i = 0; i < 6; i++) {
-			byteFormatMacAddr[i] = (byte)(Integer.parseInt(splitedStrFormatMac[i]));
+			byteFormatMacAddr[i] = (byte) (Integer.parseInt(splitedStrFormatMac[i]));
 		}
 		return byteFormatMacAddr;
 
 	}
-	
+
 	public static String convertByteFormatIpToStrFormat(byte[] pIpByte) {
 		// byte[] ip addr ->"0.0.0.0"
 		String strFormatIpAddr = "";
@@ -85,7 +85,5 @@ public final class Utils {
 		}
 		return strFormatMacAddr;
 	}
-
-
 
 }
