@@ -49,10 +49,7 @@ public class TestUI extends JFrame implements BaseLayer {
 		m_LayerMgr.AddLayer(new TestUI("TestUI"));
 
 		// Connect all currently existing layers
-		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *Chat ( *TestUI ) ) ) *IP");
-		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(1).GetLayerName());
-		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(0).GetLayerName());
-		//System.out.println(m_LayerMgr.GetLayer("NI").GetUpperLayer(0).GetUpperLayer(0).GetLayerName());
+		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *TestUI ) ) *IP");
 
 	}
 
@@ -232,7 +229,9 @@ public class TestUI extends JFrame implements BaseLayer {
 				if (btn_set.getText() == "Reset") {
 
 					byte[] testPacket= GetTestPacket();
-					((EthernetLayer) m_LayerMgr.GetLayer("Ethernet")).Send(testPacket,testPacket.length);	
+					//((EthernetLayer) m_LayerMgr.GetLayer("Ethernet")).Send(testPacket,testPacket.length);	
+					((IPLayer) m_LayerMgr.GetLayer("IP")).Send(testPacket,testPacket.length);	
+
 
 				} else {
 					JOptionPane.showMessageDialog(null, "�ּ� ���� ����");

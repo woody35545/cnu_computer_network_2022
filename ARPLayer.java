@@ -2,131 +2,31 @@ import java.util.ArrayList;
 
 public class ARPLayer implements BaseLayer {
 
+	private static final byte[] UNKNOWN_DESTINATION_MAC_ADDR = new byte[] { (byte)0x00,(byte) 0x00, (byte)0x00,(byte)0x00,(byte) 0x00,(byte) 0x00};
+	private static final byte[] OPCODE_ARP_REQUEST = new byte[] { 0x00, 0x01 };
 	// Default hardware type = Ethernet(0x0001)
-	private static final byte[] DEFAULT_HARDWARE_TYPE = new byte[]{0x00, 0x01};
+	private static final byte[] DEFAULT_HARDWARE_TYPE = new byte[] { 0x00, 0x01 };
 	// Default protocol type = IPv4(0x0800)
-	private static final byte[] DEFAULT_PROTOCOL_TYPE = new byte[]{0x08, 0x00};
+	private static final byte[] DEFAULT_PROTOCOL_TYPE = new byte[] { 0x08, 0x00 };
 	// Default length of hardware address = 0x06 (MAC Address)
-	private static final byte DEFAULT_LENGTH_OF_HARDWARE_ADDRESS = (byte)0x06;
+	private static final byte DEFAULT_LENGTH_OF_HARDWARE_ADDRESS = (byte) 0x06;
 	// Default length of protocol address = 0x04 (IP Address)
-	private static final byte DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS = (byte)0x04;
+	private static final byte DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS = (byte) 0x04;
 
-	
 	public int nUpperLayerCount = 0;
 	public String pLayerName = null;
 	public BaseLayer p_UnderLayer = null;
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
 	private _ARP_HEADER m_sHeader = new _ARP_HEADER();
-	private _ARP_CACHE_TABLE arp_cache_table = new _ARP_CACHE_TABLE(); 
-	private class _ARP_CACHE_TABLE{
-		private final static int Capacity = 30;
-		private int size = 0;
-		private _IP_ADDR[]  ip_addr = new _IP_ADDR[Capacity];
-		private _MAC_ADDR[] mac_addr = new _MAC_ADDR[Capacity];
-		private String[] state = new String[Capacity];
-		public _ARP_CACHE_TABLE() {
-			// _ARP_CACHE_TABLE constructor
-		}
-		
-		public void add(_IP_ADDR pIpAddress, _MAC_ADDR pMacAddress, String pState) {
-			if (isExist(pIpAddress)) {
-				// if ip_addr already exist in cache table, update mac_addr
-				updateCacheTable(pIpAddress, pMacAddress);
-			}
-			else {
-				// if ip_addr not exist in cache table, add ip_addr, mac_addr
-				this.ip_addr[size] = pIpAddress;
-				this.mac_addr[size] = pMacAddress;
-				this.state[size] = pState;
-				size++;
-			}
-		}
-		
-		public boolean isExist(_IP_ADDR pIpAddress) {
-			//<!> 수정해야함. 이렇게 구현하면 incomplete 상태에 있는 값도 mac 주소를 아는 것으로 판단하게 됨.
-			
-			//check mac_addr in cache table by ip_addr
-			for(int i = 0;i < size;i++) {
-				if(this.ip_addr[i] == pIpAddress) {
-					// if ip_addr is in cache table
-					return true;
-				}
-			}
-			// if ip_addr is not in cache table
-			return false;
-		}
-		
-		public _MAC_ADDR getMacAddress(_IP_ADDR pIpAddress) {
-			//find mac_addr in cache table by ip_addr
-			for(int i = 0;i < size;i++) {
-				if(this.ip_addr[i] == pIpAddress) {
-					// if ip_addr is in cache table, return its mac_addr
-					return this.mac_addr[i];
-				}
-			}
-			// if ip_addr is not in cache table, return null
-			return null;
-		}
-		
-		public boolean updateCacheTable(_IP_ADDR pIpAddress, _MAC_ADDR pMacAddress, String pState) {
-			// function for update mac_addr in cache table by ip_addr
-			for(int i = 0;i < size;i++) {
-				if(this.ip_addr[i] == pIpAddress) {
-					// if ip_addr is in cache table, update mac_addr and return true
-					this.mac_addr[i] = pMacAddress;
-					this.state[i] = pState;
-					return true;
-				}
-			}
-			// if ip_addr is not in cache table, return false
-			return false;
-		}
-		
+	private _ARP_CACHE_TABLE arpCacheTable = new _ARP_CACHE_TABLE();
 	
+	
+	public ARPLayer(String pName) {
+		// ARPLayer class constructor
+		pLayerName = pName;
+
 	}
 	
-	private class _IP_ADDR {
-		/*
-		 * Data structure for representing IP Address, Will be used for ARP
-		 * Packet structure. 4 bytes are required to represent the IP Address.
-		 */
-		private byte[] addr = new byte[4];
-		private int length_of_addr = 4;
-
-		// Initialize values ​​to 0x00
-		public _IP_ADDR() {
-			this.addr[0] = (byte) 0x00;
-			this.addr[1] = (byte) 0x00;
-			this.addr[2] = (byte) 0x00;
-			this.addr[3] = (byte) 0x00;
-		}
-		public int get_length_of_addr(){
-			return this.length_of_addr;
-		}
-	}
-
-	private class _MAC_ADDR {
-		/*
-		 * Data structure for representing Mac Address, Will be used for ARP
-		 * Packet structure. 8 bytes are required to represent the MAC Address.
-		 */
-		
-		private byte[] addr = new byte[6];
-		private int length_of_addr = 6;
-		// Initialize values ​​to 0x00
-		public _MAC_ADDR() {
-			this.addr[0] = (byte) 0x00;
-			this.addr[1] = (byte) 0x00;
-			this.addr[2] = (byte) 0x00;
-			this.addr[3] = (byte) 0x00;
-			this.addr[4] = (byte) 0x00;
-			this.addr[5] = (byte) 0x00;
-		}
-		public int get_length_of_addr(){
-			return this.length_of_addr;
-		}
-	}
-
 	private class _ARP_HEADER {
 		private int length_of_header = 28;
 		/*
@@ -143,75 +43,72 @@ public class ARPLayer implements BaseLayer {
 		 * # [Target hardware address] - 6 Bytes 
 		 * # [Target protocol address] - 4 Bytes
 		 */
-		
-		byte[] hardware_type = new byte[2];
-		byte[] protocol_type = new byte[2];
-		byte length_of_hardware_addr;
-		byte length_of_protocol_addr;
-		byte[] opcode = new byte[2];
-		_MAC_ADDR sender_mac = new _MAC_ADDR();
-		_MAC_ADDR target_mac = new _MAC_ADDR();
-		_IP_ADDR sender_ip = new _IP_ADDR();
-		_IP_ADDR target_ip = new _IP_ADDR();
-		
-		public _ARP_HEADER(){
+
+		byte[] hardwareType = new byte[2];
+		byte[] protocolType = new byte[2];
+		byte lengthOfHardwareAddr;
+		byte lengthOfProtocolAddr;
+		byte[] opCode = new byte[2];
+		_MAC_ADDR senderMac = new _MAC_ADDR();
+		_MAC_ADDR targetMac = new _MAC_ADDR();
+		_IP_ADDR senderIp = new _IP_ADDR();
+		_IP_ADDR targetIp = new _IP_ADDR();
+
+		public _ARP_HEADER() {
 			// _ARP_HEADER constructor
 		}
-		
+
 		@SuppressWarnings("unused")
-		public _ARP_HEADER(byte[] pHardwareType, byte[] pProtocolType,
-				byte pLengthOfMacAddr,
-				byte pLengthOfProtocolAddr, 
-				byte[] pOpcode, _MAC_ADDR pSenderMacAddress,
-				_MAC_ADDR pTargetMacAddress, _IP_ADDR pSenderIpAddress,
-				_IP_ADDR pTargetIpAddress) {
+		public _ARP_HEADER(byte[] pHardwareType, byte[] pProtocolType, byte pLengthOfMacAddr,
+				byte pLengthOfProtocolAddr, byte[] pOpcode, _MAC_ADDR pSenderMacAddress, _MAC_ADDR pTargetMacAddress,
+				_IP_ADDR pSenderIpAddress, _IP_ADDR pTargetIpAddress) {
 
 			// _ARP_HEADER constructor with Parameters
-			this.hardware_type = pHardwareType;
-			this.protocol_type = pProtocolType;
-			this.length_of_hardware_addr = pLengthOfMacAddr;
-			this.length_of_protocol_addr = pLengthOfProtocolAddr;
-			this.opcode = pOpcode;
-			this.sender_mac = pSenderMacAddress;
-			this.target_mac = pTargetMacAddress;
-			this.sender_ip = pSenderIpAddress;
-			this.target_ip = pTargetIpAddress;
+			this.hardwareType = pHardwareType;
+			this.protocolType = pProtocolType;
+			this.lengthOfHardwareAddr = pLengthOfMacAddr;
+			this.lengthOfProtocolAddr = pLengthOfProtocolAddr;
+			this.opCode = pOpcode;
+			this.senderMac = pSenderMacAddress;
+			this.targetMac = pTargetMacAddress;
+			this.senderIp = pSenderIpAddress;
+			this.targetIp = pTargetIpAddress;
 		}
 
 		public void SetHardwareType(byte[] pHardwareType) {
-			this.hardware_type = pHardwareType;
+			this.hardwareType = pHardwareType;
 		}
 
 		public void SetProtocolType(byte[] pProtocolType) {
-			this.protocol_type = pProtocolType;
+			this.protocolType = pProtocolType;
 		}
 
 		public void SetLengthOfHardwareAddress(byte _pLengthOfHardwareAddress) {
-			this.length_of_hardware_addr = _pLengthOfHardwareAddress;
+			this.lengthOfHardwareAddr = _pLengthOfHardwareAddress;
 		}
 
 		public void SetLengthOfProtocolAddress(byte pLengthOfProtocolAddress) {
-			this.length_of_protocol_addr = pLengthOfProtocolAddress;
+			this.lengthOfProtocolAddr = pLengthOfProtocolAddress;
 		}
 
 		public void SetOpCode(byte[] pOpCode) {
-			this.opcode = pOpCode;
+			this.opCode = pOpCode;
 		}
 
 		public void SetSenderMacAddress(byte[] pSenderMacAddress) {
-			this.sender_mac.addr = pSenderMacAddress;
+			this.senderMac.addr = pSenderMacAddress;
 		}
 
 		public void SetTargetMacAddress(byte[] pTargetMacAddress) {
-			this.target_mac.addr = pTargetMacAddress;
+			this.targetMac.addr = pTargetMacAddress;
 		}
 
 		public void SetSenderIPAddress(byte[] pSenderIPAddress) {
-			this.sender_ip.addr = pSenderIPAddress;
+			this.senderIp.addr = pSenderIPAddress;
 		}
 
 		public void SetTargetIPAddress(byte[] pTargetIPAddress) {
-			this.target_ip.addr = pTargetIPAddress;
+			this.targetIp.addr = pTargetIPAddress;
 		}
 
 		public int get_length_of_header() {
@@ -221,114 +118,224 @@ public class ARPLayer implements BaseLayer {
 	}
 
 
-	public ARPLayer(String pName) {
-		// ARPLayer class constructor
-		pLayerName = pName;
+	private class _ARP_CACHE_TABLE {
+		private final static int Capacity = 30;
+		private int size = 0;
+		private byte[] ipAddr = new byte[Capacity];
+		private byte[] macAddr = new byte[Capacity];
+		private String[] state = new String[Capacity];
+
+		public _ARP_CACHE_TABLE() {
+			// _ARP_CACHE_TABLE constructor
+		}
+
+		public boolean addArpCacheTableElement(byte[] pIpAddr, byte[] pMacAddr, String pState) {
+			/*
+			if (this.size < this.Capacity && !(this.isExist(pIpAddr))) {
+				Utils.showPacket(pIpAddr);
+				
+				this.ipAddr[size++] = pIpAddr;
+				this.macAddr[size++] =pMacAddr;
+				this.state[size++] = pState;
+
+				return true;
+			}
+			*/
+			return false;
+		}
+
+		public boolean addArpCacheTableElement(_IP_ADDR pIpAddr) {
+			// Implement layer
+
+			return false;
+		}
+
+		public boolean isExist(byte[] pIpAddr) {
+			// Implement layer
+			return false;
+		}
+
+		public void showArpTable() {
+			/*
+			for (int i = 0; i < this.size - 1; i++) {
+				for (int j = 0; j < 4; j++) {
+					System.out.print(this.ipAddr[i].getAddr()[j] + ".");
+				}
+			}
+		*/
+		}
+		
 
 	}
-	
-	public byte[] Encapsulate(_ARP_HEADER pHeader ){
+
+	private class _IP_ADDR {
+		/*
+		 * Data structure for representing IP Address, Will be used for ARP Packet
+		 * structure. 4 bytes are required to represent the IP Address.
+		 */
+		private byte[] addr = new byte[4];
+		private int lengthOfAddr = 4;
+
+		// Initialize values ​​to 0x00
+		public _IP_ADDR() {
+			for (int i = 0; i < this.lengthOfAddr; i++) {
+				this.addr[i] = (byte)0x00;
+			}
+		}
+
+		public _IP_ADDR(byte[] pAddr) {
+			for (int i = 0; i < this.lengthOfAddr; i++) {
+				this.addr[i] = pAddr[i];
+			}
+		}
+
+		public byte[] getAddrByte() {
+			return this.addr;
+		}
+		public String getAddrStr() {
+			return null;
+		}
+		
+		public int getLengthOfAddr() {
+			return this.lengthOfAddr;
+		}
+	}
+
+	private class _MAC_ADDR {
+		/*
+		 * Data structure for representing Mac Address, Will be used for ARP Packet
+		 * structure. 8 bytes are required to represent the MAC Address.
+		 */
+
+		private byte[] addr = new byte[6];
+		private int lengthOfAddr = 6;
+
+		// Initialize values ​​to 0x00
+		public _MAC_ADDR() {
+			for (int i = 0; i < this.lengthOfAddr; i++) {
+				this.addr[i] =(byte)0x00;
+			}
+		}
+
+		public _MAC_ADDR(byte[] pAddr) {
+			for (int i = 0; i < this.lengthOfAddr; i++) {
+				this.addr[i] = pAddr[i];
+			}
+		}
+
+		public byte[] getAddrByte() {
+			return this.addr;
+		}
+		public String getAddrStr() {
+			return null;
+		}
+
+		public int getLengthOfAddr() {
+			return this.lengthOfAddr;
+		}
+	}
+
+	public byte[] Encapsulate(_ARP_HEADER pHeader) {
 		// <!> Need to check
-		//  Encapsulate function to create byte array type ARP Packet
+		// Encapsulate function to create byte array type ARP Packet
 		int idx_ptr = 0;
 		byte[] encapsulated = new byte[pHeader.get_length_of_header()];
 
-		for (int i = 0; i < pHeader.hardware_type.length; i++) {
-			encapsulated[idx_ptr++] = pHeader.hardware_type[i];
-		}
-		
-		for (int i = 0; i < pHeader.protocol_type.length; i++) {
-			encapsulated[idx_ptr++] = pHeader.protocol_type[i];
+		for (int i = 0; i < pHeader.hardwareType.length; i++) {
+			encapsulated[idx_ptr++] = pHeader.hardwareType[i];
 		}
 
-		encapsulated[idx_ptr++] = pHeader.length_of_hardware_addr;
-		encapsulated[idx_ptr++] = pHeader.length_of_protocol_addr;
-
-		for (int i = 0; i < pHeader.opcode.length; i++) {
-			encapsulated[idx_ptr++] = pHeader.opcode[i];
+		for (int i = 0; i < pHeader.protocolType.length; i++) {
+			encapsulated[idx_ptr++] = pHeader.protocolType[i];
 		}
 
-		for (int i = 0; i < pHeader.sender_mac.get_length_of_addr(); i++) {
-			encapsulated[idx_ptr++] = pHeader.sender_mac.addr[i];
+		encapsulated[idx_ptr++] = pHeader.lengthOfHardwareAddr;
+		encapsulated[idx_ptr++] = pHeader.lengthOfProtocolAddr;
+
+		for (int i = 0; i < pHeader.opCode.length; i++) {
+			encapsulated[idx_ptr++] = pHeader.opCode[i];
 		}
-		for (int i = 0; i < pHeader.sender_ip.get_length_of_addr(); i++) {
-			encapsulated[idx_ptr++] = pHeader.sender_ip.addr[i];
+
+		for (int i = 0; i < pHeader.senderMac.getLengthOfAddr(); i++) {
+			encapsulated[idx_ptr++] = pHeader.senderMac.addr[i];
 		}
-		for (int i = 0; i < pHeader.target_mac.get_length_of_addr(); i++) {
-			encapsulated[idx_ptr++] = pHeader.target_mac.addr[i];
+		for (int i = 0; i < pHeader.senderIp.getLengthOfAddr(); i++) {
+			encapsulated[idx_ptr++] = pHeader.senderIp.addr[i];
 		}
-		for (int i = 0; i < pHeader.target_ip.get_length_of_addr(); i++) {
-			encapsulated[idx_ptr++] = pHeader.target_ip.addr[i];
+		for (int i = 0; i < pHeader.targetMac.getLengthOfAddr(); i++) {
+			encapsulated[idx_ptr++] = pHeader.targetMac.addr[i];
 		}
-	
+		for (int i = 0; i < pHeader.targetIp.getLengthOfAddr(); i++) {
+			encapsulated[idx_ptr++] = pHeader.targetIp.addr[i];
+		}
+
 		return encapsulated;
-		
+
 	}
-	
-	public byte[] Decapsulate(byte[] pARPPacket){
+
+	public byte[] Decapsulate(byte[] pARPPacket) {
 		// <!> Need to check
-		
-		int offset=28;
+
+		int offset = 28;
 		byte[] decapsulated = new byte[pARPPacket.length - 28];
-		for (int i=0; i<decapsulated.length; i++){
-			decapsulated[i] = pARPPacket[offset+i];
+		for (int i = 0; i < decapsulated.length; i++) {
+			decapsulated[i] = pARPPacket[offset + i];
 		}
 		return decapsulated;
 	}
 	
+	public _ARP_HEADER MakeARPRequestHeader() {
+		
+		_ARP_HEADER header = new _ARP_HEADER(DEFAULT_HARDWARE_TYPE, DEFAULT_PROTOCOL_TYPE,
+				DEFAULT_LENGTH_OF_HARDWARE_ADDRESS, DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS, OPCODE_ARP_REQUEST,
+				this.m_sHeader.senderMac, new _MAC_ADDR(UNKNOWN_DESTINATION_MAC_ADDR), this.m_sHeader.senderIp,
+				this.m_sHeader.targetIp);	
+		return header;
+		
+	}
 	public boolean Send() {
 		// <!> additional implementation required later
-		
-		if (!this.arp_cache_table.is_exist(this.m_sHeader.target_ip)) {
+
+		//if (!this.arpCacheTable.isExist(this.m_sHeader.target_ip.getByteAddr())) {
 			/*
 			 * If there is no Mac address for the destination IP in the ARP cache table,
 			 * then Send ARP Request
 			 */
-			
-			// OpCode of ARP Request = 0x0001
-			
-			
-			byte[] opCode = new byte[] {0x00,0x01};
-			this.m_sHeader.SetHardwareType(DEFAULT_HARDWARE_TYPE);
-			this.m_sHeader.SetProtocolType(DEFAULT_PROTOCOL_TYPE);
-			this.m_sHeader.SetTargetMacAddress(new byte[] {0x00,0x00,0x00,0x00,0x00,0x00});
-			this.m_sHeader.SetLengthOfHardwareAddress(DEFAULT_LENGTH_OF_HARDWARE_ADDRESS);
-			this.m_sHeader.SetLengthOfProtocolAddress(DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS);
 
-			this.m_sHeader.SetOpCode(opCode);
-			
-			byte[] encapsulated =this.Encapsulate(this.m_sHeader);
+			// OpCode of ARP Request = 0x0001
+			_ARP_HEADER ARPRequestHeader = this.MakeARPRequestHeader();
+			//System.out.println(this.arpCacheTable.addArpCacheTableElement(this.m_sHeader.target_ip));
+			//this.arpCacheTable.showArpTable();
+			byte[] encapsulated = this.Encapsulate(ARPRequestHeader);
+
 			System.out.println("ARPLayer Send: ");
 			Utils.showPacket(encapsulated);
 			this.GetUnderLayer().Send(encapsulated, encapsulated.length);
-			
-		}
-		
 
-		
-		
+		//}
+
 		return true;
 	}
 
-	
 	public void setARPHeaderSrcIp(byte[] pSrcIP) {
-		this.m_sHeader.sender_ip.addr=pSrcIP;
+		this.m_sHeader.senderIp.addr = pSrcIP;
 	}
+
 	public void setARPHeaderDstIp(byte[] pTargetIP) {
-		this.m_sHeader.target_ip.addr=pTargetIP;
+		this.m_sHeader.targetIp.addr = pTargetIP;
 	}
-	
+
 	public void setARPHeaderSrcMac(byte[] pSrcMac) {
-		this.m_sHeader.sender_mac.addr=pSrcMac;
+		this.m_sHeader.senderMac.addr = pSrcMac;
 	}
+
 	public void setARPHeaderDstMac(byte[] pTargetMac) {
-		this.m_sHeader.target_mac.addr=pTargetMac;
+		this.m_sHeader.targetMac.addr = pTargetMac;
 	}
 
 	public boolean Receive(byte[] input) {
 		// <!> additional implementation required later
-		
-		
+
 		this.GetUpperLayer(0).Receive(input);
 		return true;
 	}

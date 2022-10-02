@@ -75,8 +75,7 @@ public class ChatAppLayer implements BaseLayer{
 
            
 	public boolean Receive(byte[] input){
-		
-		
+		this.GetUpperLayer(0).Receive(this.Decapsulate(input));
 		return true;
 	}
 

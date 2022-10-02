@@ -59,6 +59,8 @@ public class NILayer implements BaseLayer {
 
 	public boolean Send(byte[] input, int length) {
 		ByteBuffer buf = ByteBuffer.wrap(input);
+		System.out.println("NILayer Send: ");
+		Utils.showPacket(input);
 		if (m_AdapterObject.sendPacket(buf) != Pcap.OK) {
 			System.err.println(m_AdapterObject.getErr());
 			return false;
