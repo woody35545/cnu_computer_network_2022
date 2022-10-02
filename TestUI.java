@@ -2,6 +2,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -18,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JEditorPane;
 import javax.swing.UIManager;
+import javax.swing.table.DefaultTableModel;
+
 import java.awt.Color;
 import javax.swing.JTable;
 import java.awt.Font;
@@ -31,12 +34,13 @@ public class TestUI extends JFrame implements BaseLayer {
 	String path;
 
 	private static LayerManager m_LayerMgr = new LayerManager();
+	DefaultTableModel dtm;
 
 	private JTextArea textarea_srcMacAddr;
 	private JTextArea textarea_dstMacAddr;
 	int selected_index;
 	JComboBox comboBox_NIC;
-	private JTable table_arpCacheTable;
+	public JTable table;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
@@ -49,15 +53,21 @@ public class TestUI extends JFrame implements BaseLayer {
 		m_LayerMgr.AddLayer(new TestUI("TestUI"));
 
 		// Connect all currently existing layers
-		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *TestUI ) ) *IP");
+		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *TestUI ) )");
+
+		//m_LayerMgr.GetLayer("ARP").SetUpperLayer(m_LayerMgr.GetLayer("TestUI"));
+		//System.out.println(m_LayerMgr.GetLayer("ARP").m_nUpperLayerCount);
+		//System.out.println(m_LayerMgr.GetLayer("ARP").GetUpperLayer(0).GetLayerName());
+
+
 
 	}
 
 	public TestUI(String pName) {
 		setTitle("Tester");
 		pLayerName = pName;
-		getContentPane().setLayout(null);
 		setBounds(250, 250, 724, 652);
+		getContentPane().setLayout(null);
 
 		JPanel panel = new JPanel();
 		panel.setBounds(12, 10, 354, 231);
@@ -166,10 +176,8 @@ public class TestUI extends JFrame implements BaseLayer {
 		panel_2.setBounds(378, 10, 330, 359);
 		getContentPane().add(panel_2);
 		panel_2.setLayout(null);
-		
-		table_arpCacheTable = new JTable();
-		table_arpCacheTable.setBounds(12, 29, 296, 221);
-		panel_2.add(table_arpCacheTable);
+	    
+
 		
 		JButton btnNewButton_2 = new JButton("Delete Item");
 		btnNewButton_2.setBounds(12, 260, 138, 23);
@@ -185,8 +193,8 @@ public class TestUI extends JFrame implements BaseLayer {
 		lblNewLabel.setFont(new Font("나눔바른고딕", Font.BOLD, 15));
 		
 		JTextArea textarea_arpRequestTargetIp = new JTextArea();
-		textarea_arpRequestTargetIp.setFont(new Font("Monospaced", Font.PLAIN, 15));
 		textarea_arpRequestTargetIp.setBounds(12, 309, 199, 30);
+		textarea_arpRequestTargetIp.setFont(new Font("Monospaced", Font.PLAIN, 15));
 		panel_2.add(textarea_arpRequestTargetIp);
 		textarea_arpRequestTargetIp.setText("192.168.139.2");
 		textarea_arpRequestTargetIp.setColumns(10);
@@ -196,17 +204,28 @@ public class TestUI extends JFrame implements BaseLayer {
 		panel_2.add(btn_arpRequestSend);
 		
 		JLabel lbl_arpCacheTable = new JLabel("ARP Cache Table");
-		lbl_arpCacheTable.setFont(new Font("나눔바른고딕", Font.BOLD, 15));
 		lbl_arpCacheTable.setBounds(12, 10, 132, 15);
+		lbl_arpCacheTable.setFont(new Font("나눔바른고딕", Font.BOLD, 15));
 		panel_2.add(lbl_arpCacheTable);
+		
+		String header[] = { "IP Address", "MAC Address", "State" };
+		DefaultTableModel model = new DefaultTableModel(header, 30);
+		table = new JTable(model);
+		table.setCellSelectionEnabled(true);
+		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane.setBounds(12, 35, 306, 210);
+		panel_2.add(scrollPane);
+		
+		
+		scrollPane.setViewportView(table);
 		
 		JTextArea textArea = new JTextArea();
 		textArea.setBounds(12, 411, 686, 194);
 		getContentPane().add(textArea);
 		
 		JLabel lblNewLabel_2 = new JLabel("Debugging Console");
-		lblNewLabel_2.setFont(new Font("나눔바른고딕", Font.BOLD, 15));
 		lblNewLabel_2.setBounds(12, 386, 176, 15);
+		lblNewLabel_2.setFont(new Font("나눔바른고딕", Font.BOLD, 15));
 		getContentPane().add(lblNewLabel_2);
 		btn_arpRequestSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -322,7 +341,14 @@ public class TestUI extends JFrame implements BaseLayer {
 		for (int i = 0; i < m_pAdapterList.size(); i++)
 			this.comboBox_NIC.addItem(m_pAdapterList.get(i).getDescription());
 	}
-
+	
+	
+	public void addData(String[] pDataArr) {
+		DefaultTableModel model=(DefaultTableModel)table.getModel();
+		model.addRow(pDataArr);
+	}
+	
+	
 	public byte[] GetTestPacket() {
 		byte[] testPacket= new byte[46];
 		for (int i=0; i<46; i++) {

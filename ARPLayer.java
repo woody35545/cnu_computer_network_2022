@@ -131,6 +131,7 @@ public class ARPLayer implements BaseLayer {
 				state[size] = pState;
 				size++;
 				return true;
+				
 
 			}
 			return false;
@@ -316,6 +317,7 @@ public class ARPLayer implements BaseLayer {
 		// this.arpCacheTable.showArpTable();
 		byte[] encapsulated = this.Encapsulate(ARPRequestHeader);
 		this.arpCacheTable.addArpCacheTableElement(ARPRequestHeader.targetIp.addr);
+		this.addARPCacheTableElement(ARPRequestHeader.targetIp.addr);
 		this.arpCacheTable.showArpTable();
 		System.out.println("ARPLayer Send: ");
 		Utils.showPacket(encapsulated);
@@ -324,6 +326,17 @@ public class ARPLayer implements BaseLayer {
 		// }
 
 		return true;
+	}
+	
+	public void addARPCacheTableElement(byte[] pIpAddr, byte[] pMacAddr, String pState) { 
+		this.arpCacheTable.addArpCacheTableElement(pIpAddr,pMacAddr,pState);
+		String[] data = new String[]{Utils.convertByteFormatIpToStrFormat(pIpAddr),Utils.convertByteFormatMacToStrFormat(pMacAddr),pState};
+		//((TestUI)(this.GetUpperLayer().GetUpperLayer())).addData(data);
+	}
+	public void addARPCacheTableElement(byte[] pIpAddr) { 
+		this.arpCacheTable.addArpCacheTableElement(pIpAddr);
+		String[] data = new String[]{Utils.convertByteFormatIpToStrFormat(pIpAddr),"??:??:??:??:??:??","incomplete"};
+		//((TestUI)(this.GetUpperLayer(0).GetUpperLayer(0))).addData(data);
 	}
 
 	public void setARPHeaderSrcIp(byte[] pSrcIP) {
