@@ -95,7 +95,7 @@ public class LayerManager {
 	private BaseLayer Top(){
 		return mp_Stack.get(m_nTop);
 	}
-	
+		
 	private void LinkLayer(_NODE pNode){
 		BaseLayer pLayer = null;
 		
@@ -103,10 +103,12 @@ public class LayerManager {
 			if( pLayer == null)
 				pLayer = GetLayer (pNode.token);
 			else{
-				if(pNode.token.equals("("))
+				if(pNode.token.equals("(")) 
 					Push (pLayer);
-				else if(pNode.token.equals(")"))
+			
+				else if(pNode.token.equals(")")) 
 					Pop();
+
 				else{
 					char cMode = pNode.token.charAt(0);
 					String pcName = pNode.token.substring(1, pNode.token.length());

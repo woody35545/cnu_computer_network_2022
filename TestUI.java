@@ -49,7 +49,11 @@ public class TestUI extends JFrame implements BaseLayer {
 		m_LayerMgr.AddLayer(new TestUI("TestUI"));
 
 		// Connect all currently existing layers
-		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *Chat ( *TestUI ) )");
+		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *Chat ( *TestUI ) ) ) *IP");
+		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(1).GetLayerName());
+		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(0).GetLayerName());
+		//System.out.println(m_LayerMgr.GetLayer("NI").GetUpperLayer(0).GetUpperLayer(0).GetLayerName());
+
 	}
 
 	public TestUI(String pName) {
