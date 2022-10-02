@@ -39,31 +39,33 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		m_LayerMgr.AddLayer(new NILayer("NI"));
 		m_LayerMgr.AddLayer(new EthernetLayer("Ethernet"));
 		m_LayerMgr.AddLayer(new ARPLayer("ARP"));
+		m_LayerMgr.AddLayer(new IPLayer("IP"));
 		m_LayerMgr.AddLayer(new ARPGUI("ARPGUI"));
-		m_LayerMgr.AddLayer(new TestUI("TestUI"));
 
 		// Connect all currently existing layers
-		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *Chat ( *TestUI ) )");
+		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *ARPGUI ) )");
 	}
-
 	/**
 	 * Create the application.
 	 */
 	public ARPGUI(String pName) {
 		this.pLayerName = pName;
+
 		initialize();
+
+	
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+
 		frmArpgui = new JFrame();
 		frmArpgui.setTitle("ARPGUI");
-		frmArpgui.setBounds(100, 100, 1117, 399);
+		frmArpgui.setBounds(100, 100, 1117, 386);
 		frmArpgui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmArpgui.getContentPane().setLayout(null);
-		
 		JLabel ARP_1 = new JLabel("ARP");
 		ARP_1.setBounds(27, 10, 50, 15);
 		frmArpgui.getContentPane().add(ARP_1);
