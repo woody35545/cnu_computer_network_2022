@@ -206,18 +206,53 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		JLabel ARP_1_2_1 = new JLabel("Address");
 		ARP_1_2_1.setBounds(763, 155, 109, 15);
 		frmArpgui.getContentPane().add(ARP_1_2_1);
+		frmArpgui.setVisible(true);
+
+	}
+	@Override
+	public void SetUnderLayer(BaseLayer pUnderLayer) {
+		// TODO Auto-generated method stub
+		if (pUnderLayer == null)
+			return;
+		this.p_UnderLayer = pUnderLayer;
+	}
+
+	@Override
+	public void SetUpperLayer(BaseLayer pUpperLayer) {
+		// TODO Auto-generated method stub
+		if (pUpperLayer == null)
+			return;
+		this.p_aUpperLayer.add(nUpperLayerCount++, pUpperLayer);
+		// nUpperLayerCount++;
 	}
 
 	@Override
 	public String GetLayerName() {
 		// TODO Auto-generated method stub
-		return null;
+		return pLayerName;
 	}
 
 	@Override
 	public BaseLayer GetUnderLayer() {
 		// TODO Auto-generated method stub
-		return null;
+		if (p_UnderLayer == null)
+			return null;
+		return p_UnderLayer;
+	}
+
+	@Override
+	public BaseLayer GetUpperLayer(int nindex) {
+		// TODO Auto-generated method stub
+		if (nindex < 0 || nindex > nUpperLayerCount || nUpperLayerCount < 0)
+			return null;
+		return p_aUpperLayer.get(nindex);
+	}
+
+	@Override
+	public void SetUpperUnderLayer(BaseLayer pUULayer) {
+		this.SetUpperLayer(pUULayer);
+		pUULayer.SetUnderLayer(this);
+
 	}
 
 	@Override
@@ -230,29 +265,5 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	public BaseLayer GetUpperLayer() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public BaseLayer GetUpperLayer(int nindex) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void SetUnderLayer(BaseLayer pUnderLayer) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void SetUpperLayer(BaseLayer pUpperLayer) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void SetUpperUnderLayer(BaseLayer pUULayer) {
-		// TODO Auto-generated method stub
-		
 	}
 }

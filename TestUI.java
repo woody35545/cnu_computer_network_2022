@@ -36,7 +36,7 @@ public class TestUI extends JFrame implements BaseLayer {
 	private JTextArea textarea_dstMacAddr;
 	int selected_index;
 	JComboBox comboBox_NIC;
-	private JTable table;
+	private JTable table_arpCacheTable;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
@@ -162,9 +162,9 @@ public class TestUI extends JFrame implements BaseLayer {
 		getContentPane().add(panel_2);
 		panel_2.setLayout(null);
 		
-		table = new JTable();
-		table.setBounds(12, 29, 296, 221);
-		panel_2.add(table);
+		table_arpCacheTable = new JTable();
+		table_arpCacheTable.setBounds(12, 29, 296, 221);
+		panel_2.add(table_arpCacheTable);
 		
 		JButton btnNewButton_2 = new JButton("Delete Item");
 		btnNewButton_2.setBounds(12, 260, 138, 23);
@@ -179,22 +179,22 @@ public class TestUI extends JFrame implements BaseLayer {
 		panel_2.add(lblNewLabel);
 		lblNewLabel.setFont(new Font("나눔바른고딕", Font.BOLD, 15));
 		
-		JTextArea textarea_dstIpAddr_1 = new JTextArea();
-		textarea_dstIpAddr_1.setFont(new Font("Monospaced", Font.PLAIN, 15));
-		textarea_dstIpAddr_1.setBounds(12, 309, 199, 30);
-		panel_2.add(textarea_dstIpAddr_1);
-		textarea_dstIpAddr_1.setText("192.168.139.2");
-		textarea_dstIpAddr_1.setColumns(10);
+		JTextArea textarea_arpRequestTargetIp = new JTextArea();
+		textarea_arpRequestTargetIp.setFont(new Font("Monospaced", Font.PLAIN, 15));
+		textarea_arpRequestTargetIp.setBounds(12, 309, 199, 30);
+		panel_2.add(textarea_arpRequestTargetIp);
+		textarea_arpRequestTargetIp.setText("192.168.139.2");
+		textarea_arpRequestTargetIp.setColumns(10);
 		
-		JButton btnNewButton_1 = new JButton("Send");
-		btnNewButton_1.setBounds(226, 307, 82, 33);
-		panel_2.add(btnNewButton_1);
+		JButton btn_arpRequestSend = new JButton("Send");
+		btn_arpRequestSend.setBounds(226, 307, 82, 33);
+		panel_2.add(btn_arpRequestSend);
 		
 		JLabel lbl_arpCacheTable = new JLabel("ARP Cache Table");
 		lbl_arpCacheTable.setFont(new Font("나눔바른고딕", Font.BOLD, 15));
 		lbl_arpCacheTable.setBounds(12, 10, 132, 15);
 		panel_2.add(lbl_arpCacheTable);
-		btnNewButton_1.addActionListener(new ActionListener() {
+		btn_arpRequestSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
