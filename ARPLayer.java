@@ -23,30 +23,31 @@ public class ARPLayer implements BaseLayer {
 		private int size = 0;
 		private _IP_ADDR[]  ip_addr = new _IP_ADDR[Capacity];
 		private _MAC_ADDR[] mac_addr = new _MAC_ADDR[Capacity];
-		
+		private String[] state = new String[Capacity];
 		public _ARP_CACHE_TABLE() {
 			// _ARP_CACHE_TABLE constructor
 		}
 		
-		public void add(_IP_ADDR ip_addr, _MAC_ADDR mac_addr) {
-			if (is_exist(ip_addr)) {
+		public void add(_IP_ADDR pIpAddress, _MAC_ADDR pMacAddress, String pState) {
+			if (isExist(pIpAddress)) {
 				// if ip_addr already exist in cache table, update mac_addr
-				update_cache_table(ip_addr, mac_addr);
+				updateCacheTable(pIpAddress, pMacAddress);
 			}
 			else {
 				// if ip_addr not exist in cache table, add ip_addr, mac_addr
-				this.ip_addr[size] = ip_addr;
-				this.mac_addr[size] = mac_addr;
+				this.ip_addr[size] = pIpAddress;
+				this.mac_addr[size] = pMacAddress;
+				this.state[size] = pState;
 				size++;
 			}
 		}
 		
-		public boolean is_exist(_IP_ADDR ip_addr) {
+		public boolean isExist(_IP_ADDR pIpAddress) {
 			//<!> 수정해야함. 이렇게 구현하면 incomplete 상태에 있는 값도 mac 주소를 아는 것으로 판단하게 됨.
 			
 			//check mac_addr in cache table by ip_addr
 			for(int i = 0;i < size;i++) {
-				if(this.ip_addr[i] == ip_addr) {
+				if(this.ip_addr[i] == pIpAddress) {
 					// if ip_addr is in cache table
 					return true;
 				}
@@ -55,10 +56,10 @@ public class ARPLayer implements BaseLayer {
 			return false;
 		}
 		
-		public _MAC_ADDR get_mac_address(_IP_ADDR ip_addr) {
+		public _MAC_ADDR getMacAddress(_IP_ADDR pIpAddress) {
 			//find mac_addr in cache table by ip_addr
 			for(int i = 0;i < size;i++) {
-				if(this.ip_addr[i] == ip_addr) {
+				if(this.ip_addr[i] == pIpAddress) {
 					// if ip_addr is in cache table, return its mac_addr
 					return this.mac_addr[i];
 				}
@@ -67,12 +68,13 @@ public class ARPLayer implements BaseLayer {
 			return null;
 		}
 		
-		public boolean update_cache_table(_IP_ADDR ip_addr, _MAC_ADDR mac_addr) {
+		public boolean updateCacheTable(_IP_ADDR pIpAddress, _MAC_ADDR pMacAddress, String pState) {
 			// function for update mac_addr in cache table by ip_addr
 			for(int i = 0;i < size;i++) {
-				if(this.ip_addr[i] == ip_addr) {
+				if(this.ip_addr[i] == pIpAddress) {
 					// if ip_addr is in cache table, update mac_addr and return true
-					this.mac_addr[i] = mac_addr;
+					this.mac_addr[i] = pMacAddress;
+					this.state[i] = pState;
 					return true;
 				}
 			}
@@ -80,21 +82,7 @@ public class ARPLayer implements BaseLayer {
 			return false;
 		}
 		
-		public boolean delete_cache_table(_IP_ADDR ip_addr) {
-			// function for delete ip_addr in cache table
-			for(int i = 0;i < size;i++) {
-				if(this.ip_addr[i] == ip_addr) {
-					// find ip_addr index in cache table
-					for(int j = i; j<size-1 ; j++) {
-						// pull elements one step since found index
-							this.ip_addr[j] = this.ip_addr[j+1];
-							return true;
-					}
-				}
-			}
-			// if ip_addr is not in cache table, return false
-			return false;
-		}
+	
 	}
 	
 	private class _IP_ADDR {
