@@ -57,6 +57,15 @@ public class ChatAppLayer implements BaseLayer{
 		
 	}
 	
+	public byte[] Decapsulate(byte[] input) {
+		byte[] decapsulated= new byte[input.length-4];
+		for (int i =0; i<decapsulated.length; i++) {
+			decapsulated[i] = input[i+4];
+		}
+		
+		return decapsulated;
+		
+	}
     public boolean Send(byte[] input, int length) {   
 		/* <!> additional implementation required later */
     	byte[] encapsulated = this.Encapsulate(m_sHeader, input);
