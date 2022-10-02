@@ -43,15 +43,27 @@ public class ChatAppLayer implements BaseLayer{
 		return null;		
 	}
 	
+	public byte[] Encapsulate(_CAPP_HEADER pHeader, byte[] input) {
+		byte[] encapsulated = new byte[4+input.length];
+		for (int i=0; i<pHeader.capp_totlen.length; i++) {
+			encapsulated[i]= pHeader.capp_totlen[i];
+		}
+		
+		encapsulated[2]=pHeader.capp_unused;
+		for (int i=0; i<pHeader.capp_data.length; i++) {
+			encapsulated[3]=pHeader.capp_data[i];
+		}
+		return encapsulated;
+		
+	}
+	
     public boolean Send(byte[] input, int length) {   
 		/* <!> additional implementation required later */
-    	this.GetUnderLayer().Send(input,length, pLayerName);
+    	byte[] encapsulated = this.Encapsulate(m_sHeader, input);
+    	this.GetUnderLayer().Send(encapsulated,encapsulated.length, pLayerName);
 		return false;
 	}
-//    
-//    public byte[] RemoveCappHeader(byte[] input, int length){
-//    
-//    }
+
            
 	public boolean Receive(byte[] input){
 		return true;
