@@ -211,7 +211,7 @@ public class TestUI extends JFrame implements BaseLayer {
 		btn_arpRequestSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String arpTargetIP = textarea_arpRequestTargetIp.getText();
-				((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderDstIp(Utils.convertStrIpToByte(arpTargetIP));
+				((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderDstIp(Utils.convertStrFormatIpToByteFormat(arpTargetIP));
 				if (btn_set.getText() == "Reset") {
 
 					((ARPLayer) m_LayerMgr.GetLayer("ARP")).Send();	
@@ -271,12 +271,12 @@ public class TestUI extends JFrame implements BaseLayer {
 					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderType(new byte[]{0x08, 0x00});
 					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderSrcMacAddr(srcMacAddress);
 					((EthernetLayer)m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderDstMacAddr(dstMacAddress);
-					((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderDstIp(Utils.convertStrIpToByte(dstIP));
-					((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderSrcIp(Utils.convertStrIpToByte(srcIP));
+					((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderDstIp(Utils.convertStrFormatIpToByteFormat(dstIP));
+					((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderSrcIp(Utils.convertStrFormatIpToByteFormat(srcIP));
 					((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderSrcMac(srcMacAddress);
 					((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderDstMac(dstMacAddress);
-					((IPLayer)m_LayerMgr.GetLayer("IP")).setIpHeaderSrcIPAddr(Utils.convertStrIpToByte(srcIP));
-					((IPLayer)m_LayerMgr.GetLayer("IP")).setIpHeaderDstIPAddr(Utils.convertStrIpToByte(dstIP));
+					((IPLayer)m_LayerMgr.GetLayer("IP")).setIpHeaderSrcIPAddr(Utils.convertStrFormatIpToByteFormat(srcIP));
+					((IPLayer)m_LayerMgr.GetLayer("IP")).setIpHeaderDstIPAddr(Utils.convertStrFormatIpToByteFormat(dstIP));
 					((NILayer) m_LayerMgr.GetLayer("NI")).SetAdapterNumber(selected_index);
 
 					btn_set.setText("Reset");
