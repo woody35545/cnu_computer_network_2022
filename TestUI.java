@@ -142,8 +142,7 @@ public class TestUI extends JFrame implements BaseLayer {
 		JButton btnSendArpPacket = new JButton("Send ARP Request");
 		btnSendArpPacket.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				byte[] testPacket= GetTestPacket();
+			
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).Send();	
 			}
 		});
@@ -210,6 +209,14 @@ public class TestUI extends JFrame implements BaseLayer {
 		getContentPane().add(lblNewLabel_2);
 		btn_arpRequestSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				String arpTargetIP = textarea_arpRequestTargetIp.getText();
+				((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderDstIp(Utils.convertStrIpToByte(arpTargetIP));
+				if (btn_set.getText() == "Reset") {
+
+					((ARPLayer) m_LayerMgr.GetLayer("ARP")).Send();	
+				} else {
+					JOptionPane.showMessageDialog(null, "Settings are required!");
+				}
 			}
 		});
 		btnNewButton_2.addActionListener(new ActionListener() {
@@ -223,8 +230,6 @@ public class TestUI extends JFrame implements BaseLayer {
 					byte[] testPacket= GetTestPacket();
 					((EthernetLayer) m_LayerMgr.GetLayer("Ethernet")).Send(testPacket,testPacket.length);	
 
-					//((IPLayer) m_LayerMgr.GetLayer("IP")).Send(bytes,bytes.length);	
-					// p_UnderLayer.Send(bytes, bytes.length);
 				} else {
 					JOptionPane.showMessageDialog(null, "�ּ� ���� ����");
 				}
