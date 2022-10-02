@@ -56,7 +56,7 @@ public class TestUI extends JFrame implements BaseLayer {
 		setTitle("Tester");
 		pLayerName = pName;
 		getContentPane().setLayout(null);
-		setBounds(250, 250, 724, 416);
+		setBounds(250, 250, 724, 652);
 
 		JPanel panel = new JPanel();
 		panel.setBounds(12, 10, 354, 231);
@@ -120,6 +120,11 @@ public class TestUI extends JFrame implements BaseLayer {
 		JLabel lblSrcip = new JLabel("Src IP");
 		lblSrcip.setBounds(0, 127, 86, 15);
 		panel.add(lblSrcip);
+		
+		JLabel lblNewLabel_1 = new JLabel("Settings");
+		lblNewLabel_1.setFont(new Font("나눔고딕", Font.BOLD, 15));
+		lblNewLabel_1.setBounds(0, 7, 74, 15);
+		panel.add(lblNewLabel_1);
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBounds(12, 251, 354, 118);
@@ -194,6 +199,15 @@ public class TestUI extends JFrame implements BaseLayer {
 		lbl_arpCacheTable.setFont(new Font("나눔바른고딕", Font.BOLD, 15));
 		lbl_arpCacheTable.setBounds(12, 10, 132, 15);
 		panel_2.add(lbl_arpCacheTable);
+		
+		JTextArea textArea = new JTextArea();
+		textArea.setBounds(12, 411, 686, 194);
+		getContentPane().add(textArea);
+		
+		JLabel lblNewLabel_2 = new JLabel("Debugging Console");
+		lblNewLabel_2.setFont(new Font("나눔바른고딕", Font.BOLD, 15));
+		lblNewLabel_2.setBounds(12, 386, 176, 15);
+		getContentPane().add(lblNewLabel_2);
 		btn_arpRequestSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
