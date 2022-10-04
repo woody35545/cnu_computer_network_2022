@@ -357,9 +357,35 @@ public class ARPLayer implements BaseLayer {
 
 	public boolean Receive(byte[] input) {
 		// <!> additional implementation required later
+		byte[] message = input;
 
-		this.GetUpperLayer(0).Receive(input);
-		return true;
+		//Object[] value = new Object[4];
+		byte[] dstIP = new byte[4];
+		byte[] dstMac = new byte[6];
+		byte[] targetIP = new byte[4];
+
+		System.arraycopy(message, 14, dstIP, 0, 4);
+		System.arraycopy(message, 8, dstMac, 0, 6);
+		System.arraycopy(message, 24, targetIP, 0, 4);
+
+		String ipAddressToString = (dstIP[0] & 0xFF) + "." + (dstIP[1] & 0xFF) + "." + (dstIP[2] & 0xFF) + "."
+            + (dstIP[3] & 0xFF);
+		String targetIpAddressToString = (targetIP[0] & 0xFF) + "." + (targetIP[1] & 0xFF) + "." + (targetIP[2] & 0xFF)
+            + "." + (targetIP[3] & 0xFF);
+		String srcIpAddressToString = (m_sHeader.senderIp.addr[0] & 0xFF) + "."
+            + (m_sHeader.senderIp.addr[1] & 0xFF) + "."
+            + (m_sHeader.senderIp.addr[2] & 0xFF) + "."
+            + (m_sHeader.senderIp.addr[3] & 0xFF);
+
+		if (message[6] == (byte) 0x00 && message[7] == (byte) 0x01) { // ARP-request Receive ("Complete")
+			if (ipAddressToString.equals(targetIpAddressToString) && ipAddressToString.equals(srcIpAddressToString)) {
+				System.out.println("receive test.");
+				return true;
+			}
+		}
+       return true;
+	//this.GetUpperLayer(0).Receive(input);
+	//return true;
 	}
 
 	@Override
