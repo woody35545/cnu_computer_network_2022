@@ -123,11 +123,11 @@ public class ARPLayer implements BaseLayer {
 			// _ARP_CACHE_TABLE constructor
 		}
 
-		public boolean addArpCacheTableElement(byte[] pIpAddr, byte[] pMacAddr, String pState) {
+		public boolean addArpCacheTableElement(String pIpAddr, String pMacAddr, String pState) {
 
 			if (this.size < this.Capacity && !this.isExist(pIpAddr)) {
-				ipAddr[size] = Utils.convertByteFormatIpToStrFormat(pIpAddr);
-				macAddr[size] = Utils.convertByteFormatIpToStrFormat(pMacAddr);
+				ipAddr[size] = pIpAddr;
+				macAddr[size] = pMacAddr;
 				state[size] = pState;
 				size++;
 				return true;
@@ -136,9 +136,9 @@ public class ARPLayer implements BaseLayer {
 			}
 			return false;
 		}
-		public boolean addArpCacheTableElement(byte[] pIpAddr) {
+		public boolean addArpCacheTableElement(String pIpAddr) {
 			if (this.size < this.Capacity && !this.isExist(pIpAddr)) {
-				ipAddr[size] = Utils.convertByteFormatIpToStrFormat(pIpAddr);
+				ipAddr[size] = pIpAddr;
 				macAddr[size] = "??:??:??:??:??:??";
 				state[size] = "incomplete";
 				size++;
@@ -154,7 +154,7 @@ public class ARPLayer implements BaseLayer {
 			return false;
 		}
 
-		public boolean isExist(byte[] pIpAddr) {
+		public boolean isExist(String pIpAddr) {
 			// Implement layer
 			return false;
 		}
@@ -328,14 +328,14 @@ public class ARPLayer implements BaseLayer {
 		return true;
 	}
 	
-	public void addARPCacheTableElement(byte[] pIpAddr, byte[] pMacAddr, String pState) { 
+	public void addARPCacheTableElement(String pIpAddr, String pMacAddr, String pState) { 
 		this.arpCacheTable.addArpCacheTableElement(pIpAddr,pMacAddr,pState);
-		String[] data = new String[]{Utils.convertByteFormatIpToStrFormat(pIpAddr),Utils.convertByteFormatMacToStrFormat(pMacAddr),pState};
+		String[] data = new String[]{pIpAddr,pMacAddr,pState};
 		//((TestUI)(this.GetUpperLayer().GetUpperLayer())).addData(data);
 	}
-	public void addARPCacheTableElement(byte[] pIpAddr) { 
+	public void addARPCacheTableElement(String pIpAddr) { 
 		this.arpCacheTable.addArpCacheTableElement(pIpAddr);
-		String[] data = new String[]{Utils.convertByteFormatIpToStrFormat(pIpAddr),"??:??:??:??:??:??","incomplete"};
+		String[] data = new String[]{pIpAddr,"??:??:??:??:??:??","incomplete"};
 		//((TestUI)(this.GetUpperLayer(0).GetUpperLayer(0))).addData(data);
 	}
 
