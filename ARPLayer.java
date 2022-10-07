@@ -316,8 +316,8 @@ public class ARPLayer implements BaseLayer {
 		// System.out.println(this.arpCacheTable.addArpCacheTableElement(this.m_sHeader.target_ip));
 		// this.arpCacheTable.showArpTable();
 		byte[] encapsulated = this.Encapsulate(ARPRequestHeader);
-		this.arpCacheTable.addArpCacheTableElement(ARPRequestHeader.targetIp.addr);
-		this.addARPCacheTableElement(ARPRequestHeader.targetIp.addr);
+		this.arpCacheTable.addArpCacheTableElement(Utils.convertByteFormatIpToStrFormat(ARPRequestHeader.targetIp.addr));
+		this.addARPCacheTableElement(Utils.convertByteFormatIpToStrFormat(ARPRequestHeader.targetIp.addr));
 		this.arpCacheTable.showArpTable();
 		System.out.println("ARPLayer Send: ");
 		Utils.showPacket(encapsulated);
