@@ -124,15 +124,16 @@ public class ARPLayer implements BaseLayer {
 		}
 
 		public boolean addArpCacheTableElement(String pIpAddr, String pMacAddr, String pState) {
-
+			if(this.isExist(pIpAddr)) {
+				this.updateArpCacheTableElement(pIpAddr, pMacAddr, pState);
+			}
+			
 			if (this.size < this.Capacity && !this.isExist(pIpAddr)) {
 				ipAddr[size] = pIpAddr;
 				macAddr[size] = pMacAddr;
 				state[size] = pState;
 				size++;
 				return true;
-				
-
 			}
 			return false;
 		}
@@ -149,20 +150,15 @@ public class ARPLayer implements BaseLayer {
 			return false;
 		}
 
-		public boolean addArpCacheTableElement(_IP_ADDR pIpAddr) {
-			// Implement layer
 
-			return false;
-		}
-		
-		public boolean updateArpCacheTableElement(String pIpAddr, String pMacAddr) {
+		public boolean updateArpCacheTableElement(String pIpAddr, String pMacAddr, String pState) {
 			if(!this.isExist(pIpAddr)) {
 				return false;
 			}
 			for(int i = 0; i < size; i++) {
 				if (ipAddr[i] == pIpAddr) {
 					macAddr[i] = pMacAddr;
-					state[i] = "complete";
+					state[i] = pState;
 					return true;
 				}
 			}
@@ -170,7 +166,11 @@ public class ARPLayer implements BaseLayer {
 		}
 
 		public boolean isExist(String pIpAddr) {
-			// Implement layer
+			for (int i=0; i<this.size; i++) {
+				if(this.ipAddr[i].equals(pIpAddr)) {
+					return true;
+				}
+			}
 			return false;
 		}
 
