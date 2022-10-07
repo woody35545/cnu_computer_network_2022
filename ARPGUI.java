@@ -54,7 +54,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 		// Connect all currently existing layers
 		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *ARPGUI ) *ARPGUI )");
-	
+		
 	}
 
 	/**
@@ -85,12 +85,17 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		ARP.setBounds(27, 29, 311, 301);
 		frmArpgui.getContentPane().add(ARP);
 		ARP.setLayout(null);
-
 		JButton btnNewButton = new JButton("Item delete");
+		
 		btnNewButton.setBounds(12, 213, 135, 25);
 		ARP.add(btnNewButton);
 
 		JButton btnNewButton_1 = new JButton("All delete");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				((ARPLayer)m_LayerMgr.GetLayer("ARP")).deleteAllARPCacheTableElement();
+			}
+		});
 		btnNewButton_1.setBounds(164, 213, 135, 25);
 		ARP.add(btnNewButton_1);
 
@@ -266,6 +271,15 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				}
 			}
 		});
+		
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int selected_row = table.getSelectedRow();
+				String value = String.valueOf(table.getValueAt(selected_row, 0));
+				((ARPLayer)m_LayerMgr.GetLayer("ARP")).deleteARPCacheTableElement(value);
+				
+			}
+		});
 		btnNewButton_6.setBounds(220, 25, 80, 23);
 		GARP_1.add(btnNewButton_6);
 		SetCombobox();
@@ -298,7 +312,6 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		 * # index 2 - MAC Address
 		 * # index 3 - State
 		 */
-		
 		int idx = Integer.parseInt(pDataArr[0]);
 		// Initialize the IP Address corresponding to the index
 		table.setValueAt(pDataArr[1], idx, 0);
@@ -307,6 +320,14 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		// Initialize the State corresponding to the index
 		table.setValueAt(pDataArr[3], idx, 2);
 
+	}
+	
+	public void resetTable() {
+		for(int i=0; i<30; i++) {
+			for (int j=0; j<3;j ++) {
+				table.setValueAt("" , i, j);		
+			}
+		}
 	}
 	
 	@Override
