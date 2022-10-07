@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 
 import org.jnetpcap.Pcap;
 import org.jnetpcap.PcapIf;
@@ -16,6 +17,8 @@ import javax.swing.JComboBox;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 public class ARPGUI extends JFrame implements BaseLayer {
 
@@ -27,7 +30,6 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 	private JFrame frmArpgui;
 	private JTextArea textField_targetIp;
-	private JTextArea textField_1;
 	private JTextArea textField_2;
 	private JTextArea textField_3;
 	private JTextArea textField_4;
@@ -35,6 +37,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 	private int selected_index;
 	JComboBox comboBox = new JComboBox();
+	private JTable table;
 
 	/**
 	 * Launch the application.
@@ -109,11 +112,15 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		JLabel ARP_1_3 = new JLabel("Target IP");
 		ARP_1_3.setBounds(12, 246, 133, 15);
 		ARP.add(ARP_1_3);
-
-		textField_1 = new JTextArea();
-		textField_1.setBounds(12, 10, 287, 193);
-		ARP.add(textField_1);
-		textField_1.setColumns(10);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(12, 10, 287, 195);
+		ARP.add(scrollPane);
+		
+		String header[] = { "IP Address", "MAC Address", "State" };
+		DefaultTableModel model = new DefaultTableModel(header, 30);
+		table = new JTable(model);
+		scrollPane.setViewportView(table);
 
 		JPanel proxy_ARP = new JPanel();
 		proxy_ARP.setBounds(383, 29, 311, 301);
@@ -280,7 +287,9 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		for (int i = 0; i < m_pAdapterList.size(); i++)
 			this.comboBox.addItem(m_pAdapterList.get(i).getDescription());
 	}
-
+	
+	
+	
 	@Override
 	public void SetUnderLayer(BaseLayer pUnderLayer) {
 		// TODO Auto-generated method stub
