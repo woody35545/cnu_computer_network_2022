@@ -49,7 +49,7 @@ public final class Utils {
 		byte[] byteFormatMacAddr = new byte[6];
 		String[] splitedStrFormatMac = pMacStr.split(Pattern.quote(":"));
 		for (int i = 0; i < 6; i++) {
-			byteFormatMacAddr[i] = (byte) (Integer.parseInt(splitedStrFormatMac[i]));
+			byteFormatMacAddr[i] = (byte)Integer.parseInt(splitedStrFormatMac[i],16);
 		}
 		return byteFormatMacAddr;
 
