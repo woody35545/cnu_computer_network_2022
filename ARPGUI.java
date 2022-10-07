@@ -54,6 +54,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 		// Connect all currently existing layers
 		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *ARPGUI ) *ARPGUI )");
+	
 	}
 
 	/**
@@ -289,9 +290,23 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	}
 	
 	
-	public void addData(String[] pDataArr) {
-		DefaultTableModel model=(DefaultTableModel)table.getModel();
-		model.addRow(pDataArr);
+	public void initTableValue(String[] pDataArr) {
+		/*
+		 * pDataArr 
+		 * # index 0 - Index of Element
+		 * # index 1 - IP Address
+		 * # index 2 - MAC Address
+		 * # index 3 - State
+		 */
+		
+		int idx = Integer.parseInt(pDataArr[0]);
+		// Initialize the IP Address corresponding to the index
+		table.setValueAt(pDataArr[1], idx, 0);
+		// Initialize the MAC Address corresponding to the index
+		table.setValueAt(pDataArr[2], idx, 1);
+		// Initialize the State corresponding to the index
+		table.setValueAt(pDataArr[3], idx, 2);
+
 	}
 	
 	@Override

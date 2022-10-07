@@ -115,6 +115,7 @@ public class ARPLayer implements BaseLayer {
 	private class _ARP_CACHE_TABLE {
 		private final static int Capacity = 30;
 		private int size = 0;
+		private int[] index = new int[Capacity]; 
 		private String[] ipAddr = new String[Capacity];
 		private String[] macAddr = new String[Capacity];
 		private String[] state = new String[Capacity];
@@ -132,7 +133,8 @@ public class ARPLayer implements BaseLayer {
 				ipAddr[size] = pIpAddr;
 				macAddr[size] = pMacAddr;
 				state[size] = pState;
-				size++;
+				index[size] = size;
+				size ++;
 				return true;
 			}
 			return false;
@@ -143,14 +145,22 @@ public class ARPLayer implements BaseLayer {
 				ipAddr[size] = pIpAddr;
 				macAddr[size] = "??:??:??:??:??:??";
 				state[size] = "incomplete";
-				size++;
+				index[size] = size;
+				size ++;
 				return true;
 
 			}
 			return false;
 		}
 
-
+		private int getIndexOf(String pIpAddr) {
+			if(this.isExist(pIpAddr)) 
+				for(int i = 0; i < size; i++) {
+					if (this.ipAddr[i].equals(pIpAddr))
+						return i;
+					}
+				return -1;
+		}
 		public boolean updateArpCacheTableElement(String pIpAddr, String pMacAddr, String pState) {
 			if(!this.isExist(pIpAddr)) {
 				return false;
@@ -176,6 +186,7 @@ public class ARPLayer implements BaseLayer {
 
 		public void showArpTable() {
 			for(int i =0; i<this.size; i++) {
+				System.out.print(index[i] + "| ");
 				System.out.print(ipAddr[i] + " | ");
 				System.out.print(macAddr[i] +" | ");
 				System.out.println(state[i]);
@@ -331,7 +342,7 @@ public class ARPLayer implements BaseLayer {
 		// System.out.println(this.arpCacheTable.addArpCacheTableElement(this.m_sHeader.target_ip));
 		// this.arpCacheTable.showArpTable();
 		byte[] encapsulated = this.Encapsulate(ARPRequestHeader);
-		this.arpCacheTable.addArpCacheTableElement(Utils.convertByteFormatIpToStrFormat(ARPRequestHeader.targetIp.addr));
+		//this.arpCacheTable.addArpCacheTableElement(Utils.convertByteFormatIpToStrFormat(ARPRequestHeader.targetIp.addr));
 		this.addARPCacheTableElement(Utils.convertByteFormatIpToStrFormat(ARPRequestHeader.targetIp.addr));
 		this.arpCacheTable.showArpTable();
 		System.out.println("ARPLayer Send: ");
@@ -343,16 +354,28 @@ public class ARPLayer implements BaseLayer {
 		return true;
 	}
 	
+	public void refreshARPCacheTableGUI() { 
+		for (int i=0; i<this.arpCacheTable.size; i++) {			
+			
+			((ARPGUI)this.GetUpperLayer(1)).initTableValue(new String[]{Integer.toString(this.arpCacheTable.index[i]),this.arpCacheTable.ipAddr[i],this.arpCacheTable.macAddr[i],this.arpCacheTable.state[i]});	
+	}
+	}
+	
+	
 	public void addARPCacheTableElement(String pIpAddr, String pMacAddr, String pState) { 
 		this.arpCacheTable.addArpCacheTableElement(pIpAddr,pMacAddr,pState);
-		String[] data = new String[]{pIpAddr,pMacAddr,pState};
-		//((TestUI)(this.GetUpperLayer().GetUpperLayer())).addData(data);
+		this.refreshARPCacheTableGUI();
+		//((ARPGUI)(this.GetUpperLayer().GetUpperLayer())).addData(data);
 	}
 	public void addARPCacheTableElement(String pIpAddr) { 
 		this.arpCacheTable.addArpCacheTableElement(pIpAddr);
-		String[] data = new String[]{pIpAddr,"??:??:??:??:??:??","incomplete"};
-		//((TestUI)(this.GetUpperLayer(0).GetUpperLayer(0))).addData(data);
-	}
+		this.refreshARPCacheTableGUI();
+
+			
+//			((ARPGUI)((IPLayer)this.GetUpperLayer(0)).GetUpperLayer(0)).initTableValue(data);		
+		}
+
+	
 
 	public void setARPHeaderSrcIp(byte[] pSrcIP) {
 		this.m_sHeader.senderIp.addr = pSrcIP;
