@@ -289,6 +289,10 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	}
 	
 	
+	public void addData(String[] pDataArr) {
+		DefaultTableModel model=(DefaultTableModel)table.getModel();
+		model.addRow(pDataArr);
+	}
 	
 	@Override
 	public void SetUnderLayer(BaseLayer pUnderLayer) {
