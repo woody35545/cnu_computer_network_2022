@@ -50,7 +50,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		m_LayerMgr.AddLayer(new ARPGUI("ARPGUI"));
 
 		// Connect all currently existing layers
-		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *ARPGUI ) )");
+		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *ARPGUI ) *ARPGUI )");
 	}
 
 	/**
