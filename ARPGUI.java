@@ -110,6 +110,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				String targetIp = textField_targetIp.getText();
 				((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderDstIp(Utils.convertStrFormatIpToByteFormat(targetIp));
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).Send();
+				((ARPLayer) m_LayerMgr.GetLayer("ARP")).Receive();	
 			}
 		});
 		btnNewButton_2.setBounds(199, 270, 100, 25);
