@@ -446,7 +446,7 @@ public class ARPLayer implements BaseLayer {
 		// <!> additional implementation required later
 		byte[] message = input;
 
-		// Object[] value = new Object[4];
+		//Object[] value = new Object[4];
 		byte[] dstIP = new byte[4];
 		byte[] dstMac = new byte[6];
 		byte[] targetIP = new byte[4];
@@ -456,23 +456,67 @@ public class ARPLayer implements BaseLayer {
 		System.arraycopy(message, 24, targetIP, 0, 4);
 
 		String ipAddressToString = (dstIP[0] & 0xFF) + "." + (dstIP[1] & 0xFF) + "." + (dstIP[2] & 0xFF) + "."
-				+ (dstIP[3] & 0xFF);
+            + (dstIP[3] & 0xFF);
 		String targetIpAddressToString = (targetIP[0] & 0xFF) + "." + (targetIP[1] & 0xFF) + "." + (targetIP[2] & 0xFF)
-				+ "." + (targetIP[3] & 0xFF);
-		String srcIpAddressToString = (m_sHeader.senderIp.addr[0] & 0xFF) + "." + (m_sHeader.senderIp.addr[1] & 0xFF)
-				+ "." + (m_sHeader.senderIp.addr[2] & 0xFF) + "." + (m_sHeader.senderIp.addr[3] & 0xFF);
+            + "." + (targetIP[3] & 0xFF);
+		String srcIpAddressToString = (m_sHeader.senderIp.addr[0] & 0xFF) + "."
+            + (m_sHeader.senderIp.addr[1] & 0xFF) + "."
+            + (m_sHeader.senderIp.addr[2] & 0xFF) + "."
+            + (m_sHeader.senderIp.addr[3] & 0xFF);
+		String dstMacToString = (dstMac[0] & 0xFF) + ":" + (dstMac[1] & 0xFF) + ":" + (dstMac[2] & 0xFF) + ":"
+	            + (dstMac[3] & 0xFF) + ":" + (dstMac[4] & 0xFF) + ":" + (dstMac[5] & 0xFF);
+		System.out.println("-----------------------");
+		
+		if (message[6] == (byte) 0x00 && message[7] == (byte) 0x02) { // ARP-reply Receive ("Incomplete" ->
 
-		if (message[6] == (byte) 0x00 && message[7] == (byte) 0x01) { // ARP-request Receive ("Complete")
-			if (ipAddressToString.equals(targetIpAddressToString) && ipAddressToString.equals(srcIpAddressToString)) {
-				System.out.println("receive test.");
-				return true;
-			}
-		}
-		return true;
-		// this.GetUpperLayer(0).Receive(input);
-		// return true;
+	         if (ipAddressToString.equals(targetIpAddressToString) && ipAddressToString.equals(srcIpAddressToString)) {
+
+	            String macAddress = String.format("%X:", dstMac[0]) + String.format("%X:", dstMac[1])
+	                  + String.format("%X:", dstMac[2]) + String.format("%X:", dstMac[3])
+	                  + String.format("%X:", dstMac[4]) + String.format("%X", dstMac[5]);
+	            System.out.println("duplicate IP address sent from Ethernet address :" + macAddress);
+	            return false;
+	         }
+
+	         if (srcIpAddressToString.equals(ipAddressToString)) {
+	            return false;
+	         }
+	        
+	         if (arpCacheTable.isExist(ipAddressToString)) {
+	            System.out.println(ipAddressToString);
+	         }
+
+	       
+	         this.addARPCacheTableElement(ipAddressToString, dstMacToString, "Complete");
+	         updateARPCacheTable();
+	      }
+		
+		System.out.println(ipAddressToString);
+		System.out.println(targetIpAddressToString);
+		System.out.println(srcIpAddressToString);
+       return true;
 	}
-
+	
+	public void updateARPCacheTable() {
+		
+		//ARP Layer 에서 _ARP_CACHE_TABLE 구조는 다음과 같다.
+		/*
+		 * Capacity = 30;
+		   size = 0;
+		   String[] ipAddr
+		   String[] macAddr 
+		   String[] state 
+		   addArpCacheTableElement(String pIpAddr, String pMacAddr, String pState) 등
+		 * 
+		 */
+		//for 문을 돌아가면서 ARP 캐시테이블에 있는 값들과 대조하면서 갱신한다.
+	    for (int i = 0; i < arpCacheTable.size; i++) { 
+	   
+	    	ARPGUI.textField_1.append("" + arpCacheTable.ipAddr[i] + "\t" + arpCacheTable.macAddr[i] +"\t"+arpCacheTable.state[i]+ "\n");
+	    }   
+	}
+	
+	
 	@Override
 	public String GetLayerName() {
 		// TODO Auto-generated method stub
