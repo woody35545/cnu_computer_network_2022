@@ -97,7 +97,7 @@ public final class Utils {
 	
 	public static byte[] convertAddrFormat(String pStrFormatAddr) {
 		// String to byte[]
-		if (pStrFormatAddr.split(Pattern.quote(".")).length == 4 ) 
+		if (pStrFormatAddr.split(Pattern.quote(".")).length == 4) 
 			// if it's IP address
 			return convertStrFormatIpToByteFormat(pStrFormatAddr);	
 		else 
