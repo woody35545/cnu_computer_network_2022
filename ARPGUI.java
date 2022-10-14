@@ -114,6 +114,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).Receive();	
 			}
 		});
+		
 		btnNewButton_2.setBounds(199, 270, 100, 25);
 		ARP.add(btnNewButton_2);
 
@@ -184,12 +185,21 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		ARP_1_3_1_1_1.setBounds(23, 21, 61, 15);
 		GARP.add(ARP_1_3_1_1_1);
 
-		JTextArea textField_6 = new JTextArea();
-		textField_6.setColumns(10);
-		textField_6.setBounds(33, 47, 255, 21);
-		GARP.add(textField_6);
-
+		JTextArea textField_srcMac = new JTextArea();
+		textField_srcMac.setColumns(10);
+		textField_srcMac.setBounds(33, 47, 255, 21);
+		GARP.add(textField_srcMac);
 		JButton btnNewButton_4_1 = new JButton("Send");
+		btnNewButton_4_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String srcMac = textField_srcMac.getText();
+				((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderSrcMac(Utils.convertStrFormatIpToByteFormat(srcMac));
+				((ARPLayer) m_LayerMgr.GetLayer("ARP")).SendGARP();
+				((ARPLayer) m_LayerMgr.GetLayer("ARP")).Receive();	
+
+			}
+		});
+		
 		btnNewButton_4_1.setBounds(111, 83, 91, 23);
 		GARP.add(btnNewButton_4_1);
 
@@ -237,6 +247,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 			}
 		});
+		
 		btn_set.setBounds(87, 124, 90, 23);
 		GARP_1.add(btn_set);
 

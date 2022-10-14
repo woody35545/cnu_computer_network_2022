@@ -394,6 +394,18 @@ public class ARPLayer implements BaseLayer {
 		return true;
 	}
 
+	public boolean SendGARP() {
+		// called by btnNewButton_4_1 in ARPGUI for GARP
+		_ARP_HEADER ARPRequestHeader = this.MakeARPRequestHeader();
+		// set targetIP's address and senderIP's address equal, because this is GARP
+		ARPRequestHeader.targetIp.addr = ARPRequestHeader.senderIp.addr;
+		byte[] encapsulated = this.Encapsulate(ARPRequestHeader);
+		System.out.println("ARPLayer Send(GARP): ");
+		Utils.showPacket(encapsulated);
+		this.GetUnderLayer().Send(encapsulated, encapsulated.length);
+		
+		return true;
+	}
 	
 	public void resetARPCacheTableGUI() { 
 		((ARPGUI) this.GetUpperLayer(1)).resetTable();
@@ -490,6 +502,16 @@ public class ARPLayer implements BaseLayer {
 	         this.addARPCacheTableElement(ipAddressToString, dstMacToString, "Complete");
 	         updateARPCacheTable();
 	      }
+		
+		else if(message[6] == (byte) 0x00 && message[7] == (byte) 0x01) {	//	ARP-Request case
+			 if (ipAddressToString.equals(targetIpAddressToString)) {	// if srcIP and dstIP is equal (GARP)
+				 if (arpCacheTable.isExist(ipAddressToString)) {
+			            System.out.println(ipAddressToString);
+			            this.addARPCacheTableElement(ipAddressToString, dstMacToString, "Complete");	//	add	-> updateARPCacheTableElement
+			            updateARPCacheTable();
+			     }
+			 }
+		}
 		
 		System.out.println(ipAddressToString);
 		System.out.println(targetIpAddressToString);
