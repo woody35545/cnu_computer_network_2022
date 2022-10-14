@@ -49,7 +49,7 @@ public final class Utils {
 		byte[] byteFormatMacAddr = new byte[6];
 		String[] splitedStrFormatMac = pMacStr.split(Pattern.quote(":"));
 		for (int i = 0; i < 6; i++) {
-			byteFormatMacAddr[i] = (byte)Integer.parseInt(splitedStrFormatMac[i],16);
+			byteFormatMacAddr[i] = (byte) Integer.parseInt(splitedStrFormatMac[i], 16);
 		}
 		return byteFormatMacAddr;
 
@@ -85,5 +85,25 @@ public final class Utils {
 		}
 		return strFormatMacAddr;
 	}
+
+	public static String convertAddrFormat(byte[] pByteFormatAddr) {
+		// byte[] to string
+		if (pByteFormatAddr.length == 4)
+			// if it's IP address
+			return convertByteFormatIpToStrFormat(pByteFormatAddr);
+		else// if it's MAC address
+			return convertByteFormatMacToStrFormat(pByteFormatAddr);
+	}
+	
+	public static byte[] convertAddrFormat(String pStrFormatAddr) {
+		// String to byte[]
+		if (pStrFormatAddr.split(Pattern.quote(".")).length == 4 ) 
+			// if it's IP address
+			return convertStrFormatIpToByteFormat(pStrFormatAddr);	
+		else 
+			// else it's MAC address
+			return convertStrFormatMacToByteFormat(pStrFormatAddr);
+	}
+
 
 }
