@@ -29,7 +29,8 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	private static LayerManager m_LayerMgr = new LayerManager();
 
 	private JFrame frmArpgui;
-	private JTextArea textField_targetIp;
+	private JTextArea textField;
+	static JTextArea textField_1;	//ARP Cache Table
 	private JTextArea textField_2;
 	private JTextArea textField_3;
 	private JTextArea textField_4;
