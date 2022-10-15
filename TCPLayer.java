@@ -81,8 +81,9 @@ public class TCPLayer implements BaseLayer {
 		
 		this.m_sHeader.tcp_data = input;
 		
-		if(app == this.GetUpperLayer(0).GetLayerName()){
-			//ChatAppLayer(0x2080) : 0
+		//if(app == this.GetUpperLayer(0).GetLayerName()){
+		if (input[2] == (byte)0x00) {
+		//ChatAppLayer(0x2080) : 0
 			
 			this.m_sHeader.tcp_sport[0] = (byte)0x20; //source port
 			this.m_sHeader.tcp_sport[1] = (byte)0x80; 
@@ -91,7 +92,8 @@ public class TCPLayer implements BaseLayer {
 			
 			this.GetUnderLayer().Send(objToByte(this.m_sHeader, input, length), length+24);
  		}
-		else if(app == this.GetUpperLayer(1).GetLayerName()){
+		//else if(app == this.GetUpperLayer(1).GetLayerName()){
+		else if(input[2] == (byte)0x01) {
 			//FileAppLayer(0x2090) : 1
 			
 			this.m_sHeader.tcp_sport[0] = (byte)0x20; //source port
