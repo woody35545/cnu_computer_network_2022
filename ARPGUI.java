@@ -212,7 +212,6 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				((ARPLayer) m_LayerMgr.GetLayer("ARP"))
 						.setARPHeaderSrcMac(Utils.convertStrFormatIpToByteFormat(srcMac));
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).SendGARP();
-				((ARPLayer) m_LayerMgr.GetLayer("ARP")).Receive();
 			}
 		});
 		btnNewButton_4_1.setBounds(111, 83, 91, 23);
