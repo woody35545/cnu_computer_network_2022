@@ -1,11 +1,17 @@
 import java.util.ArrayList;
 
 public class TCPLayer implements BaseLayer {
+	private static final byte[] CHAT_APP_PROT = new byte[] {(byte)0x20,(byte)0x80};
+	private static final byte[] FILE_TRANSFER_APP_PROT = new byte[] {(byte)0x20,(byte)0x90};
+
+	
+	
 	public int nUnderLayerCount = 0;
 	public int nUpperLayerCount = 0;
 	public String pLayerName = null;
 	public ArrayList<BaseLayer> p_UnderLayer = new ArrayList<BaseLayer>();
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
+	
 	
 	private class TCPLayer_HEADER {
 		byte[] tcp_sport; // source port
@@ -84,30 +90,22 @@ public class TCPLayer implements BaseLayer {
 		
 		//if(app == this.GetUpperLayer(0).GetLayerName()){
 		if (input[2] == (byte)0x00) {
+			System.out.println("TCPLayer >> Thisis from Chatting Application");
 		//ChatAppLayer(0x2080) : 0
-			
-			this.m_sHeader.tcp_sport[0] = (byte)0x20; //source port
-			this.m_sHeader.tcp_sport[1] = (byte)0x80; 
-			this.m_sHeader.tcp_dport[0] = (byte)0x20; //destination port
-			this.m_sHeader.tcp_dport[1] = (byte)0x20;
-			
-			System.out.println("TCP Send: ");
-			Utils.showPacket(objToByte(this.m_sHeader, input, length));
-			this.GetUnderLayer(0).Send(objToByte(this.m_sHeader, input, length), length+24);
+			this.setSourcePort(CHAT_APP_PROT);
+			this.setDestinationPort(CHAT_APP_PROT);
  		}
 		//else if(app == this.GetUpperLayer(1).GetLayerName()){
 		else if(input[2] == (byte)0x01) {
 			//FileAppLayer(0x2090) : 1
-			
-			this.m_sHeader.tcp_sport[0] = (byte)0x20; //source port
-			this.m_sHeader.tcp_sport[1] = (byte)0x90; 
-			this.m_sHeader.tcp_dport[0] = (byte)0x20; //destination port
-			this.m_sHeader.tcp_dport[1] = (byte)0x90;
-			System.out.println("TCP Send: ");
-			Utils.showPacket(objToByte(this.m_sHeader, input, length));
-			this.GetUnderLayer(0).Send(objToByte(this.m_sHeader, input, length), length+24);
-			
+			System.out.println("TCPLayer >> Thisis from File Transfer Application");
+			this.setSourcePort(FILE_TRANSFER_APP_PROT);
+			this.setDestinationPort(FILE_TRANSFER_APP_PROT);
 		}
+		
+		System.out.println("TCP Send: ");
+		Utils.showPacket(objToByte(this.m_sHeader, input, length));
+		this.GetUnderLayer(0).Send(objToByte(this.m_sHeader, input, length), length+24);
 		
 		return true;
 
@@ -144,6 +142,14 @@ public class TCPLayer implements BaseLayer {
 		return false;
 	}
 	
+	
+	public void setSourcePort(byte[] pSourcePort) {
+		this.m_sHeader.tcp_sport=pSourcePort;
+	}
+	
+	public void setDestinationPort(byte[] pDestinationPort) {
+		this.m_sHeader.tcp_dport =pDestinationPort;
+	}
 	@Override
 	public void SetUnderLayer(BaseLayer pUnderLayer) {
 		// TODO Auto-generated method stub
