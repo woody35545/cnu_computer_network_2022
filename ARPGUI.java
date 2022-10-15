@@ -135,7 +135,8 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		DefaultTableModel model = new DefaultTableModel(header, 30);
 		table_ARPTable = new JTable(model);
 		scrollPane.setViewportView(table_ARPTable);
-
+		
+		
 		JPanel proxy_ARP = new JPanel();
 		proxy_ARP.setBounds(383, 29, 311, 301);
 		frmArpgui.getContentPane().add(proxy_ARP);
@@ -180,9 +181,11 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		scrollPane_2.setBounds(12, 10, 287, 147);
 		proxy_ARP.add(scrollPane_2);
 		
-		table_ProxyTable = new JTable();
+		String proxy_header[] = { "Device", "IP Address", "MAC Address"};
+		DefaultTableModel proxy_model = new DefaultTableModel(proxy_header, 30);
+		table_ProxyTable = new JTable(proxy_model);
 		scrollPane_2.setViewportView(table_ProxyTable);
-
+		
 		JPanel GARP = new JPanel();
 		GARP.setBounds(763, 29, 311, 116);
 		frmArpgui.getContentPane().add(GARP);
