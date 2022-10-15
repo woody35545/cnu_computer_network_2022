@@ -148,13 +148,13 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		JButton btnNewButton_3 = new JButton("Add");
 	    btnNewButton_3.addActionListener(new ActionListener() {
 	       public void actionPerformed(ActionEvent e) {
-	          ARPLayer arpLayer = (ARPLayer) m_LayerMgr.GetLayer("ARP");
+	          ARPLayer arpLayer = (ARPLayer)(m_LayerMgr.GetLayer("ARP"));
 	          if(arpLayer!=null){
 	             String device_textField = textField_2.getText();
 	             String ip_textField = textField_3.getText();
 	             String mac_textField = textField_4.getText();
 	             arpLayer.addPROXYCacheTableElement(device_textField, ip_textField, mac_textField);
-	          } 
+	          }
 
 	       }
 	    });
@@ -415,11 +415,35 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		table_ARPTable.setValueAt(pDataArr[3], idx, 2);
 
 	}
+	
+	public void initProxyTableValue(String[] pDataArr) {
+		/*
+		 * pDataArr # index 0 - Index of Element # index 1 - IP Address # index 2 - MAC
+		 * Address # index 3 - State
+		 */
+		int idx = Integer.parseInt(pDataArr[0]);
+		// Initialize the IP Address corresponding to the index
+		table_ProxyTable.setValueAt(pDataArr[1], idx, 0);
+		// Initialize the MAC Address corresponding to the index
+		table_ProxyTable.setValueAt(pDataArr[2], idx, 1);
+		// Initialize the State corresponding to the index
+		table_ProxyTable.setValueAt(pDataArr[3], idx, 2);
+
+	}
+	
 
 	public void resetTable() {
 		for (int i = 0; i < 30; i++) {
 			for (int j = 0; j < 3; j++) {
 				table_ARPTable.setValueAt("", i, j);
+			}
+		}
+	}
+	
+	public void resetProxyTable() {
+		for (int i = 0; i < 30; i++) {
+			for (int j = 0; j < 3; j++) {
+				table_ProxyTable.setValueAt("", i, j);
 			}
 		}
 	}
