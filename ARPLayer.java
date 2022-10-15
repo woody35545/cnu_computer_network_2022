@@ -142,7 +142,7 @@ public class ARPLayer implements BaseLayer {
 				return false;
 			}
 			for (int i = 0; i < size; i++) {
-				if (ipAddr[i] == pIpAddr) {
+				if (ipAddr[i].equals(pIpAddr)) {
 					macAddr[i] = pMacAddr;
 					state[i] = pState;
 					System.out.println("Update");
