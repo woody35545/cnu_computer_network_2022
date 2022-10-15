@@ -18,11 +18,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import java.awt.Font;
 public class ARPGUI extends JFrame implements BaseLayer {
+	
+	public int nUnderLayerCount = 0;
 	public int nUpperLayerCount = 0;
 	public String pLayerName = null;
-	public BaseLayer p_UnderLayer = null;
+	public ArrayList<BaseLayer> p_UnderLayer = new ArrayList<BaseLayer>();
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
+	
 	private static LayerManager m_LayerMgr = new LayerManager();
+	
 	private JTextArea textField_targetIp;
 	private JFrame frmArpgui;
 	private JTextArea textField;
@@ -30,6 +34,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	private JTextArea textField_2;
 	private JTextArea textField_3;
 	private JTextArea textField_4;
+	
 	private int selected_index;
 	JComboBox comboBox = new JComboBox();
 	private JTable table_ARPTable;
@@ -286,7 +291,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		JTextArea textArea_chatView = new JTextArea();
 		scrollPane_1.setViewportView(textArea_chatView);
 		textField_chatContent = new JTextField();
-		textField_chatContent.setFont(new Font("±¼¸²", Font.PLAIN, 15));
+		textField_chatContent.setFont(new Font("Â±Â¼Â¸Â²", Font.PLAIN, 15));
 		textField_chatContent.setBounds(12, 253, 531, 32);
 		panel.add(textField_chatContent);
 		textField_chatContent.setColumns(10);
@@ -385,8 +390,10 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		// TODO Auto-generated method stub
 		if (pUnderLayer == null)
 			return;
-		this.p_UnderLayer = pUnderLayer;
+		this.p_UnderLayer.add(nUnderLayerCount++, pUnderLayer);
+		// nUpperLayerCount++;
 	}
+
 	@Override
 	public void SetUpperLayer(BaseLayer pUpperLayer) {
 		// TODO Auto-generated method stub
@@ -395,18 +402,14 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		this.p_aUpperLayer.add(nUpperLayerCount++, pUpperLayer);
 		// nUpperLayerCount++;
 	}
+
 	@Override
 	public String GetLayerName() {
 		// TODO Auto-generated method stub
 		return pLayerName;
 	}
-	@Override
-	public BaseLayer GetUnderLayer() {
-		// TODO Auto-generated method stub
-		if (p_UnderLayer == null)
-			return null;
-		return p_UnderLayer;
-	}
+
+
 	@Override
 	public BaseLayer GetUpperLayer(int nindex) {
 		// TODO Auto-generated method stub
@@ -414,19 +417,19 @@ public class ARPGUI extends JFrame implements BaseLayer {
 			return null;
 		return p_aUpperLayer.get(nindex);
 	}
+
 	@Override
 	public void SetUpperUnderLayer(BaseLayer pUULayer) {
 		this.SetUpperLayer(pUULayer);
 		pUULayer.SetUnderLayer(this);
+
 	}
+
 	@Override
 	public BaseLayer GetUnderLayer(int nindex) {
 		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public BaseLayer GetUpperLayer() {
-		// TODO Auto-generated method stub
-		return null;
+		if (nindex < 0 || nindex > nUnderLayerCount || nUnderLayerCount < 0)
+			return null;
+		return p_UnderLayer.get(nindex);
 	}
 }
