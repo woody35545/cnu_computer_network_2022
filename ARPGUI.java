@@ -32,7 +32,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	private JTextArea textField_targetIp;
 	private JFrame frmArpgui;
 	private JTextArea textField;
-	static JTextArea textField_1;	//ARP Cache Table
+	static JTextArea textField_1; // ARP Cache Table
 	private JTextArea textField_2;
 	private JTextArea textField_3;
 	private JTextArea textField_4;
@@ -55,10 +55,11 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		m_LayerMgr.AddLayer(new ARPLayer("ARP"));
 		m_LayerMgr.AddLayer(new IPLayer("IP"));
 		m_LayerMgr.AddLayer(new ARPGUI("ARPGUI"));
+		m_LayerMgr.AddLayer(new ChatAppLayer("ChatApp"));
 
 		// Connect all currently existing layers
-		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *ARPGUI ) *ARPGUI )");
-		
+		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *ChatApp ( *ARPGUI ) *ARPGUI )");
+
 	}
 
 	/**
@@ -90,14 +91,14 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		frmArpgui.getContentPane().add(ARP);
 		ARP.setLayout(null);
 		JButton btnNewButton = new JButton("Item delete");
-		
+
 		btnNewButton.setBounds(12, 213, 135, 25);
 		ARP.add(btnNewButton);
 
 		JButton btnNewButton_1 = new JButton("All delete");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				((ARPLayer)m_LayerMgr.GetLayer("ARP")).deleteAllARPCacheTableElement();
+				((ARPLayer) m_LayerMgr.GetLayer("ARP")).deleteAllARPCacheTableElement();
 			}
 		});
 		btnNewButton_1.setBounds(164, 213, 135, 25);
@@ -112,23 +113,24 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String targetIp = textField_targetIp.getText();
-				((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderDstIp(Utils.convertStrFormatIpToByteFormat(targetIp));
+				((ARPLayer) m_LayerMgr.GetLayer("ARP"))
+						.setARPHeaderDstIp(Utils.convertStrFormatIpToByteFormat(targetIp));
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).Send();
-				((ARPLayer) m_LayerMgr.GetLayer("ARP")).Receive();	
+				((ARPLayer) m_LayerMgr.GetLayer("ARP")).Receive();
 			}
 		});
-		
+
 		btnNewButton_2.setBounds(199, 270, 100, 25);
 		ARP.add(btnNewButton_2);
 
 		JLabel ARP_1_3 = new JLabel("Target IP");
 		ARP_1_3.setBounds(12, 246, 133, 15);
 		ARP.add(ARP_1_3);
-		
+
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(12, 10, 287, 195);
 		ARP.add(scrollPane);
-		
+
 		String header[] = { "IP Address", "MAC Address", "State" };
 		DefaultTableModel model = new DefaultTableModel(header, 30);
 		table = new JTable(model);
@@ -196,13 +198,14 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		btnNewButton_4_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String srcMac = textField_srcMac.getText();
-				((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderSrcMac(Utils.convertStrFormatIpToByteFormat(srcMac));
+				((ARPLayer) m_LayerMgr.GetLayer("ARP"))
+						.setARPHeaderSrcMac(Utils.convertStrFormatIpToByteFormat(srcMac));
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).SendGARP();
-				((ARPLayer) m_LayerMgr.GetLayer("ARP")).Receive();	
+				((ARPLayer) m_LayerMgr.GetLayer("ARP")).Receive();
 
 			}
 		});
-		
+
 		btnNewButton_4_1.setBounds(111, 83, 91, 23);
 		GARP.add(btnNewButton_4_1);
 
@@ -250,7 +253,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 			}
 		});
-		
+
 		btn_set.setBounds(87, 124, 90, 23);
 		GARP_1.add(btn_set);
 
@@ -287,13 +290,13 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				}
 			}
 		});
-		
+
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int selected_row = table.getSelectedRow();
 				String value = String.valueOf(table.getValueAt(selected_row, 0));
-				((ARPLayer)m_LayerMgr.GetLayer("ARP")).deleteARPCacheTableElement(value);
-				
+				((ARPLayer) m_LayerMgr.GetLayer("ARP")).deleteARPCacheTableElement(value);
+
 			}
 		});
 		btnNewButton_6.setBounds(220, 25, 80, 23);
@@ -302,44 +305,53 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		JLabel ARP_1_2_1 = new JLabel("Setting");
 		ARP_1_2_1.setBounds(763, 155, 109, 15);
 		frmArpgui.getContentPane().add(ARP_1_2_1);
-		
+
 		JPanel panel = new JPanel();
 		panel.setBounds(27, 357, 667, 293);
 		frmArpgui.getContentPane().add(panel);
 		panel.setLayout(null);
-		
+
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBounds(12, 10, 634, 233);
 		panel.add(scrollPane_1);
-		
+
 		JTextArea textArea_chatView = new JTextArea();
 		scrollPane_1.setViewportView(textArea_chatView);
-		
+
 		textField_chatContent = new JTextField();
 		textField_chatContent.setFont(new Font("굴림", Font.PLAIN, 15));
 		textField_chatContent.setBounds(12, 253, 531, 32);
 		panel.add(textField_chatContent);
 		textField_chatContent.setColumns(10);
-		
+
 		JButton btn_chatSend = new JButton("Send");
 		btn_chatSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
 				// Assign the chat content entered by the user
-				String content = textField_chatContent.getText();
-				// Append contents to ChatView
-				textArea_chatView.append("SEND >> " + content+"\n");				
-				// Reset value of chatContent textArea
-				textField_chatContent.setText("");			
+				String contentStr = textField_chatContent.getText();
+				if (contentStr.length() != 0 && contentStr != null && !contentStr.isEmpty()) {
+					// Append contents to ChatView
+					textArea_chatView.append("SEND >> " + contentStr + "\n");
+					
+					// Send byte type content to ChatApp Layer
+					byte[] contentByte = contentStr.getBytes();
+					((ChatAppLayer) m_LayerMgr.GetLayer("ChatApp")).Send(contentByte,contentByte.length);
+					
+					// Reset value of chatContent textArea
+					textField_chatContent.setText("");
+					
+				}
 			}
 		});
+		
 		btn_chatSend.setBounds(555, 252, 93, 32);
 		panel.add(btn_chatSend);
-		
+
 		JLabel lblNewLabel = new JLabel("Chatting");
 		lblNewLabel.setBounds(27, 340, 52, 15);
 		frmArpgui.getContentPane().add(lblNewLabel);
 		frmArpgui.setVisible(true);
-
 	}
 
 	private void SetCombobox() {
@@ -354,15 +366,11 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		for (int i = 0; i < m_pAdapterList.size(); i++)
 			this.comboBox.addItem(m_pAdapterList.get(i).getDescription());
 	}
-	
-	
+
 	public void initTableValue(String[] pDataArr) {
 		/*
-		 * pDataArr 
-		 * # index 0 - Index of Element
-		 * # index 1 - IP Address
-		 * # index 2 - MAC Address
-		 * # index 3 - State
+		 * pDataArr # index 0 - Index of Element # index 1 - IP Address # index 2 - MAC
+		 * Address # index 3 - State
 		 */
 		int idx = Integer.parseInt(pDataArr[0]);
 		// Initialize the IP Address corresponding to the index
@@ -373,15 +381,15 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		table.setValueAt(pDataArr[3], idx, 2);
 
 	}
-	
+
 	public void resetTable() {
-		for(int i=0; i<30; i++) {
-			for (int j=0; j<3;j ++) {
-				table.setValueAt("" , i, j);		
+		for (int i = 0; i < 30; i++) {
+			for (int j = 0; j < 3; j++) {
+				table.setValueAt("", i, j);
 			}
 		}
 	}
-	
+
 	@Override
 	public void SetUnderLayer(BaseLayer pUnderLayer) {
 		// TODO Auto-generated method stub
