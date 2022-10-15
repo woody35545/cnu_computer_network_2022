@@ -5,6 +5,8 @@ public class ARPLayer implements BaseLayer {
 	private static final byte[] UNKNOWN_DESTINATION_MAC_ADDR = new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00,
 			(byte) 0x00, (byte) 0x00, (byte) 0x00 };
 	private static final byte[] OPCODE_ARP_REQUEST = new byte[] { 0x00, 0x01 };
+	private static final byte[] OPCODE_ARP_REPLY = new byte[] { 0x00, 0x02 };
+
 	// Default hardware type = Ethernet(0x0001)
 	private static final byte[] DEFAULT_HARDWARE_TYPE = new byte[] { 0x00, 0x01 };
 	// Default protocol type = IPv4(0x0800)
@@ -563,64 +565,57 @@ public class ARPLayer implements BaseLayer {
 	 */
 	
 	
-	public boolean Receive(byte[] input) {
-		//Object[] value = new Object[4];
-		byte[] replysender_IP = Arrays.copyOfRange(input, 14, 18);		//내가 원하는 arp request 를 받는 destination  
-		byte[] replysender_Mac = Arrays.copyOfRange(input, 8, 14);
-		byte[] reqsender_IP = Arrays.copyOfRange(input, 24, 28);
+	public boolean Receive(byte[] input) {	
+		byte[] receivedSenderMAC = Arrays.copyOfRange(input,8,14);
+		byte[] receivedSenderIP  = Arrays.copyOfRange(input,14,18);
+		byte[] receivedTargetMAC = Arrays.copyOfRange(input,18,24);
+		byte[] receivedTargetIP = Arrays.copyOfRange(input,24,28);
+		byte[] receivedOpcode = new byte[] {(byte) input[6], (byte) input[7]};
 		
-		m_sHeader = new _ARP_HEADER(); 
-		m_sHeader.SetTargetIPAddress(replysender_IP);
-		m_sHeader.SetTargetMacAddress(replysender_Mac);
-		m_sHeader.SetSenderIPAddress(reqsender_IP);
-		String target_IP = m_sHeader.targetIp.getAddrStr();
-		String src_IP = m_sHeader.senderIp.getAddrStr();
-		String target_MAC = m_sHeader.targetMac.getAddrStr();
-		System.out.println("-----------------------");
-		
-		if (input[6] == (byte) 0x00 && input[7] == (byte) 0x02) { // ARP-reply Receive ("Incomplete" ->
-			 System.out.println("This is ARP Reply Type Packet");
-			 // 만약 
-	         if (target_IP.equals(src_IP)) {
-	            String macAddress = String.format("%X:", replysender_Mac[0]) + String.format("%X:", replysender_Mac[1]) + String.format("%X:", replysender_Mac[2]) + String.format("%X:", replysender_Mac[3]) + String.format("%X:", replysender_Mac[4]) + String.format("%X", replysender_Mac[5]);
-	            System.out.println("duplicate IP address sent from Ethernet address :" + macAddress);
-	            return false;
-	         }
-	         if (arpCacheTable.isExist(target_IP)) {
-	            System.out.println(target_IP);
-	         }
-	         
-	         this.addARPCacheTableElement(target_IP, target_MAC, "Complete");
-	      }
-		// src - > dst
-		else if(input[6] == (byte) 0x00 && input[7] == (byte) 0x01) {	//	ARP-Request case
-			 if (target_IP.equals(src_IP)) {	// if srcIP and dstIP is equal (GARP)
-				 if (arpCacheTable.isExist(target_IP)) {
-			            System.out.println(target_IP);
-			            this.addARPCacheTableElement(target_IP, target_MAC, "Complete");	//	add	-> updateARPCacheTableElement
-			            
-			     }
-			 }
-			 else if (proxyCacheTable.isExist(Utils.convertAddrFormat(Arrays.copyOfRange(input, 24, 28)))) {
-				 	// if target IP exists in my proxy table	
-				 	
-				 		// make reply packet header
-					 	_ARP_HEADER arpReplyHeader = new _ARP_HEADER(DEFAULT_HARDWARE_TYPE, DEFAULT_PROTOCOL_TYPE,
-								DEFAULT_LENGTH_OF_HARDWARE_ADDRESS, DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS, OPCODE_ARP_REQUEST,
-								this.m_sHeader.senderMac, new _IP_ADDR(Arrays.copyOfRange(input, 24, 28)),new _MAC_ADDR(Arrays.copyOfRange(input, 8, 14)),
-								new _IP_ADDR(Arrays.copyOfRange(input, 14, 18))); 	
-				 		
-					 	// make packet(byte type)
-					 	byte[] replyPacket = this.Encapsulate(arpReplyHeader);
-					 	
-					 	// send Proxy-Reply to ethernet
-						this.GetUnderLayer(0).Send(replyPacket, replyPacket.length);
-				 }
-				 
-			 
+		if (Utils.compareAddress(receivedOpcode, OPCODE_ARP_REQUEST)) {
+			// If I received ARP Request type packet.
+			
+			// Check if i am the target
+			if(Utils.compareAddress(receivedTargetIP, this.m_sHeader.senderIp.addr)) {
+				// If it's Reqeust to me, Reply my MAC Address ( ARP REPLY )
+				_ARP_HEADER arpReplyHeader = new _ARP_HEADER(DEFAULT_HARDWARE_TYPE, DEFAULT_PROTOCOL_TYPE,
+						DEFAULT_LENGTH_OF_HARDWARE_ADDRESS, DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS, OPCODE_ARP_REQUEST,
+						this.m_sHeader.senderMac, new _IP_ADDR(receivedTargetIP) ,new _MAC_ADDR(receivedSenderMAC),
+						new _IP_ADDR(receivedSenderIP)); 
+			 			
+						// Make Header to byte type packet
+						byte[] replyPacket = this.Encapsulate(arpReplyHeader);
+			 	
+			 			// send Reply Packet to ethernet
+			 			this.GetUnderLayer(0).Send(replyPacket, replyPacket.length);
+			}
+
+			// If I'm not target of this request packet, Searching my proxy table (Proxy ARP)
+			else if (proxyCacheTable.isExist(Utils.convertAddrFormat(receivedTargetIP))) {
+				// if target IP exists in my proxy table
+			 	
+
+				//Create a reply packet by adding my MAC address instead
+			 	_ARP_HEADER arpReplyHeader = new _ARP_HEADER(DEFAULT_HARDWARE_TYPE, DEFAULT_PROTOCOL_TYPE,
+						DEFAULT_LENGTH_OF_HARDWARE_ADDRESS, DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS, OPCODE_ARP_REQUEST,
+						this.m_sHeader.senderMac, new _IP_ADDR(Arrays.copyOfRange(input, 24, 28)),new _MAC_ADDR(Arrays.copyOfRange(input, 8, 14)),
+						new _IP_ADDR(Arrays.copyOfRange(input, 14, 18))); 	
+		 		
+			 	// make packet(byte type)
+			 	byte[] replyPacket = this.Encapsulate(arpReplyHeader);
+			 	
+			 	// send Proxy-Reply to ethernet
+				this.GetUnderLayer(0).Send(replyPacket, replyPacket.length);
+			}
+			return true;
 		}
-	
-        return true;
+		
+		else if(Utils.compareAddress(receivedTargetIP, OPCODE_ARP_REPLY)) {
+			// If I Received ARP reply packet, Then Update ARP cache table 
+			this.addARPCacheTableElement(Utils.convertAddrFormat(receivedSenderIP), Utils.convertAddrFormat(receivedSenderMAC), "Complete");
+			return true;
+		}
+        return false;
 	}
 	
 	
