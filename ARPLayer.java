@@ -14,8 +14,9 @@ public class ARPLayer implements BaseLayer {
 	// Default length of protocol address = 0x04 (IP Address)
 	private static final byte DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS = (byte) 0x04;
 	public int nUpperLayerCount = 0;
+	public int nUnderLayerCount = 0;
 	public String pLayerName = null;
-	public BaseLayer p_UnderLayer = null;
+	public ArrayList<BaseLayer> p_UnderLayer = new ArrayList<BaseLayer>();
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
 	private _ARP_HEADER m_sHeader = new _ARP_HEADER();
 	private _ARP_CACHE_TABLE arpCacheTable = new _ARP_CACHE_TABLE();
@@ -624,19 +625,31 @@ public class ARPLayer implements BaseLayer {
 	
 	
 	
-	
+	@Override
+	public void SetUnderLayer(BaseLayer pUnderLayer) {
+		// TODO Auto-generated method stub
+		if (pUnderLayer == null)
+			return;
+		this.p_UnderLayer.add(nUnderLayerCount++, pUnderLayer);
+		// nUpperLayerCount++;
+	}
+
+	@Override
+	public void SetUpperLayer(BaseLayer pUpperLayer) {
+		// TODO Auto-generated method stub
+		if (pUpperLayer == null)
+			return;
+		this.p_aUpperLayer.add(nUpperLayerCount++, pUpperLayer);
+		// nUpperLayerCount++;
+	}
+
 	@Override
 	public String GetLayerName() {
 		// TODO Auto-generated method stub
 		return pLayerName;
 	}
-	@Override
-	public BaseLayer GetUnderLayer() {
-		// TODO Auto-generated method stub
-		if (p_UnderLayer == null)
-			return null;
-		return p_UnderLayer;
-	}
+
+
 	@Override
 	public BaseLayer GetUpperLayer(int nindex) {
 		// TODO Auto-generated method stub
@@ -644,34 +657,19 @@ public class ARPLayer implements BaseLayer {
 			return null;
 		return p_aUpperLayer.get(nindex);
 	}
-	@Override
-	public void SetUnderLayer(BaseLayer pUnderLayer) {
-		// TODO Auto-generated method stub
-		if (pUnderLayer == null)
-			return;
-		this.p_UnderLayer = pUnderLayer;
-	}
-	@Override
-	public void SetUpperLayer(BaseLayer pUpperLayer) {
-		// TODO Auto-generated method stub
-		if (pUpperLayer == null)
-			return;
-		this.p_aUpperLayer.add(nUpperLayerCount++, pUpperLayer);
-	}
+
 	@Override
 	public void SetUpperUnderLayer(BaseLayer pUULayer) {
-		// TODO Auto-generated method stub
 		this.SetUpperLayer(pUULayer);
 		pUULayer.SetUnderLayer(this);
+
 	}
+
 	@Override
 	public BaseLayer GetUnderLayer(int nindex) {
 		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public BaseLayer GetUpperLayer() {
-		// TODO Auto-generated method stub
-		return null;
+		if (nindex < 0 || nindex > nUnderLayerCount || nUnderLayerCount < 0)
+			return null;
+		return p_UnderLayer.get(nindex);
 	}
 }
