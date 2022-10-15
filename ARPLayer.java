@@ -638,10 +638,9 @@ public class ARPLayer implements BaseLayer {
 	 *                  ARP Reply
 	 * Host A      <====================     Host B
 	 *                 
-	 *              header : 14 ~ 17 : Host B(ARP Reply 를 보내는 측) 의 IP : dstIP
-	 *              header : 06 ~ 13 : Host B(ARP Reply 를 보내는 측) 의 MAC : dstMac
-	 *              header : 24 ~ 27 : Host B(ARP Reply 를 보내는 측) 가 응답을 보내려는 타겟 Host A 의 IP 주소
-	 * 
+	 *              header : 14 ~ 17 : Host B(ARP Reply 를 보내는 측) 의 IP : target_IP
+	 *              header : 06 ~ 13 : Host B(ARP Reply 를 보내는 측) 의 MAC : target_Mac
+	 *              header : 24 ~ 27 : Host B(ARP Reply 를 보내는 측) 가 응답을 보내려는 타겟 Host A 의 IP 주소 : src_IP
 	 * 				
 	 */
 	
