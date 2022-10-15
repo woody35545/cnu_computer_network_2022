@@ -7,9 +7,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public class EthernetLayer implements BaseLayer {
+	public int nUnderLayerCount = 0;
 	public int nUpperLayerCount = 0;
 	public String pLayerName = null;
-	public BaseLayer p_UnderLayer = null;
+	public ArrayList<BaseLayer> p_UnderLayer = new ArrayList<BaseLayer>();
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
 
 	private class _ETHERNET_ADDR {
@@ -154,7 +155,7 @@ public class EthernetLayer implements BaseLayer {
 			byte[] encapsulated = Encapsulate(this.m_sHeader,input);
 			
 			Utils.showPacket(encapsulated);
-			this.GetUnderLayer().Send(encapsulated, length);
+			this.GetUnderLayer(0).Send(encapsulated, length);
 			return true;
 	}
 
@@ -230,18 +231,23 @@ public class EthernetLayer implements BaseLayer {
 	public void setEthernetHeaderType(byte[] pHeaderType) {
 		this.m_sHeader.set_enet_type(pHeaderType);
 	}
+	
 	@Override
 	public void SetUnderLayer(BaseLayer pUnderLayer) {
+		// TODO Auto-generated method stub
 		if (pUnderLayer == null)
 			return;
-		this.p_UnderLayer = pUnderLayer;
+		this.p_UnderLayer.add(nUnderLayerCount++, pUnderLayer);
+		// nUpperLayerCount++;
 	}
 
 	@Override
 	public void SetUpperLayer(BaseLayer pUpperLayer) {
+		// TODO Auto-generated method stub
 		if (pUpperLayer == null)
 			return;
 		this.p_aUpperLayer.add(nUpperLayerCount++, pUpperLayer);
+		// nUpperLayerCount++;
 	}
 
 	@Override
@@ -250,15 +256,10 @@ public class EthernetLayer implements BaseLayer {
 		return pLayerName;
 	}
 
-	@Override
-	public BaseLayer GetUnderLayer() {
-		if (p_UnderLayer == null)
-			return null;
-		return p_UnderLayer;
-	}
 
 	@Override
 	public BaseLayer GetUpperLayer(int nindex) {
+		// TODO Auto-generated method stub
 		if (nindex < 0 || nindex > nUpperLayerCount || nUpperLayerCount < 0)
 			return null;
 		return p_aUpperLayer.get(nindex);
@@ -268,17 +269,16 @@ public class EthernetLayer implements BaseLayer {
 	public void SetUpperUnderLayer(BaseLayer pUULayer) {
 		this.SetUpperLayer(pUULayer);
 		pUULayer.SetUnderLayer(this);
+
 	}
 
 	@Override
 	public BaseLayer GetUnderLayer(int nindex) {
 		// TODO Auto-generated method stub
-		return null;
+		if (nindex < 0 || nindex > nUnderLayerCount || nUnderLayerCount < 0)
+			return null;
+		return p_UnderLayer.get(nindex);
 	}
 
-	@Override
-	public BaseLayer GetUpperLayer() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 }
