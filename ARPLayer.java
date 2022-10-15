@@ -583,50 +583,50 @@ public class ARPLayer implements BaseLayer {
 		this.m_sHeader.targetMac.addr = pTargetMac;
 	}
 
-	public void resetProxyCacheTableGUI() { 
+	public void resetPROXYCacheTableGUI() { 
 		((ARPGUI) this.GetUpperLayer(1)).resetTable();
 	}
-	public void refreshProxyCacheTableGUI() {
+	public void refreshPROXYCacheTableGUI() {
 		for (int i = 0; i < this.proxyCacheTable.size; i++) {
 			((ARPGUI) this.GetUpperLayer(1)).initTableValue(new String[] { Integer.toString(i),
 					this.proxyCacheTable.deviceName[i], this.proxyCacheTable.ipAddr[i], this.proxyCacheTable.macAddr[i]});
 		}
 	}
 
-	public void addProxyCacheTableElement(String pDeviceName, String pIpAddr, String pMacAddr) {
+	public void addPROXYCacheTableElement(String pDeviceName, String pIpAddr, String pMacAddr) {
 		this.proxyCacheTable.addProxyCacheTableElement(pDeviceName, pIpAddr, pMacAddr);
-		this.refreshARPCacheTableGUI();
+		this.refreshPROXYCacheTableGUI();
 	}
 
-	public void addProxyCacheTableElement(String pIpAddr) {
+	public void addPROXYCacheTableElement(String pIpAddr) {
 		this.proxyCacheTable.addProxyCacheTableElement(pIpAddr);
-		this.refreshARPCacheTableGUI();
+		this.refreshPROXYCacheTableGUI();
 	}
 
-	public void deleteProxyCacheTableElement(String pIpAddr) {
-		this.resetARPCacheTableGUI();
+	public void deletePROXYCacheTableElement(String pIpAddr) {
+		this.resetPROXYCacheTableGUI();
 		this.proxyCacheTable.deleteProxyCacheTable(pIpAddr);
-		this.refreshARPCacheTableGUI();
+		this.refreshPROXYCacheTableGUI();
 	}
 	
-	public void deleteAllProxyCacheTableElement() {
+	public void deleteAllPROXYCacheTableElement() {
 		this.proxyCacheTable.resetProxyCacheTable();
-		this.resetARPCacheTableGUI();
+		this.resetPROXYCacheTableGUI();
 	}
 
-	public void setProxyHeaderSrcIp(byte[] pSrcIP) {
+	public void setPROXYHeaderSrcIp(byte[] pSrcIP) {
 		this.m_sHeader.senderIp.addr = pSrcIP;
 	}
 
-	public void setProxyHeaderDstIp(byte[] pTargetIP) {
+	public void setPROXYHeaderDstIp(byte[] pTargetIP) {
 		this.m_sHeader.targetIp.addr = pTargetIP;
 	}
 
-	public void setProxyHeaderSrcMac(byte[] pSrcMac) {
+	public void setPROXYHeaderSrcMac(byte[] pSrcMac) {
 		this.m_sHeader.senderMac.addr = pSrcMac;
 	}
 
-	public void setProxyHeaderDstMac(byte[] pTargetMac) {
+	public void setPROXYHeaderDstMac(byte[] pTargetMac) {
 		this.m_sHeader.targetMac.addr = pTargetMac;
 	}
 

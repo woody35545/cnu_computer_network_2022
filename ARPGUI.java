@@ -146,34 +146,33 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		proxy_ARP.setLayout(null);
 
 		JButton btnNewButton_3 = new JButton("Add");
-		btnNewButton_3.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ARPLayer arpLayer = (ARPLayer) m_LayerMgr.GetLayer("ARP");
-				if(arpLayer!=null){
-					String device_textField = textField_2.getText();
-					String ip_textField = textField_3.getText();
-					String mac_textField = textField_4.getText();
-					arpLayer.addPROXYCacheTableElement(device_textField, ip_textField, mac_textField);
-				} 
+	    btnNewButton_3.addActionListener(new ActionListener() {
+	       public void actionPerformed(ActionEvent e) {
+	          ARPLayer arpLayer = (ARPLayer) m_LayerMgr.GetLayer("ARP");
+	          if(arpLayer!=null){
+	             String device_textField = textField_2.getText();
+	             String ip_textField = textField_3.getText();
+	             String mac_textField = textField_4.getText();
+	             arpLayer.addPROXYCacheTableElement(device_textField, ip_textField, mac_textField);
+	          } 
 
-			}
-		});
-		btnNewButton_3.setBounds(12, 268, 135, 23);
-		proxy_ARP.add(btnNewButton_3);
+	       }
+	    });
+	    btnNewButton_3.setBounds(12, 268, 135, 23);
+	    proxy_ARP.add(btnNewButton_3);
 
-		JButton btnNewButton_4 = new JButton("Delete");
-		btnNewButton_4.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ARPLayer arpLayer = (ARPLayer) m_LayerMgr.GetLayer("ARP");
-				if(arpLayer!=null){
-					String ip_textField = textField_3.getText();
-					arpLayer.deletePROXYCacheTableElement(ip_textField);
-				} 
-
-			}
-		});
-		btnNewButton_4.setBounds(164, 268, 135, 23);
-		proxy_ARP.add(btnNewButton_4);
+	    JButton btnNewButton_4 = new JButton("Delete");
+	    btnNewButton_4.addActionListener(new ActionListener() {
+	       public void actionPerformed(ActionEvent e) {
+	          ARPLayer arpLayer = (ARPLayer) m_LayerMgr.GetLayer("ARP");
+	          if(arpLayer!=null){
+	             String ip_textField = textField_3.getText();
+	             arpLayer.deletePROXYCacheTableElement(ip_textField);
+	          } 
+	       }
+	    });
+	    btnNewButton_4.setBounds(164, 268, 135, 23);
+	    proxy_ARP.add(btnNewButton_4);
 
 		textField_2 = new JTextArea();
 		textField_2.setBounds(105, 164, 162, 21);
