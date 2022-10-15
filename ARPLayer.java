@@ -165,7 +165,7 @@ public class ARPLayer implements BaseLayer {
 				this.state =this.removeElementFromArray(this.state,idx);
 				this.size--;
 				
-				this.showArpTable();
+				//this.showArpTable();
 				return true;
 			}
 			return false;
@@ -279,7 +279,7 @@ public class ARPLayer implements BaseLayer {
 	            this.macAddr = this.removeElementFromArray(this.macAddr, idx);
 	            this.size--;
 	            
-	            this.showProxyTable();
+	            //this.showProxyTable();
 	            return true;
 	         }
 	         return false;
