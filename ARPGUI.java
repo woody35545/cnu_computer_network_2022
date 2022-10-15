@@ -429,10 +429,10 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		btn_chatSet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String chatDstIPStr = textField_ChatDstIP.getText();
-				String chatDstMACStr =textField_ChatDstMac.getText();
-				
-
-
+				String chatDstMACStr =textField_ChatDstMac.getText();				
+		
+				((IPLayer) m_LayerMgr.GetLayer("IP")).setIpHeaderDstIPAddr(Utils.convertAddrFormat(chatDstIPStr));
+				((EthernetLayer) m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(chatDstMACStr));
 				
 				textField_ChatDstIP.setEditable(false);
 				textField_ChatDstIP.setEnabled(false);
