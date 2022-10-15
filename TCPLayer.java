@@ -1,10 +1,11 @@
 import java.util.ArrayList;
 
 public class TCPLayer implements BaseLayer {
-	public int p_UpperLayerCount = 0;
-	public String p_LayerName = null;
-	public BaseLayer p_UnderLayer = null;
-	public ArrayList<BaseLayer> p_UpperLayer = new ArrayList<BaseLayer>();
+	public int nUnderLayerCount = 0;
+	public int nUpperLayerCount = 0;
+	public String pLayerName = null;
+	public ArrayList<BaseLayer> p_UnderLayer = new ArrayList<BaseLayer>();
+	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
 	
 	private class TCPLayer_HEADER {
 		byte[] tcp_sport; // source port
@@ -39,7 +40,7 @@ public class TCPLayer implements BaseLayer {
 	
 	
 	public TCPLayer(String pName) {
-		this.p_LayerName = pName;
+		this.pLayerName = pName;
 		m_sHeader = new TCPLayer_HEADER();
 	}
 	
@@ -77,7 +78,7 @@ public class TCPLayer implements BaseLayer {
 	public boolean Send(byte[] input, int length, Object app) {
 
 		byte[] data = objToByte(this.m_sHeader,input,length);
-		this.GetUnderLayer().Send(data, length+24);
+		this.GetUnderLayer(0).Send(data, length+24);
 		
 		this.m_sHeader.tcp_data = input;
 		
@@ -90,7 +91,7 @@ public class TCPLayer implements BaseLayer {
 			this.m_sHeader.tcp_dport[0] = (byte)0x20; //destination port
 			this.m_sHeader.tcp_dport[1] = (byte)0x20;
 			
-			this.GetUnderLayer().Send(objToByte(this.m_sHeader, input, length), length+24);
+			this.GetUnderLayer(0).Send(objToByte(this.m_sHeader, input, length), length+24);
  		}
 		//else if(app == this.GetUpperLayer(1).GetLayerName()){
 		else if(input[2] == (byte)0x01) {
@@ -101,7 +102,7 @@ public class TCPLayer implements BaseLayer {
 			this.m_sHeader.tcp_dport[0] = (byte)0x20; //destination port
 			this.m_sHeader.tcp_dport[1] = (byte)0x90;
 			
-			this.GetUnderLayer().Send(objToByte(this.m_sHeader, input, length), length+24);
+			this.GetUnderLayer(0).Send(objToByte(this.m_sHeader, input, length), length+24);
 			
 		}
 		
@@ -141,60 +142,50 @@ public class TCPLayer implements BaseLayer {
 	}
 	
 	@Override
-	public String GetLayerName() {
-		// TODO Auto-generated method stub
-		return this.p_LayerName;
-	}
-
-	@Override
-	public BaseLayer GetUnderLayer() {
-		// TODO Auto-generated method stub
-		if(this.p_UnderLayer == null) 
-			return null;
-		return this.p_UnderLayer;
-	}
-
-	@Override
-	public BaseLayer GetUpperLayer(int nindex) {
-		// TODO Auto-generated method stub
-		if (nindex > this.p_UpperLayerCount) 
-			return null;
-		return this.p_UpperLayer.get(nindex); //ChatAppLayer, FileAppLayer
-	}
-
-	@Override
 	public void SetUnderLayer(BaseLayer pUnderLayer) {
 		// TODO Auto-generated method stub
-		if(this.p_UpperLayer == null)
+		if (pUnderLayer == null)
 			return;
-		this.p_UnderLayer = pUnderLayer;
+		this.p_UnderLayer.add(nUnderLayerCount++, pUnderLayer);
+		// nUpperLayerCount++;
 	}
 
 	@Override
 	public void SetUpperLayer(BaseLayer pUpperLayer) {
 		// TODO Auto-generated method stub
-		if(this.p_UpperLayer == null)
+		if (pUpperLayer == null)
 			return;
-		this.p_UpperLayer.add(p_UpperLayerCount++, pUpperLayer); //ChatAppLayer, FileAppLayer
+		this.p_aUpperLayer.add(nUpperLayerCount++, pUpperLayer);
+		// nUpperLayerCount++;
+	}
+
+	@Override
+	public String GetLayerName() {
+		// TODO Auto-generated method stub
+		return pLayerName;
+	}
+
+
+	@Override
+	public BaseLayer GetUpperLayer(int nindex) {
+		// TODO Auto-generated method stub
+		if (nindex < 0 || nindex > nUpperLayerCount || nUpperLayerCount < 0)
+			return null;
+		return p_aUpperLayer.get(nindex);
 	}
 
 	@Override
 	public void SetUpperUnderLayer(BaseLayer pUULayer) {
-		// TODO Auto-generated method stub
 		this.SetUpperLayer(pUULayer);
 		pUULayer.SetUnderLayer(this);
+
 	}
 
 	@Override
 	public BaseLayer GetUnderLayer(int nindex) {
 		// TODO Auto-generated method stub
-		return null;
+		if (nindex < 0 || nindex > nUnderLayerCount || nUnderLayerCount < 0)
+			return null;
+		return p_UnderLayer.get(nindex);
 	}
-
-	@Override
-	public BaseLayer GetUpperLayer() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
