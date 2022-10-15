@@ -5,6 +5,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class EthernetLayer implements BaseLayer {
 	public int nUnderLayerCount = 0;
@@ -171,9 +172,11 @@ public class EthernetLayer implements BaseLayer {
 		 * to test whether the inter-layer data forwarding function is performed
 		 * smoothly
 		 */
-	
-		boolean isFrameISent = true;
-		boolean isFrameForMe = true;
+		byte[] dstMacAddr = Arrays.copyOfRange(input,0,6);
+		byte[] srcMacAddr = Arrays.copyOfRange(input,6,12);
+		
+		boolean isFrameISent = false;
+		boolean isFrameForMe = false;
 		boolean isBroadcastFrame = true;
 
 		for (int i = 0; i < 6; i++) {
@@ -182,13 +185,15 @@ public class EthernetLayer implements BaseLayer {
 				isBroadcastFrame = false;
 			}
 			/* Check whether received frame is the frame I sent */
-			if (this.GetEthernetHeader().get_source_address().addr[i] != input[i+6]) {
-				isFrameISent = false;
+			//if (this.GetEthernetHeader().get_source_address().addr[i] != input[i+6]) {
+				if(Utils.compareBytes(this.m_sHeader.enet_srcaddr.addr, srcMacAddr)){
+				isFrameISent = true;
 			}
 
 			/* Check whether I am the destination of this frame */
-			if (this.GetEthernetHeader().get_source_address().addr[i] != input[i]) {
-				isFrameForMe = false;
+			//if (this.GetEthernetHeader().get_source_address().addr[i] != input[i]) {
+				if(Utils.compareBytes(this.m_sHeader.enet_srcaddr.addr, dstMacAddr)){
+				isFrameForMe = true;
 			}
 		}
 
