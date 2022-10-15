@@ -688,11 +688,20 @@ public class ARPLayer implements BaseLayer {
 			            
 			     }
 			 }
-			 else if (proxyCacheTable.isExist(target_IP)) {
-					 	System.out.println(target_IP);
-					 	// proxyTable.isExist(input[24:27]) 이 주소가 있으면
-					 	// 자기 맥주소 담아서 REPLY 
+			 else if (proxyCacheTable.isExist(Utils.convertAddrFormat(Arrays.copyOfRange(input, 24, 28)))) {
+				 	// if target IP exists in my proxy table	
+				 	
+				 		// make reply packet header
+					 	_ARP_HEADER arpReplyHeader = new _ARP_HEADER(DEFAULT_HARDWARE_TYPE, DEFAULT_PROTOCOL_TYPE,
+								DEFAULT_LENGTH_OF_HARDWARE_ADDRESS, DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS, OPCODE_ARP_REQUEST,
+								this.m_sHeader.senderMac, new _IP_ADDR(Arrays.copyOfRange(input, 24, 28)),new _MAC_ADDR(Arrays.copyOfRange(input, 8, 14)),
+								new _IP_ADDR(Arrays.copyOfRange(input, 14, 18))); 	
+				 		
+					 	// make packet(byte type)
+					 	byte[] replyPacket = this.Encapsulate(arpReplyHeader);
 					 	
+					 	// send Proxy-Reply to ethernet
+						this.GetUnderLayer().Send(replyPacket, replyPacket.length);
 				 }
 				 
 			 
