@@ -166,7 +166,9 @@ public class IPLayer implements BaseLayer {
 	@Override
 	public void SetUpperLayer(BaseLayer pUpperLayer) {
 		// TODO Auto-generated method stub
-		this.p_UpperLayer = pUpperLayer;
+		if (pUpperLayer == null)
+			return;
+		this.p_aUpperLayer.add(p_UpperLayerCount++, pUpperLayer);
 	}
 
 	@Override
