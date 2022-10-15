@@ -442,7 +442,7 @@ public class ARPLayer implements BaseLayer {
 		this.arpCacheTable.showArpTable();
 		System.out.println("ARPLayer Send: ");
 		Utils.showPacket(encapsulated);
-		this.GetUnderLayer().Send(encapsulated, encapsulated.length);
+		this.GetUnderLayer(0).Send(encapsulated, encapsulated.length);
 		// }
 		return true;
 	}
@@ -454,7 +454,7 @@ public class ARPLayer implements BaseLayer {
 		byte[] encapsulated = this.Encapsulate(ARPRequestHeader);
 		System.out.println("ARPLayer Send(GARP): ");
 		Utils.showPacket(encapsulated);
-		this.GetUnderLayer().Send(encapsulated, encapsulated.length);
+		this.GetUnderLayer(0).Send(encapsulated, encapsulated.length);
 		
 		return true;
 	}
@@ -612,7 +612,7 @@ public class ARPLayer implements BaseLayer {
 					 	byte[] replyPacket = this.Encapsulate(arpReplyHeader);
 					 	
 					 	// send Proxy-Reply to ethernet
-						this.GetUnderLayer().Send(replyPacket, replyPacket.length);
+						this.GetUnderLayer(0).Send(replyPacket, replyPacket.length);
 				 }
 				 
 			 
