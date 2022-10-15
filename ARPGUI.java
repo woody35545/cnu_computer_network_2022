@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import java.awt.Font;
 
 public class ARPGUI extends JFrame implements BaseLayer {
 
@@ -40,6 +41,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	private int selected_index;
 	JComboBox comboBox = new JComboBox();
 	private JTable table;
+	private JTextField textField_chatContent;
 
 	/**
 	 * Launch the application.
@@ -76,7 +78,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 		frmArpgui = new JFrame();
 		frmArpgui.setTitle("ARPGUI");
-		frmArpgui.setBounds(100, 100, 1117, 386);
+		frmArpgui.setBounds(100, 100, 1100, 722);
 		frmArpgui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmArpgui.getContentPane().setLayout(null);
 		JLabel ARP_1 = new JLabel("ARP");
@@ -300,6 +302,42 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		JLabel ARP_1_2_1 = new JLabel("Setting");
 		ARP_1_2_1.setBounds(763, 155, 109, 15);
 		frmArpgui.getContentPane().add(ARP_1_2_1);
+		
+		JPanel panel = new JPanel();
+		panel.setBounds(27, 357, 667, 293);
+		frmArpgui.getContentPane().add(panel);
+		panel.setLayout(null);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(12, 10, 634, 233);
+		panel.add(scrollPane_1);
+		
+		JTextArea textArea_chatView = new JTextArea();
+		scrollPane_1.setViewportView(textArea_chatView);
+		
+		textField_chatContent = new JTextField();
+		textField_chatContent.setFont(new Font("굴림", Font.PLAIN, 15));
+		textField_chatContent.setBounds(12, 253, 531, 32);
+		panel.add(textField_chatContent);
+		textField_chatContent.setColumns(10);
+		
+		JButton btn_chatSend = new JButton("Send");
+		btn_chatSend.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Assign the chat content entered by the user
+				String content = textField_chatContent.getText();
+				// Append contents to ChatView
+				textArea_chatView.append("SEND >> " + content+"\n");				
+				// Reset value of chatContent textArea
+				textField_chatContent.setText("");			
+			}
+		});
+		btn_chatSend.setBounds(555, 252, 93, 32);
+		panel.add(btn_chatSend);
+		
+		JLabel lblNewLabel = new JLabel("Chatting");
+		lblNewLabel.setBounds(27, 340, 52, 15);
+		frmArpgui.getContentPane().add(lblNewLabel);
 		frmArpgui.setVisible(true);
 
 	}
