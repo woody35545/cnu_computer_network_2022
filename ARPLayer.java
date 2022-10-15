@@ -491,7 +491,7 @@ public class ARPLayer implements BaseLayer {
 
 		_ARP_HEADER header = new _ARP_HEADER(DEFAULT_HARDWARE_TYPE, DEFAULT_PROTOCOL_TYPE,
 				DEFAULT_LENGTH_OF_HARDWARE_ADDRESS, DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS, OPCODE_ARP_REQUEST,
-				this.m_sHeader.senderMac, new _MAC_ADDR(UNKNOWN_DESTINATION_MAC_ADDR), this.m_sHeader.senderIp,
+				this.m_sHeader.senderMac, this.m_sHeader.senderIp, new _MAC_ADDR(UNKNOWN_DESTINATION_MAC_ADDR),
 				this.m_sHeader.targetIp);
 		return header;
 
