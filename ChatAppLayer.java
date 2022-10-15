@@ -68,6 +68,8 @@ public class ChatAppLayer implements BaseLayer{
 	}
     public boolean Send(byte[] input, int length) {   
 		/* <!> additional implementation required later */
+	    // Need to check
+    	this.m_sHeader.capp_data = input; 
     	byte[] encapsulated = this.Encapsulate(m_sHeader, input);
     	this.GetUnderLayer().Send(encapsulated,encapsulated.length, pLayerName);
 		return false;
