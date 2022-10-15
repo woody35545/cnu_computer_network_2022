@@ -150,10 +150,11 @@ public class EthernetLayer implements BaseLayer {
 		}	
 		/* else, This is from the IP layer */		
 		else{
+			System.out.println("Ethernet >> This is IP Packet");
+			this.m_sHeader.set_enet_type(new byte[] {0x08,0x00});
 		}
 		
-			System.out.println("Ethernet >> This is IP Layer");
-			this.m_sHeader.set_enet_type(new byte[] {0x08,0x00});
+			
 			byte[] encapsulated = Encapsulate(this.m_sHeader,input);
 			
 			System.out.println("Ethernet Send: ");
