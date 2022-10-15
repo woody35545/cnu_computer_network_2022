@@ -223,7 +223,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		JTextArea textArea_srcIpAddr = new JTextArea();
 		textArea_srcIpAddr.setColumns(10);
 		textArea_srcIpAddr.setBounds(87, 93, 201, 21);
-		textArea_srcIpAddr.setText("192.168.145.128");
+		textArea_srcIpAddr.setText("168.188.129.1");
 		GARP_1.add(textArea_srcIpAddr);
 
 		JButton btn_set = new JButton("Set");

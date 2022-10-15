@@ -106,6 +106,7 @@ public class ARPLayer implements BaseLayer {
 		public boolean addArpCacheTableElement(String pIpAddr, String pMacAddr, String pState) {
 			if (this.isExist(pIpAddr)) {
 				this.updateArpCacheTableElement(pIpAddr, pMacAddr, pState);
+				return true;
 			}
 			if (this.size < this.Capacity && !this.isExist(pIpAddr)) {
 				ipAddr[size] = pIpAddr;
@@ -142,6 +143,7 @@ public class ARPLayer implements BaseLayer {
 				if (ipAddr[i] == pIpAddr) {
 					macAddr[i] = pMacAddr;
 					state[i] = pState;
+					System.out.println("Update");
 					return true;
 				}
 			}
@@ -577,7 +579,7 @@ public class ARPLayer implements BaseLayer {
 		System.out.println("-----------------------");
 		
 		if (input[6] == (byte) 0x00 && input[7] == (byte) 0x02) { // ARP-reply Receive ("Incomplete" ->
-			 
+			 System.out.println("This is ARP Reply Type Packet");
 			 // 만약 
 	         if (target_IP.equals(src_IP)) {
 	            String macAddress = String.format("%X:", replysender_Mac[0]) + String.format("%X:", replysender_Mac[1]) + String.format("%X:", replysender_Mac[2]) + String.format("%X:", replysender_Mac[3]) + String.format("%X:", replysender_Mac[4]) + String.format("%X", replysender_Mac[5]);
@@ -587,7 +589,7 @@ public class ARPLayer implements BaseLayer {
 	         if (arpCacheTable.isExist(target_IP)) {
 	            System.out.println(target_IP);
 	         }
-	       
+	         
 	         this.addARPCacheTableElement(target_IP, target_MAC, "Complete");
 	      }
 		// src - > dst
@@ -617,9 +619,7 @@ public class ARPLayer implements BaseLayer {
 				 
 			 
 		}
-		
-		System.out.println(target_IP);
-		System.out.println(src_IP);
+	
         return true;
 	}
 	

@@ -205,6 +205,7 @@ public class EthernetLayer implements BaseLayer {
 
 			else if (input[12] == (byte) 0x08 && input[13] == (byte) 0x06) {
 				// if protocol type == ARP : 0
+				System.out.println("This is ARP Packet");
 				byte[] decapsulated = this.Decapsulate(input);
 				// call ARPLayer.Recevie(..);
 				this.GetUpperLayer(0).Receive(decapsulated);
