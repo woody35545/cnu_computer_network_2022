@@ -610,7 +610,7 @@ public class ARPLayer implements BaseLayer {
 			return true;
 		}
 		
-		else if(Utils.compareBytes(receivedTargetIP, OPCODE_ARP_REPLY)) {
+		else if(Utils.compareBytes(receivedOpcode, OPCODE_ARP_REPLY)) {
 			// If I Received ARP reply packet, Then Update ARP cache table 
 			this.addARPCacheTableElement(Utils.convertAddrFormat(receivedSenderIP), Utils.convertAddrFormat(receivedSenderMAC), "Complete");
 			return true;
