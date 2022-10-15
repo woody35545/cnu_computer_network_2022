@@ -57,9 +57,9 @@ public class ARPLayer implements BaseLayer {
 		}
 
 		@SuppressWarnings("unused")
-		public _ARP_HEADER(byte[] pHardwareType, byte[] pProtocolType, byte pLengthOfMacAddr,
-				byte pLengthOfProtocolAddr, byte[] pOpcode, _MAC_ADDR pSenderMacAddress, _MAC_ADDR pTargetMacAddress,
-				_IP_ADDR pSenderIpAddress, _IP_ADDR pTargetIpAddress) {
+	      public _ARP_HEADER(byte[] pHardwareType, byte[] pProtocolType, byte pLengthOfMacAddr,
+	            byte pLengthOfProtocolAddr, byte[] pOpcode, _MAC_ADDR pSenderMacAddress, _IP_ADDR pSenderIpAddress,
+	            _MAC_ADDR pTargetMacAddress,_IP_ADDR pTargetIpAddress) {
 
 			// _ARP_HEADER constructor with Parameters
 			this.hardwareType = pHardwareType;
@@ -491,7 +491,7 @@ public class ARPLayer implements BaseLayer {
 
 		_ARP_HEADER header = new _ARP_HEADER(DEFAULT_HARDWARE_TYPE, DEFAULT_PROTOCOL_TYPE,
 				DEFAULT_LENGTH_OF_HARDWARE_ADDRESS, DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS, OPCODE_ARP_REQUEST,
-				this.m_sHeader.senderMac, new _MAC_ADDR(UNKNOWN_DESTINATION_MAC_ADDR), this.m_sHeader.senderIp,
+				this.m_sHeader.senderMac, this.m_sHeader.senderIp, new _MAC_ADDR(UNKNOWN_DESTINATION_MAC_ADDR),
 				this.m_sHeader.targetIp);
 		return header;
 
@@ -688,11 +688,20 @@ public class ARPLayer implements BaseLayer {
 			            
 			     }
 			 }
-			 else if (proxyCacheTable.isExist(target_IP)) {
-					 	System.out.println(target_IP);
-					 	// proxyTable.isExist(input[24:27]) 이 주소가 있으면
-					 	// 자기 맥주소 담아서 REPLY 
+			 else if (proxyCacheTable.isExist(Utils.convertAddrFormat(Arrays.copyOfRange(input, 24, 28)))) {
+				 	// if target IP exists in my proxy table	
+				 	
+				 		// make reply packet header
+					 	_ARP_HEADER arpReplyHeader = new _ARP_HEADER(DEFAULT_HARDWARE_TYPE, DEFAULT_PROTOCOL_TYPE,
+								DEFAULT_LENGTH_OF_HARDWARE_ADDRESS, DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS, OPCODE_ARP_REQUEST,
+								this.m_sHeader.senderMac, new _IP_ADDR(Arrays.copyOfRange(input, 24, 28)),new _MAC_ADDR(Arrays.copyOfRange(input, 8, 14)),
+								new _IP_ADDR(Arrays.copyOfRange(input, 14, 18))); 	
+				 		
+					 	// make packet(byte type)
+					 	byte[] replyPacket = this.Encapsulate(arpReplyHeader);
 					 	
+					 	// send Proxy-Reply to ethernet
+						this.GetUnderLayer().Send(replyPacket, replyPacket.length);
 				 }
 				 
 			 
@@ -705,25 +714,6 @@ public class ARPLayer implements BaseLayer {
 	}
 	
 	
-	
-	public void updateProxyCacheTable() {
-		
-		//ARP Layer 에서 _PROXY_CACHE_TABLE 구조는 다음과 같다.
-		/*
-		 * Capacity = 30;
-		   size = 0;
-		   String[] deviceName
-		   String[] ipAddr
-		   String[] macAddr 
-		   addArpCacheTableElement(String deviceName, String pIpAddr, String pMacAddr) 등
-		 * 
-		 */
-		//for 문을 돌아가면서 Proxy 캐시테이블에 있는 값들과 대조하면서 갱신한다.
-	    for (int i = 0; i < proxyCacheTable.size; i++) { 
-	    	//textField_1 다른거로 바꾸기
-	    	ARPGUI.textField_1.append("" + proxyCacheTable.deviceName[i] + "\t" + proxyCacheTable.ipAddr[i] + "\t" + proxyCacheTable.macAddr[i] + "\n");
-	    }   
-	}
 	
 	
 	@Override
