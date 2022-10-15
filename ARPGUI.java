@@ -36,12 +36,12 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	private JTextArea textField_2;
 	private JTextArea textField_3;
 	private JTextArea textField_4;
-	private JTextArea textField_5;
 
 	private int selected_index;
 	JComboBox comboBox = new JComboBox();
-	private JTable table;
+	private JTable table_ARPTable;
 	private JTextField textField_chatContent;
+	private JTable table_ProxyTable;
 
 	/**
 	 * Launch the application.
@@ -133,8 +133,8 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 		String header[] = { "IP Address", "MAC Address", "State" };
 		DefaultTableModel model = new DefaultTableModel(header, 30);
-		table = new JTable(model);
-		scrollPane.setViewportView(table);
+		table_ARPTable = new JTable(model);
+		scrollPane.setViewportView(table_ARPTable);
 
 		JPanel proxy_ARP = new JPanel();
 		proxy_ARP.setBounds(383, 29, 311, 301);
@@ -164,11 +164,6 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		textField_4.setBounds(105, 226, 162, 21);
 		proxy_ARP.add(textField_4);
 
-		textField_5 = new JTextArea();
-		textField_5.setBounds(12, 10, 287, 144);
-		proxy_ARP.add(textField_5);
-		textField_5.setColumns(10);
-
 		JLabel ARP_1_3_1_1 = new JLabel("Device");
 		ARP_1_3_1_1.setBounds(12, 169, 61, 15);
 		proxy_ARP.add(ARP_1_3_1_1);
@@ -180,6 +175,13 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		JLabel ARP_1_3_1_2 = new JLabel("Mac Address");
 		ARP_1_3_1_2.setBounds(12, 231, 81, 15);
 		proxy_ARP.add(ARP_1_3_1_2);
+		
+		JScrollPane scrollPane_2 = new JScrollPane();
+		scrollPane_2.setBounds(12, 10, 287, 147);
+		proxy_ARP.add(scrollPane_2);
+		
+		table_ProxyTable = new JTable();
+		scrollPane_2.setViewportView(table_ProxyTable);
 
 		JPanel GARP = new JPanel();
 		GARP.setBounds(763, 29, 311, 116);
@@ -293,8 +295,8 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int selected_row = table.getSelectedRow();
-				String value = String.valueOf(table.getValueAt(selected_row, 0));
+				int selected_row = table_ARPTable.getSelectedRow();
+				String value = String.valueOf(table_ARPTable.getValueAt(selected_row, 0));
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).deleteARPCacheTableElement(value);
 
 			}
@@ -374,18 +376,18 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		 */
 		int idx = Integer.parseInt(pDataArr[0]);
 		// Initialize the IP Address corresponding to the index
-		table.setValueAt(pDataArr[1], idx, 0);
+		table_ARPTable.setValueAt(pDataArr[1], idx, 0);
 		// Initialize the MAC Address corresponding to the index
-		table.setValueAt(pDataArr[2], idx, 1);
+		table_ARPTable.setValueAt(pDataArr[2], idx, 1);
 		// Initialize the State corresponding to the index
-		table.setValueAt(pDataArr[3], idx, 2);
+		table_ARPTable.setValueAt(pDataArr[3], idx, 2);
 
 	}
 
 	public void resetTable() {
 		for (int i = 0; i < 30; i++) {
 			for (int j = 0; j < 3; j++) {
-				table.setValueAt("", i, j);
+				table_ARPTable.setValueAt("", i, j);
 			}
 		}
 	}
