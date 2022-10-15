@@ -266,7 +266,8 @@ public class ARPLayer implements BaseLayer {
 		}
 
 		public String getAddrStr() {
-			return null;
+			String addr_str = (addr[0] & 0xFF) + "." + (addr[1] & 0xFF) + "." + (addr[2] & 0xFF) + "." + (addr[3] & 0xFF);
+			return addr_str;
 		}
 
 		public int getLengthOfAddr() {
@@ -301,7 +302,8 @@ public class ARPLayer implements BaseLayer {
 		}
 
 		public String getAddrStr() {
-			return null;
+			String addr_str = (addr[0] & 0xFF) + ":" + (addr[1] & 0xFF) + ":" + (addr[2] & 0xFF) + ":" + (addr[3] & 0xFF) + ":" + (addr[4] & 0xFF) + ":" + (addr[5] & 0xFF);
+			return addr_str;
 		}
 
 		public int getLengthOfAddr() {
@@ -469,68 +471,55 @@ public class ARPLayer implements BaseLayer {
 	 * 				
 	 */
 	public boolean Receive(byte[] input) {
-		// <!> additional implementation required later
-		byte[] message = input;
 
 		//Object[] value = new Object[4];
-		byte[] dstIP = new byte[4];
-		byte[] dstMac = new byte[6];
-		byte[] targetIP = new byte[4];
+		byte[] replysender_IP = Arrays.copyOfRange(input, 14, 18);		//내가 원하는 arp request 를 받는 destination  
+		byte[] replysender_Mac = Arrays.copyOfRange(input, 8, 14);
+		byte[] reqsender_IP = Arrays.copyOfRange(input, 24, 28);
+		
+		m_sHeader = new _ARP_HEADER(); 
+		m_sHeader.SetTargetIPAddress(replysender_IP);
+		m_sHeader.SetTargetMacAddress(replysender_Mac);
+		m_sHeader.SetSenderIPAddress(reqsender_IP);
 
-		System.arraycopy(message, 14, dstIP, 0, 4);
-		System.arraycopy(message, 8, dstMac, 0, 6);
-		System.arraycopy(message, 24, targetIP, 0, 4);
-
-		String ipAddressToString = (dstIP[0] & 0xFF) + "." + (dstIP[1] & 0xFF) + "." + (dstIP[2] & 0xFF) + "."
-            + (dstIP[3] & 0xFF);
-		String targetIpAddressToString = (targetIP[0] & 0xFF) + "." + (targetIP[1] & 0xFF) + "." + (targetIP[2] & 0xFF)
-            + "." + (targetIP[3] & 0xFF);
-		String srcIpAddressToString = (m_sHeader.senderIp.addr[0] & 0xFF) + "."
-            + (m_sHeader.senderIp.addr[1] & 0xFF) + "."
-            + (m_sHeader.senderIp.addr[2] & 0xFF) + "."
-            + (m_sHeader.senderIp.addr[3] & 0xFF);
-		String dstMacToString = (dstMac[0] & 0xFF) + ":" + (dstMac[1] & 0xFF) + ":" + (dstMac[2] & 0xFF) + ":"
-	            + (dstMac[3] & 0xFF) + ":" + (dstMac[4] & 0xFF) + ":" + (dstMac[5] & 0xFF);
+		String target_IP = m_sHeader.targetIp.getAddrStr();
+		String src_IP = m_sHeader.senderIp.getAddrStr();
+		String target_MAC = m_sHeader.targetMac.getAddrStr();
 		System.out.println("-----------------------");
 		
-		if (message[6] == (byte) 0x00 && message[7] == (byte) 0x02) { // ARP-reply Receive ("Incomplete" ->
+		if (input[6] == (byte) 0x00 && input[7] == (byte) 0x02) { // ARP-reply Receive ("Incomplete" ->
+			 
+			 // 만약 
+	         if (target_IP.equals(src_IP)) {
 
-	         if (ipAddressToString.equals(targetIpAddressToString) && ipAddressToString.equals(srcIpAddressToString)) {
-
-	            String macAddress = String.format("%X:", dstMac[0]) + String.format("%X:", dstMac[1])
-	                  + String.format("%X:", dstMac[2]) + String.format("%X:", dstMac[3])
-	                  + String.format("%X:", dstMac[4]) + String.format("%X", dstMac[5]);
+	            String macAddress = String.format("%X:", replysender_Mac[0]) + String.format("%X:", replysender_Mac[1]) + String.format("%X:", replysender_Mac[2]) + String.format("%X:", replysender_Mac[3]) + String.format("%X:", replysender_Mac[4]) + String.format("%X", replysender_Mac[5]);
 	            System.out.println("duplicate IP address sent from Ethernet address :" + macAddress);
 	            return false;
 	         }
 
-	         if (srcIpAddressToString.equals(ipAddressToString)) {
-	            return false;
-	         }
-	        
-	         if (arpCacheTable.isExist(ipAddressToString)) {
-	            System.out.println(ipAddressToString);
+	         if (arpCacheTable.isExist(target_IP)) {
+	            System.out.println(target_IP);
 	         }
 
 	       
-	         this.addARPCacheTableElement(ipAddressToString, dstMacToString, "Complete");
+	         this.addARPCacheTableElement(target_IP, target_MAC, "Complete");
 	         updateARPCacheTable();
 	      }
-		
-		else if(message[6] == (byte) 0x00 && message[7] == (byte) 0x01) {	//	ARP-Request case
-			 if (ipAddressToString.equals(targetIpAddressToString)) {	// if srcIP and dstIP is equal (GARP)
-				 if (arpCacheTable.isExist(ipAddressToString)) {
-			            System.out.println(ipAddressToString);
-			            this.addARPCacheTableElement(ipAddressToString, dstMacToString, "Complete");	//	add	-> updateARPCacheTableElement
+		// src - > dst
+		else if(input[6] == (byte) 0x00 && input[7] == (byte) 0x01) {	//	ARP-Request case
+			 if (target_IP.equals(src_IP)) {	// if srcIP and dstIP is equal (GARP)
+				 if (arpCacheTable.isExist(target_IP)) {
+			            System.out.println(target_IP);
+			            this.addARPCacheTableElement(target_IP, target_MAC, "Complete");	//	add	-> updateARPCacheTableElement
 			            updateARPCacheTable();
 			     }
 			 }
 		}
 		
-		System.out.println(ipAddressToString);
-		System.out.println(targetIpAddressToString);
-		System.out.println(srcIpAddressToString);
-       return true;
+		System.out.println(target_IP);
+		System.out.println(src_IP);
+
+        return true;
 	}
 	
 	public void updateARPCacheTable() {
