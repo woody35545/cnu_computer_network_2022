@@ -81,7 +81,11 @@ public class ChatAppLayer implements BaseLayer{
 
           
 	public boolean Receive(byte[] input){
-		this.GetUpperLayer(0).Receive(this.Decapsulate(input));
+		System.out.println(this.GetUpperLayer(0).GetLayerName());
+		byte[] decapsulated = this.Decapsulate(input);
+		String decapsulatedToStr = new String(decapsulated);
+		((ARPGUI)this.GetUpperLayer(0)).appendToChatView(decapsulatedToStr);
+		
 		return true;
 	}
 	

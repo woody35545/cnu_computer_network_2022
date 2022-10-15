@@ -41,6 +41,8 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	private JTextField textField_chatContent;
 	private JTable table_ProxyTable;
 	JButton btn_addrSettingReset;
+	JTextArea textArea_chatView;
+
 	/**
 	 * Launch the application.
 	 */
@@ -509,7 +511,10 @@ public class ARPGUI extends JFrame implements BaseLayer {
 			}
 		}
 	}
-
+	public void appendToChatView(String pMessage) {
+		textArea_chatView.append("RECEIVED >> " + pMessage);
+	}
+	
 	@Override
 	public void SetUnderLayer(BaseLayer pUnderLayer) {
 		// TODO Auto-generated method stub
