@@ -454,6 +454,20 @@ public class ARPLayer implements BaseLayer {
 		this.m_sHeader.targetMac.addr = pTargetMac;
 	}
 
+	
+	/*
+	 * 		    ARP Request
+	 * Host A      ====================>     Host B
+	 *  
+	 *                  ARP Reply
+	 * Host A      <====================     Host B
+	 *                 
+	 *              header : 14 ~ 17 : Host B(ARP Reply 를 보내는 특) 의 IP : dstIP
+	 *              header : 06 ~ 13 : Host B(ARP Reply 를 보내는 특) 의 MAC : dstMac
+	 *              header : 24 ~ 27 : Host B(ARP Reply 를 보내는 특) 가 응답을 보내려는 타겟 Host A 의 IP 주소
+	 * 
+	 * 				
+	 */
 	public boolean Receive(byte[] input) {
 		// <!> additional implementation required later
 		byte[] message = input;
