@@ -341,6 +341,11 @@ public class ARPGUI extends JFrame implements BaseLayer {
 					
 					// Send byte type content to ChatApp Layer
 					byte[] contentByte = contentStr.getBytes();
+					
+					// Set app type to chat app(0x00)
+					((ChatAppLayer) m_LayerMgr.GetLayer("ChatApp")).setAppType((byte)0x00); 
+					
+					// Call ChatAppLayer.Send
 					((ChatAppLayer) m_LayerMgr.GetLayer("ChatApp")).Send(contentByte,contentByte.length);
 					
 					// Reset value of chatContent textArea
