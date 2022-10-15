@@ -233,11 +233,15 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		JTextArea textArea_srcMacAddr = new JTextArea();
 		textArea_srcMacAddr.setColumns(10);
 		textArea_srcMacAddr.setBounds(87, 58, 201, 21);
+		textArea_srcMacAddr.setText("201902664");
 		GARP_1.add(textArea_srcMacAddr);
+		
 		JTextArea textArea_srcIpAddr = new JTextArea();
 		textArea_srcIpAddr.setColumns(10);
 		textArea_srcIpAddr.setBounds(87, 93, 201, 21);
+		textArea_srcIpAddr.setText("201902664");
 		GARP_1.add(textArea_srcIpAddr);
+
 		JButton btn_set = new JButton("Set");
 		btn_set.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
