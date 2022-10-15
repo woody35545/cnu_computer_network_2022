@@ -73,7 +73,7 @@ public class IPLayer implements BaseLayer {
 	// Ethernet 계층으로 전송 
 	public boolean Send(byte[] input, int length) {
 		//port 0x2080 : Chat App Layer , port 0x2090 : File App Layer
-		if((input[2]==(byte)0x20 && input[3]==(byte)0x80) || (input[2]==(byte)0x20 && input[3]==(byte)0x90) ) {
+		if((input[0]==(byte)0x20 && input[1]==(byte)0x80) || (input[0]==(byte)0x20 && input[1]==(byte)0x90) ) {
 			m_sHeader.ip_offset[0] = 0x00;
 			m_sHeader.ip_offset[1] = 0x03;
 			
