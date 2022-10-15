@@ -572,11 +572,11 @@ public class ARPLayer implements BaseLayer {
 		byte[] receivedTargetIP = Arrays.copyOfRange(input,24,28);
 		byte[] receivedOpcode = new byte[] {(byte) input[6], (byte) input[7]};
 		
-		if (Utils.compareAddress(receivedOpcode, OPCODE_ARP_REQUEST)) {
+		if (Utils.compareBytes(receivedOpcode, OPCODE_ARP_REQUEST)) {
 			// If I received ARP Request type packet.
 			
 			// Check if i am the target
-			if(Utils.compareAddress(receivedTargetIP, this.m_sHeader.senderIp.addr)) {
+			if(Utils.compareBytes(receivedTargetIP, this.m_sHeader.senderIp.addr)) {
 				// If it's Reqeust to me, Reply my MAC Address ( ARP REPLY )
 				_ARP_HEADER arpReplyHeader = new _ARP_HEADER(DEFAULT_HARDWARE_TYPE, DEFAULT_PROTOCOL_TYPE,
 						DEFAULT_LENGTH_OF_HARDWARE_ADDRESS, DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS, OPCODE_ARP_REQUEST,
@@ -610,7 +610,7 @@ public class ARPLayer implements BaseLayer {
 			return true;
 		}
 		
-		else if(Utils.compareAddress(receivedTargetIP, OPCODE_ARP_REPLY)) {
+		else if(Utils.compareBytes(receivedTargetIP, OPCODE_ARP_REPLY)) {
 			// If I Received ARP reply packet, Then Update ARP cache table 
 			this.addARPCacheTableElement(Utils.convertAddrFormat(receivedSenderIP), Utils.convertAddrFormat(receivedSenderMAC), "Complete");
 			return true;

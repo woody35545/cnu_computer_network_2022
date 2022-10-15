@@ -8,13 +8,12 @@ public final class Utils {
 
 	private static final boolean DEBUG_MODE = true;
 
-	public static boolean compareAddress(byte[] address_1, byte[] address_2) {
+	public static boolean compareBytes(byte[] pByteArr_1, byte[] pByteArr_2) {
 		/*
-		 * Address comparison function defined in byte array format. Available for both
-		 * mac and ip addresses
+		 * Byte array comparison (only for same size byte array)
 		 */
-		for (int i = 0; i < address_1.length; i++) {
-			if (((byte) address_1[i]) != ((byte) address_2[i])) {
+		for (int i = 0; i < pByteArr_1.length; i++) {
+			if (((byte) pByteArr_1[i]) != ((byte) pByteArr_2[i])) {
 				return false;
 			}
 		}
