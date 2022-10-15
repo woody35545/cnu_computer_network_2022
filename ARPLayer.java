@@ -583,21 +583,6 @@ public class ARPLayer implements BaseLayer {
 		this.m_sHeader.targetMac.addr = pTargetMac;
 	}
 
-	
-	/*
-	 * 		    ARP Request
-	 * Host A      ====================>     Host B
-	 *  
-	 *                  ARP Reply
-	 * Host A      <====================     Host B
-	 *                 
-	 *              header : 14 ~ 17 : Host B(ARP Reply 를 보내는 측) 의 IP : dstIP
-	 *              header : 06 ~ 13 : Host B(ARP Reply 를 보내는 측) 의 MAC : dstMac
-	 *              header : 24 ~ 27 : Host B(ARP Reply 를 보내는 측) 가 응답을 보내려는 타겟 Host A 의 IP 주소
-	 * 
-	 * 				
-	 */
-	
 	public void resetProxyCacheTableGUI() { 
 		((ARPGUI) this.GetUpperLayer(1)).resetTable();
 	}
@@ -646,7 +631,19 @@ public class ARPLayer implements BaseLayer {
 	}
 
 	
-	
+	/*
+	 * 		    ARP Request
+	 * Host A      ====================>     Host B
+	 *  
+	 *                  ARP Reply
+	 * Host A      <====================     Host B
+	 *                 
+	 *              header : 14 ~ 17 : Host B(ARP Reply 를 보내는 측) 의 IP : dstIP
+	 *              header : 06 ~ 13 : Host B(ARP Reply 를 보내는 측) 의 MAC : dstMac
+	 *              header : 24 ~ 27 : Host B(ARP Reply 를 보내는 측) 가 응답을 보내려는 타겟 Host A 의 IP 주소
+	 * 
+	 * 				
+	 */
 	
 	
 	public boolean Receive(byte[] input) {
@@ -682,7 +679,6 @@ public class ARPLayer implements BaseLayer {
 
 	       
 	         this.addARPCacheTableElement(target_IP, target_MAC, "Complete");
-	         updateARPCacheTable();
 	      }
 		// src - > dst
 		else if(input[6] == (byte) 0x00 && input[7] == (byte) 0x01) {	//	ARP-Request case
@@ -690,7 +686,7 @@ public class ARPLayer implements BaseLayer {
 				 if (arpCacheTable.isExist(target_IP)) {
 			            System.out.println(target_IP);
 			            this.addARPCacheTableElement(target_IP, target_MAC, "Complete");	//	add	-> updateARPCacheTableElement
-			            updateARPCacheTable();
+			            
 			     }
 			 }
 		}
@@ -701,24 +697,6 @@ public class ARPLayer implements BaseLayer {
         return true;
 	}
 	
-	public void updateARPCacheTable() {
-		
-		//ARP Layer 에서 _ARP_CACHE_TABLE 구조는 다음과 같다.
-		/*
-		 * Capacity = 30;
-		   size = 0;
-		   String[] ipAddr
-		   String[] macAddr 
-		   String[] state 
-		   addArpCacheTableElement(String pIpAddr, String pMacAddr, String pState) 등
-		 * 
-		 */
-		//for 문을 돌아가면서 ARP 캐시테이블에 있는 값들과 대조하면서 갱신한다.
-	    for (int i = 0; i < arpCacheTable.size; i++) { 
-	   
-	    	ARPGUI.textField_1.append("" + arpCacheTable.ipAddr[i] + "\t" + arpCacheTable.macAddr[i] +"\t"+arpCacheTable.state[i]+ "\n");
-	    }   
-	}
 	
 	
 	public void updateProxyCacheTable() {
