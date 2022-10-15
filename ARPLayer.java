@@ -688,6 +688,14 @@ public class ARPLayer implements BaseLayer {
 			            
 			     }
 			 }
+			 else if (proxyCacheTable.isExist(target_IP)) {
+					 	System.out.println(target_IP);
+					 	// proxyTable.isExist(input[24:27]) 이 주소가 있으면
+					 	// 자기 맥주소 담아서 REPLY 
+					 	
+				 }
+				 
+			 
 		}
 		
 		System.out.println(target_IP);
