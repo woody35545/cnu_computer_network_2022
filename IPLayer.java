@@ -78,13 +78,13 @@ public class IPLayer implements BaseLayer {
 			m_sHeader.ip_offset[1] = 0x03;
 			
 			byte[] bytes = ObjToByte(m_sHeader,input,length);	//IP 헤더 추가 (EnCapsulate)
-			
+			System.out.println("IPLayer Send:");
+			Utils.showPacket(bytes);
 			this.GetUnderLayer(1).Send(bytes,length+IPHEADER);	//IP 헤더 길이만큼 추가된 데이터를 아래 레이어에 전송
 
 			return true;
-			
 		}
-	
+		return false;
 	}
 	
 	public byte[] RemoveCappHeader(byte[] input, int length) {

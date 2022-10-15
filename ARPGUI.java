@@ -54,7 +54,10 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		m_LayerMgr.AddLayer(new ChatAppLayer("Chat"));
 		
 		// Connect all currently existing layers
-		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *TCP ( *Chat ( *ARPGUI ) ) ) +ARPGUI ) +IP ) -Ethernet ");
+		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *TCP ( *Chat ( *ARPGUI ) ) ) +ARPGUI ) +IP ( -Ethernet ");
+		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(1).GetLayerName());
+		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(1).GetLayerName());
+
 		
 	}
 	/**

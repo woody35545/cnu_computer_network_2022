@@ -78,7 +78,7 @@ public class TCPLayer implements BaseLayer {
 	public boolean Send(byte[] input, int length, Object app) {
 
 		byte[] data = objToByte(this.m_sHeader,input,length);
-		this.GetUnderLayer(0).Send(data, length+24);
+		//this.GetUnderLayer(0).Send(data, length+24);
 		
 		this.m_sHeader.tcp_data = input;
 		
@@ -91,6 +91,8 @@ public class TCPLayer implements BaseLayer {
 			this.m_sHeader.tcp_dport[0] = (byte)0x20; //destination port
 			this.m_sHeader.tcp_dport[1] = (byte)0x20;
 			
+			System.out.println("TCP Send: ");
+			Utils.showPacket(objToByte(this.m_sHeader, input, length));
 			this.GetUnderLayer(0).Send(objToByte(this.m_sHeader, input, length), length+24);
  		}
 		//else if(app == this.GetUpperLayer(1).GetLayerName()){
@@ -101,7 +103,8 @@ public class TCPLayer implements BaseLayer {
 			this.m_sHeader.tcp_sport[1] = (byte)0x90; 
 			this.m_sHeader.tcp_dport[0] = (byte)0x20; //destination port
 			this.m_sHeader.tcp_dport[1] = (byte)0x90;
-			
+			System.out.println("TCP Send: ");
+			Utils.showPacket(objToByte(this.m_sHeader, input, length));
 			this.GetUnderLayer(0).Send(objToByte(this.m_sHeader, input, length), length+24);
 			
 		}

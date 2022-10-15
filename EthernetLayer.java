@@ -141,11 +141,10 @@ public class EthernetLayer implements BaseLayer {
 		
 		 /* if ARP Layer, The first 4 bytes will have the same value as this. {0x00, 0x01, 0x08, 0x00}*/
 		if (isFromARPLayer){
-			System.out.println("Ethernet Send: ");
 
 			// ARP Request Packet should be sent as broadcast
 			// Make BroadCast Frame
-			System.out.println("This is ARP Packet");
+			System.out.println("Ethernet >> This is ARP Packet");
 			this.m_sHeader.set_enet_type(new byte[] {0x08,0x06});
 			this.m_sHeader.set_destination_address(new byte[]{(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff});
 		}	
@@ -154,6 +153,8 @@ public class EthernetLayer implements BaseLayer {
 		}
 			byte[] encapsulated = Encapsulate(this.m_sHeader,input);
 			
+			System.out.println("Ethernet Send: ");
+
 			Utils.showPacket(encapsulated);
 			this.GetUnderLayer(0).Send(encapsulated, length);
 			return true;

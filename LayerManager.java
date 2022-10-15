@@ -107,14 +107,14 @@ public class LayerManager {
 					{
 					
 					Push (pLayer);
-					//System.out.println("Push["+ pLayer.GetLayerName() +"] \nTOP: " + Top().GetLayerName());
+					System.out.println("Push["+ pLayer.GetLayerName() +"] \nTOP: " + Top().GetLayerName());
 					}
 				
 			
 				else if(pNode.token.equals(")")) {
-					//String tmp = Top().GetLayerName();
+					String tmp = Top().GetLayerName();
 					Pop();
-				//System.out.println("Pop["+ tmp +"] \nTOP: " + Top().GetLayerName());
+				System.out.println("Pop["+ tmp +"] \nTOP: " + Top().GetLayerName());
 				}
 
 				else{
@@ -126,15 +126,15 @@ public class LayerManager {
 					switch(cMode){
 					case '*':
 						Top().SetUpperUnderLayer( pLayer );
-						//System.out.println(Top().GetLayerName()+".SetUpperUnderLayer("+pLayer.GetLayerName()+")");
+						System.out.println(Top().GetLayerName()+".SetUpperUnderLayer("+pLayer.GetLayerName()+")");
 						break;
 					case '+':
 						Top().SetUpperLayer( pLayer );
-						//System.out.println(Top().GetLayerName()+".SetUpperLayer("+pLayer.GetLayerName()+")");
+						System.out.println(Top().GetLayerName()+".SetUpperLayer("+pLayer.GetLayerName()+")");
 						break;
 					case '-':
 						Top().SetUnderLayer( pLayer );
-						//System.out.println(Top().GetLayerName()+".SetUnderLayer("+pLayer.GetLayerName()+")");
+						System.out.println(Top().GetLayerName()+".SetUnderLayer("+pLayer.GetLayerName()+")");
 						break;
 					}					
 				}
