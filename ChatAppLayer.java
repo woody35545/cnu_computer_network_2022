@@ -1,9 +1,10 @@
 import java.util.ArrayList;
 
 public class ChatAppLayer implements BaseLayer{
+	public int nUnderLayerCount = 0;
 	public int nUpperLayerCount = 0;
 	public String pLayerName = null;
-	public BaseLayer p_UnderLayer = null;
+	public ArrayList<BaseLayer> p_UnderLayer = new ArrayList<BaseLayer>();
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
 	
 	private class _CAPP_HEADER{
@@ -71,7 +72,7 @@ public class ChatAppLayer implements BaseLayer{
 	    // Need to check
     	this.m_sHeader.capp_data = input; 
     	byte[] encapsulated = this.Encapsulate(m_sHeader, input);
-    	this.GetUnderLayer().Send(encapsulated,encapsulated.length, pLayerName);
+    	this.GetUnderLayer(0).Send(encapsulated,encapsulated.length, pLayerName);
 		return false;
 	}
 
@@ -86,55 +87,51 @@ public class ChatAppLayer implements BaseLayer{
 	}
 
 	@Override
+	public void SetUnderLayer(BaseLayer pUnderLayer) {
+		// TODO Auto-generated method stub
+		if (pUnderLayer == null)
+			return;
+		this.p_UnderLayer.add(nUnderLayerCount++, pUnderLayer);
+		// nUpperLayerCount++;
+	}
+
+	@Override
+	public void SetUpperLayer(BaseLayer pUpperLayer) {
+		// TODO Auto-generated method stub
+		if (pUpperLayer == null)
+			return;
+		this.p_aUpperLayer.add(nUpperLayerCount++, pUpperLayer);
+		// nUpperLayerCount++;
+	}
+
+	@Override
 	public String GetLayerName() {
 		// TODO Auto-generated method stub
 		return pLayerName;
 	}
 
-	@Override
-	public BaseLayer GetUnderLayer() {
-		if (p_UnderLayer == null)
-			return null;
-		return p_UnderLayer;
-	}
 
 	@Override
 	public BaseLayer GetUpperLayer(int nindex) {
+		// TODO Auto-generated method stub
 		if (nindex < 0 || nindex > nUpperLayerCount || nUpperLayerCount < 0)
 			return null;
 		return p_aUpperLayer.get(nindex);
 	}
 
 	@Override
-	public void SetUnderLayer(BaseLayer pUnderLayer) {
-		if (pUnderLayer == null)
-			return;
-		this.p_UnderLayer = pUnderLayer;
-	}
-
-	@Override
-	public void SetUpperLayer(BaseLayer pUpperLayer) {
-		if (pUpperLayer == null)
-			return;
-		this.p_aUpperLayer.add(nUpperLayerCount++, pUpperLayer);
-	}
-
-	@Override
 	public void SetUpperUnderLayer(BaseLayer pUULayer) {
 		this.SetUpperLayer(pUULayer);
 		pUULayer.SetUnderLayer(this);
+
 	}
 
 	@Override
 	public BaseLayer GetUnderLayer(int nindex) {
 		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public BaseLayer GetUpperLayer() {
-		// TODO Auto-generated method stub
-		return null;
+		if (nindex < 0 || nindex > nUnderLayerCount || nUnderLayerCount < 0)
+			return null;
+		return p_UnderLayer.get(nindex);
 	}
 
 }
