@@ -41,7 +41,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	private JTextField textField_chatContent;
 	private JTable table_ProxyTable;
 	JButton btn_addrSettingReset;
-	JTextArea textArea_chatView;
+	private JTextArea textArea_chatView = new JTextArea();
 
 	/**
 	 * Launch the application.
@@ -367,7 +367,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBounds(12, 10, 490, 198);
 		panel.add(scrollPane_1);
-		JTextArea textArea_chatView = new JTextArea();
+		//JTextArea textArea_chatView = new JTextArea();
 		scrollPane_1.setViewportView(textArea_chatView);
 		textField_chatContent = new JTextField();
 		textField_chatContent.setFont(new Font("±¼¸²", Font.PLAIN, 15));
@@ -512,7 +512,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		}
 	}
 	public void appendToChatView(String pMessage) {
-		textArea_chatView.append("RECEIVED >> " + pMessage);
+		textArea_chatView.append("RECEIVED >> " +pMessage);
 	}
 	
 	@Override
