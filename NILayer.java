@@ -144,7 +144,11 @@ class Receive_Thread implements Runnable {
 		while (true) {
 			PcapPacketHandler<String> jpacketHandler = new PcapPacketHandler<String>() {
 				public void nextPacket(PcapPacket packet, String user) {
+					System.out.printf("Capture >> Time: %s, Length: %d\n", new Date(packet.getCaptureHeader().timestampInMillis()), packet.getCaptureHeader().caplen());
+
 					data = packet.getByteArray(0, packet.size());
+					System.out.println("NI received");
+					Utils.showPacket(data);
 					UpperLayer.Receive(data);
 				}
 			};
