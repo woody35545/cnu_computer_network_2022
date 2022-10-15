@@ -104,10 +104,18 @@ public class LayerManager {
 				pLayer = GetLayer (pNode.token);
 			else{
 				if(pNode.token.equals("(")) 
+					{
+					
 					Push (pLayer);
+					//System.out.println("Push["+ pLayer.GetLayerName() +"] \nTOP: " + Top().GetLayerName());
+					}
+				
 			
-				else if(pNode.token.equals(")")) 
+				else if(pNode.token.equals(")")) {
+					//String tmp = Top().GetLayerName();
 					Pop();
+				//System.out.println("Pop["+ tmp +"] \nTOP: " + Top().GetLayerName());
+				}
 
 				else{
 					char cMode = pNode.token.charAt(0);
@@ -118,17 +126,19 @@ public class LayerManager {
 					switch(cMode){
 					case '*':
 						Top().SetUpperUnderLayer( pLayer );
+						//System.out.println(Top().GetLayerName()+".SetUpperUnderLayer("+pLayer.GetLayerName()+")");
 						break;
 					case '+':
 						Top().SetUpperLayer( pLayer );
+						//System.out.println(Top().GetLayerName()+".SetUpperLayer("+pLayer.GetLayerName()+")");
 						break;
 					case '-':
 						Top().SetUnderLayer( pLayer );
+						//System.out.println(Top().GetLayerName()+".SetUnderLayer("+pLayer.GetLayerName()+")");
 						break;
 					}					
 				}
 			}
-			
 			pNode = pNode.next;
 				
 		}
