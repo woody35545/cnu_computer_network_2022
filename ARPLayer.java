@@ -22,6 +22,7 @@ public class ARPLayer implements BaseLayer {
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
 	private _ARP_HEADER m_sHeader = new _ARP_HEADER();
 	private _ARP_CACHE_TABLE arpCacheTable = new _ARP_CACHE_TABLE();
+	private _PROXY_CACHE_TABLE proxyCacheTable = new _PROXY_CACHE_TABLE();
 
 	public ARPLayer(String pName) {
 		// ARPLayer class constructor
@@ -596,6 +597,58 @@ public class ARPLayer implements BaseLayer {
 	 * 
 	 * 				
 	 */
+	
+	public void resetProxyCacheTableGUI() { 
+		((ARPGUI) this.GetUpperLayer(1)).resetTable();
+	}
+	public void refreshProxyCacheTableGUI() {
+		for (int i = 0; i < this.proxyCacheTable.size; i++) {
+			((ARPGUI) this.GetUpperLayer(1)).initTableValue(new String[] { Integer.toString(i),
+					this.proxyCacheTable.deviceName[i], this.proxyCacheTable.ipAddr[i], this.proxyCacheTable.macAddr[i]});
+		}
+	}
+
+	public void addProxyCacheTableElement(String pDeviceName, String pIpAddr, String pMacAddr) {
+		this.proxyCacheTable.addProxyCacheTableElement(pDeviceName, pIpAddr, pMacAddr);
+		this.refreshARPCacheTableGUI();
+	}
+
+	public void addProxyCacheTableElement(String pIpAddr) {
+		this.proxyCacheTable.addProxyCacheTableElement(pIpAddr);
+		this.refreshARPCacheTableGUI();
+	}
+
+	public void deleteProxyCacheTableElement(String pIpAddr) {
+		this.resetARPCacheTableGUI();
+		this.proxyCacheTable.deleteProxyCacheTable(pIpAddr);
+		this.refreshARPCacheTableGUI();
+	}
+	
+	public void deleteAllProxyCacheTableElement() {
+		this.proxyCacheTable.resetProxyCacheTable();
+		this.resetARPCacheTableGUI();
+	}
+
+	public void setProxyHeaderSrcIp(byte[] pSrcIP) {
+		this.m_sHeader.senderIp.addr = pSrcIP;
+	}
+
+	public void setProxyHeaderDstIp(byte[] pTargetIP) {
+		this.m_sHeader.targetIp.addr = pTargetIP;
+	}
+
+	public void setProxyHeaderSrcMac(byte[] pSrcMac) {
+		this.m_sHeader.senderMac.addr = pSrcMac;
+	}
+
+	public void setProxyHeaderDstMac(byte[] pTargetMac) {
+		this.m_sHeader.targetMac.addr = pTargetMac;
+	}
+
+	
+	
+	
+	
 	public boolean Receive(byte[] input) {
 
 		//Object[] value = new Object[4];
@@ -664,6 +717,26 @@ public class ARPLayer implements BaseLayer {
 	    for (int i = 0; i < arpCacheTable.size; i++) { 
 	   
 	    	ARPGUI.textField_1.append("" + arpCacheTable.ipAddr[i] + "\t" + arpCacheTable.macAddr[i] +"\t"+arpCacheTable.state[i]+ "\n");
+	    }   
+	}
+	
+	
+	public void updateProxyCacheTable() {
+		
+		//ARP Layer 에서 _PROXY_CACHE_TABLE 구조는 다음과 같다.
+		/*
+		 * Capacity = 30;
+		   size = 0;
+		   String[] deviceName
+		   String[] ipAddr
+		   String[] macAddr 
+		   addArpCacheTableElement(String deviceName, String pIpAddr, String pMacAddr) 등
+		 * 
+		 */
+		//for 문을 돌아가면서 Proxy 캐시테이블에 있는 값들과 대조하면서 갱신한다.
+	    for (int i = 0; i < proxyCacheTable.size; i++) { 
+	    	//textField_1 다른거로 바꾸기
+	    	ARPGUI.textField_1.append("" + proxyCacheTable.deviceName[i] + "\t" + proxyCacheTable.ipAddr[i] + "\t" + proxyCacheTable.macAddr[i] + "\n");
 	    }   
 	}
 	
