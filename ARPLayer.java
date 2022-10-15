@@ -706,25 +706,6 @@ public class ARPLayer implements BaseLayer {
 	
 	
 	
-	public void updateProxyCacheTable() {
-		
-		//ARP Layer 에서 _PROXY_CACHE_TABLE 구조는 다음과 같다.
-		/*
-		 * Capacity = 30;
-		   size = 0;
-		   String[] deviceName
-		   String[] ipAddr
-		   String[] macAddr 
-		   addArpCacheTableElement(String deviceName, String pIpAddr, String pMacAddr) 등
-		 * 
-		 */
-		//for 문을 돌아가면서 Proxy 캐시테이블에 있는 값들과 대조하면서 갱신한다.
-	    for (int i = 0; i < proxyCacheTable.size; i++) { 
-	    	//textField_1 다른거로 바꾸기
-	    	ARPGUI.textField_1.append("" + proxyCacheTable.deviceName[i] + "\t" + proxyCacheTable.ipAddr[i] + "\t" + proxyCacheTable.macAddr[i] + "\n");
-	    }   
-	}
-	
 	
 	@Override
 	public String GetLayerName() {
