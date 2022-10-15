@@ -512,7 +512,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		}
 	}
 	public void appendToChatView(String pMessage) {
-		textArea_chatView.append("RECEIVED >> " +pMessage);
+		textArea_chatView.append("RECEIVED >> " + pMessage + "\n");
 	}
 	
 	@Override
