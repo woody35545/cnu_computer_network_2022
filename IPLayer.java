@@ -84,11 +84,7 @@ public class IPLayer implements BaseLayer {
 			return true;
 			
 		}
-		else {
-			System.out.println("GARP");
-		}
-		//((ARPLayer)this.GetUnderLayer()).Send(m_sHeader.ip_srcaddr, m_sHeader.ip_dstaddr);
-		return true;
+	
 	}
 	
 	public byte[] RemoveCappHeader(byte[] input, int length) {

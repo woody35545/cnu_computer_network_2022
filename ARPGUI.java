@@ -54,7 +54,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		m_LayerMgr.AddLayer(new ChatAppLayer("Chat"));
 		
 		// Connect all currently existing layers
-		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *TCP ( *Chat ( *ARPGUI ) ) ) +ARPGUI ) +IP ");
+		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *TCP ( *Chat ( *ARPGUI ) ) ) +ARPGUI ) +IP ) -Ethernet ");
 		
 	}
 	/**
@@ -312,10 +312,10 @@ public class ARPGUI extends JFrame implements BaseLayer {
 					byte[] contentByte = contentStr.getBytes();
 					
 					// Set app type to chat app(0x00)
-					((ChatAppLayer) m_LayerMgr.GetLayer("ChatApp")).setAppType((byte)0x00); 
+					((ChatAppLayer) m_LayerMgr.GetLayer("Chat")).setAppType((byte)0x00); 
 					
 					// Call ChatAppLayer.Send
-					((ChatAppLayer) m_LayerMgr.GetLayer("ChatApp")).Send(contentByte,contentByte.length);
+					((ChatAppLayer) m_LayerMgr.GetLayer("Chat")).Send(contentByte,contentByte.length);
 					
 					// Reset value of chatContent textArea
 					textField_chatContent.setText("");
