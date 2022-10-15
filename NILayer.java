@@ -66,6 +66,7 @@ public class NILayer implements BaseLayer {
 			System.err.println(m_AdapterObject.getErr());
 			return false;
 		}
+		System.out.println("## Data is sent to network ## ");
 		return true;
 	}
 

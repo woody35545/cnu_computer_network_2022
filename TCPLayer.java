@@ -130,7 +130,7 @@ public class TCPLayer implements BaseLayer {
 			
 			return true;
 		}
-		else if(input[2]==(byte)0x20 && input[3]==(byte)0x80){
+		else if(input[2]==(byte)0x20 && input[3]==(byte)0x90){
 			//FileAppLayer(0x2090) : 1
 			data = RemoveCappHeader(input, input.length);
 			this.GetUpperLayer(1).Receive();
