@@ -122,18 +122,24 @@ public class TCPLayer implements BaseLayer {
 	
 	public boolean Receive(byte[] input){
 		byte[] data;
-		
+		System.out.println("TCP received:");
+		Utils.showPacket(input);
 		if(input[2]==(byte)0x20 && input[3]==(byte)0x80){
+			
+			System.out.println("TCP >> This is ChatAppLayer data:");
+
 			//ChatAppLayer(0x2080) : 0
 			data = RemoveCappHeader(input, input.length);
-			this.GetUpperLayer(0).Receive();
+			this.GetUpperLayer(0).Receive(data);
 			
 			return true;
 		}
 		else if(input[2]==(byte)0x20 && input[3]==(byte)0x90){
 			//FileAppLayer(0x2090) : 1
+			System.out.println("TCP >> This is FileAppLayer data:");
+
 			data = RemoveCappHeader(input, input.length);
-			this.GetUpperLayer(1).Receive();
+			this.GetUpperLayer(1).Receive(data);
 			
 			return true;
 		}

@@ -52,7 +52,7 @@ public class ChatAppLayer implements BaseLayer{
 		
 		encapsulated[2]=pHeader.capp_unused;
 		for (int i=0; i<pHeader.capp_data.length; i++) {
-			encapsulated[3]=pHeader.capp_data[i];
+			encapsulated[4+i]=pHeader.capp_data[i];
 		}
 		return encapsulated;
 		

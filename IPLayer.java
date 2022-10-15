@@ -70,17 +70,17 @@ public class IPLayer implements BaseLayer {
 		}
 		return buf;
 	}
-	// Ethernet 계층으로 전송 
+	// Ethernet 怨꾩링�쑝濡� �쟾�넚 
 	public boolean Send(byte[] input, int length) {
 		//port 0x2080 : Chat App Layer , port 0x2090 : File App Layer
 		if((input[0]==(byte)0x20 && input[1]==(byte)0x80) || (input[0]==(byte)0x20 && input[1]==(byte)0x90) ) {
 			m_sHeader.ip_offset[0] = 0x00;
 			m_sHeader.ip_offset[1] = 0x03;
 			
-			byte[] bytes = ObjToByte(m_sHeader,input,length);	//IP 헤더 추가 (EnCapsulate)
+			byte[] bytes = ObjToByte(m_sHeader,input,length);	//IP �뿤�뜑 異붽� (EnCapsulate)
 			System.out.println("IPLayer Send:");
 			Utils.showPacket(bytes);
-			this.GetUnderLayer(1).Send(bytes,length+IPHEADER);	//IP 헤더 길이만큼 추가된 데이터를 아래 레이어에 전송
+			this.GetUnderLayer(1).Send(bytes,length+IPHEADER);	//IP �뿤�뜑 湲몄씠留뚰겮 異붽��맂 �뜲�씠�꽣瑜� �븘�옒 �젅�씠�뼱�뿉 �쟾�넚
 
 			return true;
 		}
@@ -88,7 +88,7 @@ public class IPLayer implements BaseLayer {
 	}
 	
 	public byte[] RemoveCappHeader(byte[] input, int length) {
-		//캡슐화 했던 IP 헤더들을 제거한다. 
+		//罹≪뒓�솕 �뻽�뜕 IP �뿤�뜑�뱾�쓣 �젣嫄고븳�떎. 
 		byte[] remvHeader = new byte[length-IPHEADER];
 		for(int i=0;i<length-IPHEADER;i++) {
 			remvHeader[i] = input[i+IPHEADER];
@@ -98,9 +98,10 @@ public class IPLayer implements BaseLayer {
 	}
 	
 	
-	//Receive 함수
+	//Receive �븿�닔
 	public synchronized boolean Receive(byte[] input) {
-		System.out.println("IP receive input length : "+input.length);
+		System.out.println("IPLayer received:");
+		Utils.showPacket(input);
 		byte[] data = RemoveCappHeader(input, input.length);
 		
 		if(me_equals_dst_Addr(input)) {
@@ -111,14 +112,14 @@ public class IPLayer implements BaseLayer {
 		}
 	}
 	
-	public boolean me_equals_dst_Addr(byte[] input) {//패킷의 dst 주소랑 내 주소랑 같은지 확인
+	public boolean me_equals_dst_Addr(byte[] input) {//�뙣�궥�쓽 dst 二쇱냼�옉 �궡 二쇱냼�옉 媛숈�吏� �솗�씤
 		for(int i = 0;i<4;i++) {
 			if(input[i+16]!=m_sHeader.ip_srcaddr[i]) return false;
 		}
 
 		return true;
 	}
-	public boolean me_equals_src_Addr(byte[] input) {//패킷의 src 주소랑 내 주소랑 같은지 확인
+	public boolean me_equals_src_Addr(byte[] input) {//�뙣�궥�쓽 src 二쇱냼�옉 �궡 二쇱냼�옉 媛숈�吏� �솗�씤
 		for(int i = 0;i<4;i++) {
 			if(input[i+12]!=m_sHeader.ip_srcaddr[i]) return false;
 		}
