@@ -73,10 +73,11 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	private void initialize() {
 		frmArpgui = new JFrame();
 		frmArpgui.setTitle("ARPGUI");
-		frmArpgui.setBounds(100, 100, 1100, 722);
+		frmArpgui.setBounds(100, 100, 1151, 722);
 		frmArpgui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmArpgui.getContentPane().setLayout(null);
 		JLabel ARP_1 = new JLabel("ARP");
+		ARP_1.setFont(new Font("굴림", Font.BOLD, 14));
 		ARP_1.setBounds(27, 10, 50, 15);
 		frmArpgui.getContentPane().add(ARP_1);
 		JPanel ARP = new JPanel();
@@ -95,6 +96,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		btnNewButton_1.setBounds(164, 213, 135, 25);
 		ARP.add(btnNewButton_1);
 		textField_targetIp = new JTextArea();
+		textField_targetIp.setText("168.188.129.2");
 		textField_targetIp.setBounds(12, 270, 175, 25);
 		ARP.add(textField_targetIp);
 		textField_targetIp.setColumns(10);
@@ -122,7 +124,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		
 		
 		JPanel proxy_ARP = new JPanel();
-		proxy_ARP.setBounds(383, 29, 311, 301);
+		proxy_ARP.setBounds(383, 29, 342, 301);
 		frmArpgui.getContentPane().add(proxy_ARP);
 		proxy_ARP.setLayout(null);
 		JButton btnNewButton_3 = new JButton("Add");
@@ -151,16 +153,16 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	    btnNewButton_4.setBounds(164, 268, 135, 23);
 	    proxy_ARP.add(btnNewButton_4);
 		textField_2 = new JTextArea();
-		textField_2.setBounds(105, 164, 162, 21);
+		textField_2.setBounds(105, 164, 207, 21);
 		proxy_ARP.add(textField_2);
 		textField_2.setColumns(10);
 		textField_3 = new JTextArea();
 		textField_3.setColumns(10);
-		textField_3.setBounds(105, 195, 162, 21);
+		textField_3.setBounds(105, 195, 207, 21);
 		proxy_ARP.add(textField_3);
 		textField_4 = new JTextArea();
 		textField_4.setColumns(10);
-		textField_4.setBounds(105, 226, 162, 21);
+		textField_4.setBounds(105, 226, 207, 21);
 		proxy_ARP.add(textField_4);
 		JLabel ARP_1_3_1_1 = new JLabel("Device");
 		ARP_1_3_1_1.setBounds(12, 169, 61, 15);
@@ -173,7 +175,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		proxy_ARP.add(ARP_1_3_1_2);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(12, 10, 287, 147);
+		scrollPane_2.setBounds(12, 10, 318, 147);
 		proxy_ARP.add(scrollPane_2);
 		
 		String proxy_header[] = { "Device", "IP Address", "MAC Address"};
@@ -182,15 +184,15 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		scrollPane_2.setViewportView(table_ProxyTable);
 		
 		JPanel GARP = new JPanel();
-		GARP.setBounds(763, 29, 311, 116);
+		GARP.setBounds(763, 29, 362, 116);
 		frmArpgui.getContentPane().add(GARP);
 		GARP.setLayout(null);
 		JLabel ARP_1_3_1_1_1 = new JLabel("HW");
-		ARP_1_3_1_1_1.setBounds(23, 21, 61, 15);
+		ARP_1_3_1_1_1.setBounds(12, 51, 61, 15);
 		GARP.add(ARP_1_3_1_1_1);
 		JTextArea textField_srcMac = new JTextArea();
 		textField_srcMac.setColumns(10);
-		textField_srcMac.setBounds(33, 47, 255, 21);
+		textField_srcMac.setBounds(54, 47, 207, 21);
 		GARP.add(textField_srcMac);
 		JButton btnNewButton_4_1 = new JButton("Send");
 		btnNewButton_4_1.addActionListener(new ActionListener() {
@@ -201,30 +203,32 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).SendGARP();
 			}
 		});
-		btnNewButton_4_1.setBounds(111, 83, 91, 23);
+		btnNewButton_4_1.setBounds(271, 47, 91, 23);
 		GARP.add(btnNewButton_4_1);
 		JLabel ARP_1_1 = new JLabel("Proxy ARP");
+		ARP_1_1.setFont(new Font("굴림", Font.BOLD, 14));
 		ARP_1_1.setBounds(383, 10, 83, 15);
 		frmArpgui.getContentPane().add(ARP_1_1);
 		JLabel ARP_1_2 = new JLabel("Gratitous ARP");
+		ARP_1_2.setFont(new Font("굴림", Font.BOLD, 14));
 		ARP_1_2.setBounds(763, 10, 109, 15);
 		frmArpgui.getContentPane().add(ARP_1_2);
 		JPanel GARP_1 = new JPanel();
 		GARP_1.setLayout(null);
-		GARP_1.setBounds(763, 173, 311, 157);
+		GARP_1.setBounds(763, 174, 362, 156);
 		frmArpgui.getContentPane().add(GARP_1);
 		JLabel ARP_1_3_1_1_1_1 = new JLabel("MAC");
-		ARP_1_3_1_1_1_1.setBounds(23, 63, 64, 15);
+		ARP_1_3_1_1_1_1.setBounds(12, 63, 64, 15);
 		GARP_1.add(ARP_1_3_1_1_1_1);
 		JTextArea textArea_srcMacAddr = new JTextArea();
 		textArea_srcMacAddr.setColumns(10);
-		textArea_srcMacAddr.setBounds(87, 58, 201, 21);
+		textArea_srcMacAddr.setBounds(77, 58, 201, 21);
 		textArea_srcMacAddr.setText("0:C:29:D2:99:B3");
 		GARP_1.add(textArea_srcMacAddr);
 		
 		JTextArea textArea_srcIpAddr = new JTextArea();
 		textArea_srcIpAddr.setColumns(10);
-		textArea_srcIpAddr.setBounds(87, 93, 201, 21);
+		textArea_srcIpAddr.setBounds(77, 93, 201, 21);
 		textArea_srcIpAddr.setText("168.188.129.1");
 		GARP_1.add(textArea_srcIpAddr);
 
@@ -243,15 +247,15 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				((NILayer) m_LayerMgr.GetLayer("NI")).SetAdapterNumber(selected_index);
 			}
 		});
-		btn_set.setBounds(87, 124, 90, 23);
+		btn_set.setBounds(77, 126, 90, 23);
 		GARP_1.add(btn_set);
 		JLabel ARP_1_3_1_1_1_1_1 = new JLabel("IP");
-		ARP_1_3_1_1_1_1_1.setBounds(23, 98, 64, 15);
+		ARP_1_3_1_1_1_1_1.setBounds(12, 88, 64, 15);
 		GARP_1.add(ARP_1_3_1_1_1_1_1);
-		comboBox.setBounds(12, 25, 201, 23);
+		comboBox.setBounds(12, 25, 266, 23);
 		GARP_1.add(comboBox);
 		JButton btnNewButton_5 = new JButton("Reset ");
-		btnNewButton_5.setBounds(198, 124, 90, 23);
+		btnNewButton_5.setBounds(188, 126, 90, 23);
 		GARP_1.add(btnNewButton_5);
 		JButton btnNewButton_6 = new JButton("Select");
 		btnNewButton_6.addActionListener(new ActionListener() {
@@ -282,24 +286,25 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).deleteARPCacheTableElement(value);
 			}
 		});
-		btnNewButton_6.setBounds(220, 25, 80, 23);
+		btnNewButton_6.setBounds(282, 25, 80, 23);
 		GARP_1.add(btnNewButton_6);
 		SetCombobox();
-		JLabel ARP_1_2_1 = new JLabel("Setting");
-		ARP_1_2_1.setBounds(763, 155, 109, 15);
+		JLabel ARP_1_2_1 = new JLabel("My Address Setting");
+		ARP_1_2_1.setFont(new Font("굴림", Font.BOLD, 14));
+		ARP_1_2_1.setBounds(763, 155, 159, 15);
 		frmArpgui.getContentPane().add(ARP_1_2_1);
 		JPanel panel = new JPanel();
-		panel.setBounds(27, 357, 667, 293);
+		panel.setBounds(27, 357, 698, 261);
 		frmArpgui.getContentPane().add(panel);
 		panel.setLayout(null);
 		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(12, 10, 634, 233);
+		scrollPane_1.setBounds(12, 10, 490, 198);
 		panel.add(scrollPane_1);
 		JTextArea textArea_chatView = new JTextArea();
 		scrollPane_1.setViewportView(textArea_chatView);
 		textField_chatContent = new JTextField();
 		textField_chatContent.setFont(new Font("±¼¸²", Font.PLAIN, 15));
-		textField_chatContent.setBounds(12, 253, 531, 32);
+		textField_chatContent.setBounds(12, 218, 383, 32);
 		panel.add(textField_chatContent);
 		textField_chatContent.setColumns(10);
 		JButton btn_chatSend = new JButton("Send");
@@ -327,10 +332,39 @@ public class ARPGUI extends JFrame implements BaseLayer {
 			}
 		});
 		
-		btn_chatSend.setBounds(555, 252, 93, 32);
+		btn_chatSend.setBounds(407, 218, 95, 32);
 		panel.add(btn_chatSend);
+		
+		JLabel chat_dst_ip = new JLabel("Chat Destination IP");
+		chat_dst_ip.setBounds(524, 41, 135, 15);
+		panel.add(chat_dst_ip);
+		
+		JTextArea textField_ChatDstIP = new JTextArea();
+		textField_ChatDstIP.setText("168.188.129.1");
+		textField_ChatDstIP.setBounds(524, 66, 159, 25);
+		panel.add(textField_ChatDstIP);
+		textField_ChatDstIP.setColumns(10);
+		
+		JLabel chat_dst_mac = new JLabel("Chat Destination MAC");
+		chat_dst_mac.setBounds(524, 105, 159, 15);
+		panel.add(chat_dst_mac);
+		
+		JTextArea textField_ChatDstMac = new JTextArea();
+		textField_ChatDstMac.setBounds(524, 129, 159, 25);
+		panel.add(textField_ChatDstMac);
+		textField_ChatDstMac.setColumns(10);
+		
+		JLabel ARP_1_2_1_1 = new JLabel("Chat Setting");
+		ARP_1_2_1_1.setFont(new Font("굴림", Font.BOLD, 14));
+		ARP_1_2_1_1.setBounds(514, 16, 159, 15);
+		panel.add(ARP_1_2_1_1);
+		
+		JButton btn_chatSet = new JButton("Set");
+		btn_chatSet.setBounds(524, 164, 159, 32);
+		panel.add(btn_chatSet);
 		JLabel lblNewLabel = new JLabel("Chatting");
-		lblNewLabel.setBounds(27, 340, 52, 15);
+		lblNewLabel.setFont(new Font("굴림", Font.BOLD, 14));
+		lblNewLabel.setBounds(27, 340, 118, 15);
 		frmArpgui.getContentPane().add(lblNewLabel);
 		frmArpgui.setVisible(true);
 	}
