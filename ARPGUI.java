@@ -40,6 +40,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	private JTable table_ARPTable;
 	private JTextField textField_chatContent;
 	private JTable table_ProxyTable;
+	JButton btn_addrSettingReset;
 	/**
 	 * Launch the application.
 	 */
@@ -84,24 +85,27 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		ARP.setBounds(27, 29, 311, 301);
 		frmArpgui.getContentPane().add(ARP);
 		ARP.setLayout(null);
-		JButton btnNewButton = new JButton("Item delete");
-		btnNewButton.setBounds(12, 213, 135, 25);
-		ARP.add(btnNewButton);
-		JButton btnNewButton_1 = new JButton("All delete");
-		btnNewButton_1.addActionListener(new ActionListener() {
+		JButton btn_arpItemDelete = new JButton("Item delete");
+		btn_arpItemDelete.setEnabled(false);
+		btn_arpItemDelete.setBounds(12, 213, 135, 25);
+		ARP.add(btn_arpItemDelete);
+		JButton btn_arpAllDelete = new JButton("All delete");
+		btn_arpAllDelete.setEnabled(false);
+		btn_arpAllDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).deleteAllARPCacheTableElement();
 			}
 		});
-		btnNewButton_1.setBounds(164, 213, 135, 25);
-		ARP.add(btnNewButton_1);
+		btn_arpAllDelete.setBounds(164, 213, 135, 25);
+		ARP.add(btn_arpAllDelete);
 		textField_targetIp = new JTextArea();
 		textField_targetIp.setText("168.188.129.2");
 		textField_targetIp.setBounds(12, 270, 175, 25);
 		ARP.add(textField_targetIp);
 		textField_targetIp.setColumns(10);
-		JButton btnNewButton_2 = new JButton("Send");
-		btnNewButton_2.addActionListener(new ActionListener() {
+		JButton btn_sendArpRequest = new JButton("Send");
+		btn_sendArpRequest.setEnabled(false);
+		btn_sendArpRequest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String targetIp = textField_targetIp.getText();
 				((ARPLayer) m_LayerMgr.GetLayer("ARP"))
@@ -109,8 +113,8 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).Send();
 			}
 		});
-		btnNewButton_2.setBounds(199, 270, 100, 25);
-		ARP.add(btnNewButton_2);
+		btn_sendArpRequest.setBounds(199, 270, 100, 25);
+		ARP.add(btn_sendArpRequest);
 		JLabel ARP_1_3 = new JLabel("Target IP");
 		ARP_1_3.setBounds(12, 246, 133, 15);
 		ARP.add(ARP_1_3);
@@ -127,8 +131,9 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		proxy_ARP.setBounds(383, 29, 342, 301);
 		frmArpgui.getContentPane().add(proxy_ARP);
 		proxy_ARP.setLayout(null);
-		JButton btnNewButton_3 = new JButton("Add");
-	    btnNewButton_3.addActionListener(new ActionListener() {
+		JButton btn_proxyArpAdd = new JButton("Add");
+		btn_proxyArpAdd.setEnabled(false);
+	    btn_proxyArpAdd.addActionListener(new ActionListener() {
 	       public void actionPerformed(ActionEvent e) {
 	          ARPLayer arpLayer = (ARPLayer)(m_LayerMgr.GetLayer("ARP"));
 	          if(arpLayer!=null){
@@ -136,22 +141,28 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	             String ip_textField = textField_3.getText();
 	             String mac_textField = textField_4.getText();
 	             arpLayer.addPROXYCacheTableElement(device_textField, ip_textField, mac_textField);
+	             
+	             
+	             textField_2.setText("");
+	             textField_3.setText("");
+	             textField_4.setText("");
 	          }
 
 	       }
 	    });
-	    btnNewButton_3.setBounds(12, 268, 135, 23);
-	    proxy_ARP.add(btnNewButton_3);
-	    JButton btnNewButton_4 = new JButton("Delete");
-	    btnNewButton_4.addActionListener(new ActionListener() {
+	    btn_proxyArpAdd.setBounds(12, 268, 135, 23);
+	    proxy_ARP.add(btn_proxyArpAdd);
+	    JButton btn_proxyArpDelete = new JButton("Delete");
+	    btn_proxyArpDelete.setEnabled(false);
+	    btn_proxyArpDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int selected_row = table_ProxyTable.getSelectedRow();
 				String value = String.valueOf(table_ProxyTable.getValueAt(selected_row, 1));
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).deletePROXYCacheTableElement(value);
 			}
 		});
-	    btnNewButton_4.setBounds(164, 268, 135, 23);
-	    proxy_ARP.add(btnNewButton_4);
+	    btn_proxyArpDelete.setBounds(164, 268, 135, 23);
+	    proxy_ARP.add(btn_proxyArpDelete);
 		textField_2 = new JTextArea();
 		textField_2.setBounds(105, 164, 207, 21);
 		proxy_ARP.add(textField_2);
@@ -194,8 +205,9 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		textField_srcMac.setColumns(10);
 		textField_srcMac.setBounds(54, 47, 207, 21);
 		GARP.add(textField_srcMac);
-		JButton btnNewButton_4_1 = new JButton("Send");
-		btnNewButton_4_1.addActionListener(new ActionListener() {
+		JButton btn_sendGarp = new JButton("Send");
+		btn_sendGarp.setEnabled(false);
+		btn_sendGarp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String srcMac = textField_srcMac.getText();
 				((ARPLayer) m_LayerMgr.GetLayer("ARP"))
@@ -203,8 +215,8 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).SendGARP();
 			}
 		});
-		btnNewButton_4_1.setBounds(271, 47, 91, 23);
-		GARP.add(btnNewButton_4_1);
+		btn_sendGarp.setBounds(271, 47, 91, 23);
+		GARP.add(btn_sendGarp);
 		JLabel ARP_1_1 = new JLabel("Proxy ARP");
 		ARP_1_1.setFont(new Font("굴림", Font.BOLD, 14));
 		ARP_1_1.setBounds(383, 10, 83, 15);
@@ -221,19 +233,28 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		ARP_1_3_1_1_1_1.setBounds(12, 63, 64, 15);
 		GARP_1.add(ARP_1_3_1_1_1_1);
 		JTextArea textArea_srcMacAddr = new JTextArea();
+		textArea_srcMacAddr.setEnabled(false);
+		textArea_srcMacAddr.setEditable(false);
 		textArea_srcMacAddr.setColumns(10);
 		textArea_srcMacAddr.setBounds(77, 58, 201, 21);
 		textArea_srcMacAddr.setText("0:C:29:D2:99:B3");
 		GARP_1.add(textArea_srcMacAddr);
 		
 		JTextArea textArea_srcIpAddr = new JTextArea();
+		textArea_srcIpAddr.setEnabled(false);
+		textArea_srcIpAddr.setEditable(false);
 		textArea_srcIpAddr.setColumns(10);
-		textArea_srcIpAddr.setBounds(77, 93, 201, 21);
+		textArea_srcIpAddr.setBounds(77, 88, 201, 21);
 		textArea_srcIpAddr.setText("168.188.129.1");
 		GARP_1.add(textArea_srcIpAddr);
-
-		JButton btn_set = new JButton("Set");
-		btn_set.addActionListener(new ActionListener() {
+		
+		JButton btn_addrSelect = new JButton("Select");
+		JButton btn_chatSet = new JButton("Set");
+		JButton btn_addrSettingReset = new JButton("Reset");
+		JButton btn_addrSet = new JButton("Set");
+		btn_addrSet.setEnabled(false);
+		
+		btn_addrSet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String srcMac = textArea_srcMacAddr.getText();
 				String srcIP = textArea_srcIpAddr.getText();
@@ -245,20 +266,57 @@ public class ARPGUI extends JFrame implements BaseLayer {
 						.setARPHeaderSrcMac(Utils.convertStrFormatMacToByteFormat(srcMac));
 				((IPLayer) m_LayerMgr.GetLayer("IP")).setIpHeaderSrcIPAddr(Utils.convertStrFormatIpToByteFormat(srcIP));
 				((NILayer) m_LayerMgr.GetLayer("NI")).SetAdapterNumber(selected_index);
+				
+				
+
+				textArea_srcMacAddr.setEnabled(false);
+				textArea_srcIpAddr.setEnabled(false);
+				
+				btn_sendGarp.setEnabled(true);
+				btn_sendArpRequest.setEnabled(true);
+				btn_arpItemDelete.setEnabled(true);
+				btn_arpAllDelete.setEnabled(true);
+				btn_proxyArpAdd.setEnabled(true);
+				btn_proxyArpDelete.setEnabled(true);
+				btn_chatSet.setEnabled(true);
+				btn_addrSettingReset.setEnabled(true);
+				btn_addrSet.setEnabled(false);
+				btn_addrSelect.setEnabled(false);
+
 			}
 		});
-		btn_set.setBounds(77, 126, 90, 23);
-		GARP_1.add(btn_set);
+		btn_addrSet.setBounds(77, 126, 90, 23);
+		GARP_1.add(btn_addrSet);
 		JLabel ARP_1_3_1_1_1_1_1 = new JLabel("IP");
 		ARP_1_3_1_1_1_1_1.setBounds(12, 88, 64, 15);
 		GARP_1.add(ARP_1_3_1_1_1_1_1);
 		comboBox.setBounds(12, 25, 266, 23);
 		GARP_1.add(comboBox);
-		JButton btnNewButton_5 = new JButton("Reset ");
-		btnNewButton_5.setBounds(188, 126, 90, 23);
-		GARP_1.add(btnNewButton_5);
-		JButton btnNewButton_6 = new JButton("Select");
-		btnNewButton_6.addActionListener(new ActionListener() {
+		
+		btn_addrSettingReset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textArea_srcMacAddr.setEnabled(true);
+				textArea_srcIpAddr.setEnabled(true);
+				
+				
+				btn_sendGarp.setEnabled(false);
+				btn_sendArpRequest.setEnabled(false);
+				btn_arpItemDelete.setEnabled(false);
+				btn_arpAllDelete.setEnabled(false);
+				btn_proxyArpAdd.setEnabled(false);
+				btn_proxyArpDelete.setEnabled(false);
+				btn_chatSet.setEnabled(false);
+				btn_addrSettingReset.setEnabled(false);
+				
+				btn_addrSet.setEnabled(true);
+				btn_addrSettingReset.setEnabled(false);
+
+			}
+		});
+		btn_addrSettingReset.setEnabled(false);
+		btn_addrSettingReset.setBounds(188, 126, 90, 23);
+		GARP_1.add(btn_addrSettingReset);
+		btn_addrSelect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String selected = comboBox.getSelectedItem().toString();
 				selected_index = comboBox.getSelectedIndex();
@@ -277,17 +335,24 @@ public class ARPGUI extends JFrame implements BaseLayer {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+			
+
+				textArea_srcMacAddr.setEditable(true);
+				textArea_srcMacAddr.setEnabled(true);
+				textArea_srcIpAddr.setEditable(true);
+				textArea_srcIpAddr.setEnabled(true);
+				btn_addrSet.setEnabled(true);
 			}
 		});
-		btnNewButton.addActionListener(new ActionListener() {
+		btn_arpItemDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int selected_row = table_ARPTable.getSelectedRow();
 				String value = String.valueOf(table_ARPTable.getValueAt(selected_row, 0));
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).deleteARPCacheTableElement(value);
 			}
 		});
-		btnNewButton_6.setBounds(282, 25, 80, 23);
-		GARP_1.add(btnNewButton_6);
+		btn_addrSelect.setBounds(282, 25, 80, 23);
+		GARP_1.add(btn_addrSelect);
 		SetCombobox();
 		JLabel ARP_1_2_1 = new JLabel("My Address Setting");
 		ARP_1_2_1.setFont(new Font("굴림", Font.BOLD, 14));
@@ -308,6 +373,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		panel.add(textField_chatContent);
 		textField_chatContent.setColumns(10);
 		JButton btn_chatSend = new JButton("Send");
+		btn_chatSend.setEnabled(false);
 		btn_chatSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// Assign the chat content entered by the user
@@ -359,7 +425,25 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		ARP_1_2_1_1.setBounds(514, 16, 159, 15);
 		panel.add(ARP_1_2_1_1);
 		
-		JButton btn_chatSet = new JButton("Set");
+		btn_chatSet.setEnabled(false);
+		btn_chatSet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String chatDstIPStr = textField_ChatDstIP.getText();
+				String chatDstMACStr =textField_ChatDstMac.getText();
+				
+
+
+				
+				textField_ChatDstIP.setEditable(false);
+				textField_ChatDstIP.setEnabled(false);
+				textField_ChatDstMac.setEditable(false);
+				textField_ChatDstMac.setEnabled(false);
+
+				btn_chatSend.setEnabled(true);
+				btn_chatSet.setEnabled(false);
+
+			}
+		});
 		btn_chatSet.setBounds(524, 164, 159, 32);
 		panel.add(btn_chatSet);
 		JLabel lblNewLabel = new JLabel("Chatting");
