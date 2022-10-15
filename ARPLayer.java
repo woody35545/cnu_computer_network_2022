@@ -239,6 +239,132 @@ public class ARPLayer implements BaseLayer {
 		}
 
 	}
+	
+	private class _PROXY_CACHE_TABLE {
+	      private final static int Capacity = 30;
+	      private int size = 0;
+	      private String[] deviceName = new String[Capacity];
+	      private String[] ipAddr = new String[Capacity];
+	      private String[] macAddr = new String[Capacity];
+	      
+
+	      public _PROXY_CACHE_TABLE() {
+	         // _PROXY_CACHE_TABLE constructor
+	      }
+
+	      public boolean addProxyCacheTableElement(String pDeviceName, String pIpAddr, String pMacAddr) {
+	         if (this.isExist(pIpAddr)) {
+	            this.updateProxyCacheTableElement(pIpAddr, pMacAddr);
+	         }
+
+	         if (this.size < this.Capacity && !this.isExist(pIpAddr)) {
+	            deviceName[size] = pDeviceName;
+	            ipAddr[size] = pIpAddr;
+	            macAddr[size] = pMacAddr;
+	            size++;
+	            return true;
+	         }
+	         return false;
+	      }
+
+	      public boolean addProxyCacheTableElement(String pIpAddr) {
+	         if (this.size < this.Capacity && !this.isExist(pIpAddr)) {
+	            deviceName[size] = "Host ~"; //?
+	            ipAddr[size] = pIpAddr;
+	            macAddr[size] = "??:??:??:??:??:??";
+	            size++;
+	            return true;
+
+	         }
+	         return false;
+	      }
+
+	      private int getIndexOf(String pIpAddr) {
+	         if (this.isExist(pIpAddr))
+	            for (int i = 0; i < size; i++) {
+	               if (this.ipAddr[i].equals(pIpAddr))
+	                  return i;
+	            }
+	         return -1;
+	      }
+
+	      public boolean updateProxyCacheTableElement(String pIpAddr, String pMacAddr) {
+	         if (!this.isExist(pIpAddr)) {
+	            return false;
+	         }
+	         for (int i = 0; i < size; i++) {
+	            if (ipAddr[i] == pIpAddr) {
+	               macAddr[i] = pMacAddr;
+	               return true;
+	            }
+	         }
+	         return false;
+	      }
+	      
+	      public boolean deleteProxyCacheTable(String pIpAddr) {
+	         if (this.isExist(pIpAddr)) {
+	            int idx = 0;
+	            for (int i = 0; i < this.size; i++) {
+	               if (this.ipAddr[i].equals(pIpAddr)) {
+	                  idx = i;
+	               }
+	            }
+
+	            this.deviceName = this.removeElementFromArray(this.deviceName,idx);
+	            this.ipAddr = this.removeElementFromArray(this.ipAddr, idx);
+	            this.macAddr = this.removeElementFromArray(this.macAddr, idx);
+	            this.size--;
+	            
+	            this.showProxyTable();
+	            return true;
+	         }
+	         return false;
+	      }
+
+	      
+	      public void resetProxyCacheTable() {
+	         this.size = 0;
+	         this.deviceName = new String[Capacity];
+	         this.ipAddr = new String[Capacity];
+	         this.macAddr = new String[Capacity];
+	      }
+	      
+	      public boolean isExist(String pIpAddr) {
+	         for (int i = 0; i < this.size; i++) {
+	            if (this.ipAddr[i].equals(pIpAddr)) {
+	               return true;
+	            }
+	         }
+	         return false;
+	      }
+
+	      private String[] removeElementFromArray(String[] arr, int index)
+	       {
+	           if (arr == null || index < 0 || index >= arr.length) {
+	               return arr;
+	           }
+	           String[] removed_arr = new String[arr.length - 1];
+	           System.arraycopy(arr, 0, removed_arr, 0, index);
+	           System.arraycopy(arr, index + 1, removed_arr, index, arr.length - index - 1);
+	           return removed_arr;
+	       }
+
+	      public void showProxyTable() {
+	         System.out.println("[ PROXY CACHE TABLE ] - (size: " + this.size +")");
+	         for (int i = 0; i < this.size; i++) {
+	            System.out.print(deviceName[i] + " | ");
+	            System.out.print(ipAddr[i] + " | ");
+	            System.out.print(macAddr[i] + " | ");
+	         }
+	         System.out.println("----------------------------------------------------------------------------");
+	         System.out.println("");
+	         /*
+	          * for (int i = 0; i < this.size - 1; i++) { for (int j = 0; j < 4; j++) {
+	          * System.out.print(this.ipAddr[i].getAddr()[j] + "."); } }
+	          */
+	      }
+
+	   }
 
 	private class _IP_ADDR {
 		/*
