@@ -33,7 +33,7 @@ public class ChatAppLayer implements BaseLayer{
 		for(int i=0; i<2; i++){
 			m_sHeader.capp_totlen[i] = (byte) 0x00;
 		}
-		m_sHeader.capp_type = (byte) 0x00;	
+		m_sHeader.capp_type = (byte) 0x00;	// if Chat: 0x00, FileTransfer: 0x01
 		m_sHeader.capp_unused = (byte) 0x00;	
 		m_sHeader.capp_data = null;	
 	}
@@ -75,10 +75,14 @@ public class ChatAppLayer implements BaseLayer{
 		return false;
 	}
 
-           
+          
 	public boolean Receive(byte[] input){
 		this.GetUpperLayer(0).Receive(this.Decapsulate(input));
 		return true;
+	}
+	
+	public void setAppType(byte pAppType) {
+		this.m_sHeader.capp_type = pAppType;
 	}
 
 	@Override
