@@ -57,9 +57,9 @@ public class ARPLayer implements BaseLayer {
 		}
 
 		@SuppressWarnings("unused")
-		public _ARP_HEADER(byte[] pHardwareType, byte[] pProtocolType, byte pLengthOfMacAddr,
-				byte pLengthOfProtocolAddr, byte[] pOpcode, _MAC_ADDR pSenderMacAddress, _MAC_ADDR pTargetMacAddress,
-				_IP_ADDR pSenderIpAddress, _IP_ADDR pTargetIpAddress) {
+	      public _ARP_HEADER(byte[] pHardwareType, byte[] pProtocolType, byte pLengthOfMacAddr,
+	            byte pLengthOfProtocolAddr, byte[] pOpcode, _MAC_ADDR pSenderMacAddress, _IP_ADDR pSenderIpAddress,
+	            _MAC_ADDR pTargetMacAddress,_IP_ADDR pTargetIpAddress) {
 
 			// _ARP_HEADER constructor with Parameters
 			this.hardwareType = pHardwareType;
