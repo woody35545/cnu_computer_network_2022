@@ -202,15 +202,15 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		JPanel panel_garp = new JPanel();
 		panel_garp.setBorder(new TitledBorder(new LineBorder(Color.black,1),"GARP"));
 
-		panel_garp.setBounds(763, 29, 362, 116);
+		panel_garp.setBounds(763, 10, 362, 135);
 		frmArpgui.getContentPane().add(panel_garp);
 		panel_garp.setLayout(null);
 		JLabel ARP_1_3_1_1_1 = new JLabel("HW");
-		ARP_1_3_1_1_1.setBounds(12, 51, 61, 15);
+		ARP_1_3_1_1_1.setBounds(10, 65, 61, 15);
 		panel_garp.add(ARP_1_3_1_1_1);
 		JTextArea textField_srcMac = new JTextArea();
 		textField_srcMac.setColumns(10);
-		textField_srcMac.setBounds(77, 47, 201, 21);
+		textField_srcMac.setBounds(75, 61, 201, 21);
 		panel_garp.add(textField_srcMac);
 		JButton btn_sendGarp = new JButton("Send");
 		btn_sendGarp.setEnabled(false);
@@ -222,12 +222,8 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).SendGARP();
 			}
 		});
-		btn_sendGarp.setBounds(283, 47, 68, 23);
+		btn_sendGarp.setBounds(281, 61, 68, 23);
 		panel_garp.add(btn_sendGarp);
-		JLabel ARP_1_2 = new JLabel("Gratitous ARP");
-		ARP_1_2.setFont(new Font("굴림", Font.BOLD, 14));
-		ARP_1_2.setBounds(763, 10, 109, 15);
-		frmArpgui.getContentPane().add(ARP_1_2);
 		JPanel panel_addressSetting = new JPanel();
 		panel_addressSetting.setBorder(new TitledBorder(new LineBorder(Color.black,1),"Address Setting"));
 
@@ -464,6 +460,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		panel_fileTransfer.add(progressBar_fileTransferProgressBar);
 		
 		JTextArea textField_filePath = new JTextArea();
+		textField_filePath.setBorder(new LineBorder(Color.gray,1));
 		textField_filePath.setEditable(false);
 		textField_filePath.setColumns(10);
 		textField_filePath.setBounds(22, 166, 222, 32);
@@ -493,6 +490,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		btn_fileTransferSet.setEnabled(false);
 		
 		JTextArea textField_FileTransferDstMac = new JTextArea();
+		textField_FileTransferDstMac.setBorder(new LineBorder(Color.gray));
 		textField_FileTransferDstMac.setBounds(178, 52, 141, 25);
 		panel_fileTransferSetting.add(textField_FileTransferDstMac);
 		textField_FileTransferDstMac.setColumns(10);
