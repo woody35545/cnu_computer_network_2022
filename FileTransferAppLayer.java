@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.nio.ByteBuffer;
 
 public class FileTransferAppLayer implements BaseLayer {
 	private static final int FRAGMENT_SIZE = 1400;
@@ -13,6 +14,9 @@ public class FileTransferAppLayer implements BaseLayer {
 
 	_FILE_TRANSFER_HEADER m_sHeader = new _FILE_TRANSFER_HEADER();
 
+	int receivedLength = 0;
+	private ByteBuffer receivedBuffer = ByteBuffer.allocate(FRAGMENT_SIZE*10);
+	
 	private class _FILE_TRANSFER_HEADER {
 		/*
 		 * Data structure for File Trasfer type message.
@@ -72,14 +76,28 @@ public class FileTransferAppLayer implements BaseLayer {
 		}
 		return encapsulated;
 	}
-
+	
+	public byte[] Decapulate(byte[] pData) {
+	
+		byte[] decapsulated = new byte[pData.length - LENGTH_OF_HEADER_EXCEPT_DATA];
+		for (int i = 0; i < decapsulated.length; i++) {
+			decapsulated[i] = pData[LENGTH_OF_HEADER_EXCEPT_DATA + i];
+		}
+		return decapsulated;
+		
+	}
 	public boolean Send(byte[] pData, int pLength) {
 		int fragmentTotalLength; // length of fragment
 
 		if (pData.length > FRAGMENT_SIZE) {
 			// If Fragmentation needed!
-
+			
+			
 			int fragmentedLength = 0; // Fragmented size from full data size
+			
+			// Sequence of Fragment start with 0 
+			int fragmentNumber = 0;
+			
 			// Declare variable to check if it is the last fragment during whole
 			// fragmentation
 			boolean isLastFragment = false;
@@ -92,7 +110,7 @@ public class FileTransferAppLayer implements BaseLayer {
 					// If this is the last fragment, it fragments up to this point and does not
 					// fragment any more.
 					isLastFragment = false;
-
+					
 					// Assign total length of last fragment
 					fragmentTotalLength = pData.length - fragmentedLength;
 
@@ -102,6 +120,9 @@ public class FileTransferAppLayer implements BaseLayer {
 					// Set header's fragment type feild value to last fragment type(0x03)
 					this.m_sHeader.fragment_type = (byte) 0x03;
 
+					// Set header's fragment's sequence
+					this.setFileFragmentNumber(fragmentNumber++);
+					
 					// Declare an array to hold fragmented data
 					byte[] fragmentedData = new byte[fragmentTotalLength];
 
@@ -115,6 +136,10 @@ public class FileTransferAppLayer implements BaseLayer {
 
 					// send to TCP Layer
 					((TCPLayer) this.GetUnderLayer(0)).Send(encapsulated, encapsulated.length);
+					
+					// update fragemented length
+					fragmentedLength += fragmentTotalLength;
+
 				}
 
 				else {
@@ -136,9 +161,9 @@ public class FileTransferAppLayer implements BaseLayer {
 					// set Header's File total length
 					this.setFileTotalLength(fragmentTotalLength);
 
-					// update fragemented length
-					fragmentedLength += fragmentTotalLength;
-
+					// Set header's fragment's sequence
+					this.setFileFragmentNumber(fragmentNumber++);
+					
 					// Declare an array to hold fragmented data
 					byte[] fragmentedData = new byte[fragmentTotalLength];
 
@@ -155,6 +180,9 @@ public class FileTransferAppLayer implements BaseLayer {
 
 					// send to TCP Layer
 					((TCPLayer) this.GetUnderLayer(0)).Send(encapsulated, encapsulated.length);
+					
+					// update fragemented length
+					fragmentedLength += fragmentTotalLength;
 
 				}
 
@@ -171,6 +199,9 @@ public class FileTransferAppLayer implements BaseLayer {
 			// set Header's File total length
 			this.setFileTotalLength(fragmentTotalLength);
 
+			// Set Header's Fragement Number to '0', Cause it won't be used when Fragmentation is not needed
+			this.setFileFragmentNumber(0);
+			
 			// Declare an array to hold fragmented data
 			byte[] fragmentedData = new byte[fragmentTotalLength];
 
@@ -192,6 +223,63 @@ public class FileTransferAppLayer implements BaseLayer {
 	}
 
 	public boolean Receive(byte[] pData) {
+		// Assign Decapsulated data
+		byte[] decapsulated = this.Decapulate(pData);
+
+		// Check if Received Data is Fragmented data
+		if(this.getFragmentTypeFromByte(pData) == (byte)0x00) {
+			// this is not Fragmented type data
+			
+			
+			// Converting Byte type original data(= decapsulated data) to file type
+			Utils.convertByteToFile("ReceivedFile", "pwd", decapsulated);
+			
+		}
+		else { 
+			// if this is Fragmented type data (if type == 0x01 or 0x02 or 0x03)
+			
+			/*
+			 * When defining the file app transfer header, 
+			 * the location of the fragment was specified as the fragment type field, 
+			 * but I ignored it because it seemed unnecessary and received
+			 */
+			
+			// Assign total length of received file.
+			int receivedFileTotalLength = this.castByteArrToInt(this.getFileTotalLengthFromByte(pData));
+			
+			// reallocate receivedBuffer size to total length of received file
+			this.receivedBuffer = ByteBuffer.allocate(receivedFileTotalLength);
+			
+			// initialize receivedLength to 0 before collecting fragments.
+			this.receivedLength = 0;
+			
+			// Declare value to check whether collecting fragment is finish
+			boolean isLastFragment = false;
+		
+			// Start collecting Fragment to Receive Buffer
+			while(!isLastFragment) {
+				if(this.getFragmentTypeFromByte(pData)==(byte)0x03) {
+					// If this fragment is last one, set isLastFragment true.
+					isLastFragment = true;
+				}
+				
+				// Declare variable to store fragmentNumber of received fragment
+				int fragmentNumber = this.castByteArrToInt(this.getFileFragmentNumberFromByte(pData));
+				
+				// Put fragment into buffer with considering fragment number
+				for(int i=0; i<decapsulated.length; i++)
+				this.receivedBuffer.put(fragmentNumber*FRAGMENT_SIZE + i, decapsulated[i]);
+				
+				// Update received length
+				this.receivedLength += decapsulated.length;			
+			}
+			
+			// After complete collecting all fragments, then make file with collecting bytes			
+			Utils.convertByteToFile("ReceivedFile", "pwd", this.receivedBuffer.array());
+			
+			// Reset receivedBuffer after making file for next receive.
+			this.receivedBuffer.clear();
+		}
 		return true;
 	}
 
@@ -214,7 +302,41 @@ public class FileTransferAppLayer implements BaseLayer {
 					* (this.m_sHeader.fragment_number.length - 1 - i))) & 0xff);
 		}
 	}
-
+	
+	public byte getFragmentTypeFromByte(byte[] pHeaderByte) { 
+		// Return value of Fragment type field from File transfer header type byte array 
+		
+		// The offset of Fragment type field from File transfer header is '4' 
+		return pHeaderByte[4];
+	}
+	public byte[] getFileTotalLengthFromByte(byte[] pHeaderByte) { 
+		// Return value of File Total Length field from File transfer header type byte array 
+		
+		// The offset of Fragment type field from File transfer header is '0:4' 
+		byte[] fileTotalLength = Arrays.copyOfRange(pHeaderByte, 0, 4);
+		
+		return fileTotalLength;
+	} 
+	
+	public byte[] getFileFragmentNumberFromByte(byte[] pHeaderByte) { 
+		// Return value of File Fragment Number field from File transfer header type byte array 
+		
+		// The offset of File Fragment Number field from File transfer header is '5:9' 
+		byte[] fileFragmentNumber = Arrays.copyOfRange(pHeaderByte, 5, 9);
+		
+		return fileFragmentNumber;
+	} 
+	
+	public int castByteArrToInt(byte[] pByte) { 
+		// Casting Byte array values to one integer value
+		int byteArrToInt = 0;
+		for (int i = 0; i < pByte.length; i++) {
+			byteArrToInt |=  ((pByte[i] & 0xff) << (pByte.length-1-i)) ;
+		}
+		return byteArrToInt;
+	}
+	
+	
 	public void setFileData(byte[] pData) {
 		this.m_sHeader.data = pData;
 	}
