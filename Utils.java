@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.regex.Pattern;
 
 public final class Utils {
@@ -104,5 +107,16 @@ public final class Utils {
 			return convertStrFormatMacToByteFormat(pStrFormatAddr);
 	}
 
+	public static byte[] convertFileToByte(String pFilePath) { 
+		byte[] byteTypeFileData = null;
+		try {
+			byteTypeFileData = Files.readAllBytes(new File(pFilePath).toPath());
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		return byteTypeFileData;
+	}
+
+	
 
 }
