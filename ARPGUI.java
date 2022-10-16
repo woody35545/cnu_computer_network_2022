@@ -17,6 +17,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import java.awt.Font;
+import javax.swing.JProgressBar;
 public class ARPGUI extends JFrame implements BaseLayer {
 	
 	public int nUnderLayerCount = 0;
@@ -76,7 +77,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	private void initialize() {
 		frmArpgui = new JFrame();
 		frmArpgui.setTitle("ARPGUI");
-		frmArpgui.setBounds(100, 100, 1151, 722);
+		frmArpgui.setBounds(100, 100, 1158, 689);
 		frmArpgui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmArpgui.getContentPane().setLayout(null);
 		JLabel ARP_1 = new JLabel("ARP");
@@ -452,6 +453,59 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		lblNewLabel.setFont(new Font("굴림", Font.BOLD, 14));
 		lblNewLabel.setBounds(27, 340, 118, 15);
 		frmArpgui.getContentPane().add(lblNewLabel);
+		
+		JPanel panel_fileTransfer = new JPanel();
+		panel_fileTransfer.setBounds(763, 360, 362, 258);
+		frmArpgui.getContentPane().add(panel_fileTransfer);
+		panel_fileTransfer.setLayout(null);
+		
+		JProgressBar progressBar_fileTransferProgressBar = new JProgressBar();
+		progressBar_fileTransferProgressBar.setBounds(22, 190, 328, 40);
+		panel_fileTransfer.add(progressBar_fileTransferProgressBar);
+		
+		JLabel lbl_fileTransferSetting = new JLabel("File Transfer Setting");
+		lbl_fileTransferSetting.setFont(new Font("굴림", Font.BOLD, 14));
+		lbl_fileTransferSetting.setBounds(12, 10, 159, 15);
+		panel_fileTransfer.add(lbl_fileTransferSetting);
+		
+		JLabel fileTransfer_dst_ip_1 = new JLabel("Destination IP");
+		fileTransfer_dst_ip_1.setBounds(22, 35, 135, 15);
+		panel_fileTransfer.add(fileTransfer_dst_ip_1);
+		
+		JTextArea textField_FileTransferDstIP = new JTextArea();
+		textField_FileTransferDstIP.setText("168.188.129.1");
+		textField_FileTransferDstIP.setColumns(10);
+		textField_FileTransferDstIP.setBounds(22, 60, 159, 25);
+		panel_fileTransfer.add(textField_FileTransferDstIP);
+		
+		JLabel fileTransfer_dst_mac_1 = new JLabel("Destination MAC");
+		fileTransfer_dst_mac_1.setBounds(191, 36, 159, 15);
+		panel_fileTransfer.add(fileTransfer_dst_mac_1);
+		
+		JTextArea textField_FileTransferDstMac = new JTextArea();
+		textField_FileTransferDstMac.setColumns(10);
+		textField_FileTransferDstMac.setBounds(191, 60, 159, 25);
+		panel_fileTransfer.add(textField_FileTransferDstMac);
+		
+		JButton btn_fileTransferSet = new JButton("Set");
+		btn_fileTransferSet.setEnabled(false);
+		btn_fileTransferSet.setBounds(22, 95, 328, 32);
+		panel_fileTransfer.add(btn_fileTransferSet);
+		
+		JTextArea textField_filePath = new JTextArea();
+		textField_filePath.setColumns(10);
+		textField_filePath.setBounds(22, 145, 222, 32);
+		panel_fileTransfer.add(textField_filePath);
+		
+		JButton btn_fileSend = new JButton("Send");
+		btn_fileSend.setEnabled(false);
+		btn_fileSend.setBounds(255, 145, 95, 32);
+		panel_fileTransfer.add(btn_fileSend);
+		
+		JLabel lbl_fileTransfer = new JLabel("File Transfer");
+		lbl_fileTransfer.setFont(new Font("굴림", Font.BOLD, 14));
+		lbl_fileTransfer.setBounds(763, 340, 159, 15);
+		frmArpgui.getContentPane().add(lbl_fileTransfer);
 		frmArpgui.setVisible(true);
 	}
 	private void SetCombobox() {
