@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +7,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
 import javax.swing.JTextField;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import org.jnetpcap.Pcap;
 import org.jnetpcap.PcapIf;
@@ -77,21 +80,18 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	private void initialize() {
 		frmArpgui = new JFrame();
 		frmArpgui.setTitle("ARPGUI");
-		frmArpgui.setBounds(100, 100, 1158, 689);
+		frmArpgui.setBounds(100, 100, 1149, 675);
 		frmArpgui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmArpgui.getContentPane().setLayout(null);
-		JLabel ARP_1 = new JLabel("ARP");
-		ARP_1.setFont(new Font("굴림", Font.BOLD, 14));
-		ARP_1.setBounds(27, 10, 50, 15);
-		frmArpgui.getContentPane().add(ARP_1);
-		JPanel ARP = new JPanel();
-		ARP.setBounds(27, 29, 311, 301);
-		frmArpgui.getContentPane().add(ARP);
-		ARP.setLayout(null);
+		JPanel panel_ARP = new JPanel();
+		panel_ARP.setBounds(27, 10, 315, 320);
+		panel_ARP.setBorder(new TitledBorder(new LineBorder(Color.black,1),"ARP"));
+		frmArpgui.getContentPane().add(panel_ARP);
+		panel_ARP.setLayout(null);
 		JButton btn_arpItemDelete = new JButton("Item delete");
 		btn_arpItemDelete.setEnabled(false);
-		btn_arpItemDelete.setBounds(12, 213, 135, 25);
-		ARP.add(btn_arpItemDelete);
+		btn_arpItemDelete.setBounds(12, 223, 135, 25);
+		panel_ARP.add(btn_arpItemDelete);
 		JButton btn_arpAllDelete = new JButton("All delete");
 		btn_arpAllDelete.setEnabled(false);
 		btn_arpAllDelete.addActionListener(new ActionListener() {
@@ -99,12 +99,12 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).deleteAllARPCacheTableElement();
 			}
 		});
-		btn_arpAllDelete.setBounds(164, 213, 135, 25);
-		ARP.add(btn_arpAllDelete);
+		btn_arpAllDelete.setBounds(164, 223, 135, 25);
+		panel_ARP.add(btn_arpAllDelete);
 		textField_targetIp = new JTextArea();
 		textField_targetIp.setText("168.188.129.2");
-		textField_targetIp.setBounds(12, 270, 175, 25);
-		ARP.add(textField_targetIp);
+		textField_targetIp.setBounds(22, 285, 175, 25);
+		panel_ARP.add(textField_targetIp);
 		textField_targetIp.setColumns(10);
 		JButton btn_sendArpRequest = new JButton("Send");
 		btn_sendArpRequest.setEnabled(false);
@@ -116,14 +116,14 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).Send();
 			}
 		});
-		btn_sendArpRequest.setBounds(199, 270, 100, 25);
-		ARP.add(btn_sendArpRequest);
+		btn_sendArpRequest.setBounds(209, 285, 100, 25);
+		panel_ARP.add(btn_sendArpRequest);
 		JLabel ARP_1_3 = new JLabel("Target IP");
-		ARP_1_3.setBounds(12, 246, 133, 15);
-		ARP.add(ARP_1_3);
+		ARP_1_3.setBounds(22, 261, 133, 15);
+		panel_ARP.add(ARP_1_3);
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(12, 10, 287, 195);
-		ARP.add(scrollPane);
+		scrollPane.setBounds(12, 20, 287, 195);
+		panel_ARP.add(scrollPane);
 		String header[] = { "IP Address", "MAC Address", "State" };
 		DefaultTableModel model = new DefaultTableModel(header, 30);
 		table_ARPTable = new JTable(model);
@@ -131,7 +131,9 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		
 		
 		JPanel proxy_ARP = new JPanel();
-		proxy_ARP.setBounds(383, 29, 342, 301);
+		proxy_ARP.setBorder(new TitledBorder(new LineBorder(Color.black,1),"Proxy ARP"));
+
+		proxy_ARP.setBounds(383, 10, 342, 320);
 		frmArpgui.getContentPane().add(proxy_ARP);
 		proxy_ARP.setLayout(null);
 		JButton btn_proxyArpAdd = new JButton("Add");
@@ -153,7 +155,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 	       }
 	    });
-	    btn_proxyArpAdd.setBounds(12, 268, 135, 23);
+	    btn_proxyArpAdd.setBounds(22, 287, 135, 23);
 	    proxy_ARP.add(btn_proxyArpAdd);
 	    JButton btn_proxyArpDelete = new JButton("Delete");
 	    btn_proxyArpDelete.setEnabled(false);
@@ -164,32 +166,32 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).deletePROXYCacheTableElement(value);
 			}
 		});
-	    btn_proxyArpDelete.setBounds(164, 268, 135, 23);
+	    btn_proxyArpDelete.setBounds(177, 287, 135, 23);
 	    proxy_ARP.add(btn_proxyArpDelete);
 		textField_2 = new JTextArea();
-		textField_2.setBounds(105, 164, 207, 21);
+		textField_2.setBounds(105, 183, 207, 21);
 		proxy_ARP.add(textField_2);
 		textField_2.setColumns(10);
 		textField_3 = new JTextArea();
 		textField_3.setColumns(10);
-		textField_3.setBounds(105, 195, 207, 21);
+		textField_3.setBounds(105, 214, 207, 21);
 		proxy_ARP.add(textField_3);
 		textField_4 = new JTextArea();
 		textField_4.setColumns(10);
-		textField_4.setBounds(105, 226, 207, 21);
+		textField_4.setBounds(105, 245, 207, 21);
 		proxy_ARP.add(textField_4);
 		JLabel ARP_1_3_1_1 = new JLabel("Device");
-		ARP_1_3_1_1.setBounds(12, 169, 61, 15);
+		ARP_1_3_1_1.setBounds(12, 188, 61, 15);
 		proxy_ARP.add(ARP_1_3_1_1);
 		JLabel ARP_1_3_1 = new JLabel("IP Address");
-		ARP_1_3_1.setBounds(12, 200, 81, 15);
+		ARP_1_3_1.setBounds(12, 219, 81, 15);
 		proxy_ARP.add(ARP_1_3_1);
 		JLabel ARP_1_3_1_2 = new JLabel("Mac Address");
-		ARP_1_3_1_2.setBounds(12, 231, 81, 15);
+		ARP_1_3_1_2.setBounds(12, 250, 81, 15);
 		proxy_ARP.add(ARP_1_3_1_2);
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setBounds(12, 10, 318, 147);
+		scrollPane_2.setBounds(12, 29, 318, 147);
 		proxy_ARP.add(scrollPane_2);
 		
 		String proxy_header[] = { "Device", "IP Address", "MAC Address"};
@@ -197,17 +199,19 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		table_ProxyTable = new JTable(proxy_model);
 		scrollPane_2.setViewportView(table_ProxyTable);
 		
-		JPanel GARP = new JPanel();
-		GARP.setBounds(763, 29, 362, 116);
-		frmArpgui.getContentPane().add(GARP);
-		GARP.setLayout(null);
+		JPanel panel_garp = new JPanel();
+		panel_garp.setBorder(new TitledBorder(new LineBorder(Color.black,1),"GARP"));
+
+		panel_garp.setBounds(763, 29, 362, 116);
+		frmArpgui.getContentPane().add(panel_garp);
+		panel_garp.setLayout(null);
 		JLabel ARP_1_3_1_1_1 = new JLabel("HW");
 		ARP_1_3_1_1_1.setBounds(12, 51, 61, 15);
-		GARP.add(ARP_1_3_1_1_1);
+		panel_garp.add(ARP_1_3_1_1_1);
 		JTextArea textField_srcMac = new JTextArea();
 		textField_srcMac.setColumns(10);
-		textField_srcMac.setBounds(54, 47, 207, 21);
-		GARP.add(textField_srcMac);
+		textField_srcMac.setBounds(77, 47, 201, 21);
+		panel_garp.add(textField_srcMac);
 		JButton btn_sendGarp = new JButton("Send");
 		btn_sendGarp.setEnabled(false);
 		btn_sendGarp.addActionListener(new ActionListener() {
@@ -218,43 +222,42 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).SendGARP();
 			}
 		});
-		btn_sendGarp.setBounds(271, 47, 91, 23);
-		GARP.add(btn_sendGarp);
-		JLabel ARP_1_1 = new JLabel("Proxy ARP");
-		ARP_1_1.setFont(new Font("굴림", Font.BOLD, 14));
-		ARP_1_1.setBounds(383, 10, 83, 15);
-		frmArpgui.getContentPane().add(ARP_1_1);
+		btn_sendGarp.setBounds(283, 47, 68, 23);
+		panel_garp.add(btn_sendGarp);
 		JLabel ARP_1_2 = new JLabel("Gratitous ARP");
 		ARP_1_2.setFont(new Font("굴림", Font.BOLD, 14));
 		ARP_1_2.setBounds(763, 10, 109, 15);
 		frmArpgui.getContentPane().add(ARP_1_2);
-		JPanel GARP_1 = new JPanel();
-		GARP_1.setLayout(null);
-		GARP_1.setBounds(763, 174, 362, 156);
-		frmArpgui.getContentPane().add(GARP_1);
+		JPanel panel_addressSetting = new JPanel();
+		panel_addressSetting.setBorder(new TitledBorder(new LineBorder(Color.black,1),"Address Setting"));
+
+		panel_addressSetting.setLayout(null);
+		panel_addressSetting.setBounds(763, 160, 362, 170);
+		frmArpgui.getContentPane().add(panel_addressSetting);
 		JLabel ARP_1_3_1_1_1_1 = new JLabel("MAC");
-		ARP_1_3_1_1_1_1.setBounds(12, 63, 64, 15);
-		GARP_1.add(ARP_1_3_1_1_1_1);
+		ARP_1_3_1_1_1_1.setBounds(12, 74, 64, 15);
+		panel_addressSetting.add(ARP_1_3_1_1_1_1);
 		JTextArea textArea_srcMacAddr = new JTextArea();
 		textArea_srcMacAddr.setEnabled(false);
 		textArea_srcMacAddr.setEditable(false);
 		textArea_srcMacAddr.setColumns(10);
-		textArea_srcMacAddr.setBounds(77, 58, 201, 21);
+		textArea_srcMacAddr.setBounds(77, 69, 201, 21);
 		textArea_srcMacAddr.setText("0:C:29:D2:99:B3");
-		GARP_1.add(textArea_srcMacAddr);
+		panel_addressSetting.add(textArea_srcMacAddr);
 		
 		JTextArea textArea_srcIpAddr = new JTextArea();
 		textArea_srcIpAddr.setEnabled(false);
 		textArea_srcIpAddr.setEditable(false);
 		textArea_srcIpAddr.setColumns(10);
-		textArea_srcIpAddr.setBounds(77, 88, 201, 21);
+		textArea_srcIpAddr.setBounds(77, 99, 201, 21);
 		textArea_srcIpAddr.setText("168.188.129.1");
-		GARP_1.add(textArea_srcIpAddr);
+		panel_addressSetting.add(textArea_srcIpAddr);
 		
 		JButton btn_addrSelect = new JButton("Select");
-		JButton btn_chatSet = new JButton("Set");
 		JButton btn_addrSettingReset = new JButton("Reset");
 		JButton btn_addrSet = new JButton("Set");
+		JButton btn_chatSet = new JButton("Set");
+
 		btn_addrSet.setEnabled(false);
 		
 		btn_addrSet.addActionListener(new ActionListener() {
@@ -288,13 +291,13 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 			}
 		});
-		btn_addrSet.setBounds(77, 126, 90, 23);
-		GARP_1.add(btn_addrSet);
+		btn_addrSet.setBounds(77, 137, 96, 23);
+		panel_addressSetting.add(btn_addrSet);
 		JLabel ARP_1_3_1_1_1_1_1 = new JLabel("IP");
-		ARP_1_3_1_1_1_1_1.setBounds(12, 88, 64, 15);
-		GARP_1.add(ARP_1_3_1_1_1_1_1);
-		comboBox.setBounds(12, 25, 266, 23);
-		GARP_1.add(comboBox);
+		ARP_1_3_1_1_1_1_1.setBounds(12, 99, 64, 15);
+		panel_addressSetting.add(ARP_1_3_1_1_1_1_1);
+		comboBox.setBounds(12, 36, 266, 23);
+		panel_addressSetting.add(comboBox);
 		
 		btn_addrSettingReset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -317,8 +320,8 @@ public class ARPGUI extends JFrame implements BaseLayer {
 			}
 		});
 		btn_addrSettingReset.setEnabled(false);
-		btn_addrSettingReset.setBounds(188, 126, 90, 23);
-		GARP_1.add(btn_addrSettingReset);
+		btn_addrSettingReset.setBounds(182, 137, 96, 23);
+		panel_addressSetting.add(btn_addrSettingReset);
 		btn_addrSelect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String selected = comboBox.getSelectedItem().toString();
@@ -354,26 +357,23 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).deleteARPCacheTableElement(value);
 			}
 		});
-		btn_addrSelect.setBounds(282, 25, 80, 23);
-		GARP_1.add(btn_addrSelect);
+		btn_addrSelect.setBounds(282, 36, 68, 23);
+		panel_addressSetting.add(btn_addrSelect);
 		SetCombobox();
-		JLabel ARP_1_2_1 = new JLabel("My Address Setting");
-		ARP_1_2_1.setFont(new Font("굴림", Font.BOLD, 14));
-		ARP_1_2_1.setBounds(763, 155, 159, 15);
-		frmArpgui.getContentPane().add(ARP_1_2_1);
-		JPanel panel = new JPanel();
-		panel.setBounds(27, 357, 698, 261);
-		frmArpgui.getContentPane().add(panel);
-		panel.setLayout(null);
+		JPanel panel_chatting = new JPanel();
+		panel_chatting.setBorder(new TitledBorder(new LineBorder(Color.black,1),"Chatting"));
+
+		panel_chatting.setBounds(27, 357, 698, 261);
+		frmArpgui.getContentPane().add(panel_chatting);
+		panel_chatting.setLayout(null);
 		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(12, 10, 490, 198);
-		panel.add(scrollPane_1);
-		//JTextArea textArea_chatView = new JTextArea();
+		scrollPane_1.setBounds(12, 28, 490, 170);
+		panel_chatting.add(scrollPane_1);
 		scrollPane_1.setViewportView(textArea_chatView);
 		textField_chatContent = new JTextField();
 		textField_chatContent.setFont(new Font("±¼¸²", Font.PLAIN, 15));
-		textField_chatContent.setBounds(12, 218, 383, 32);
-		panel.add(textField_chatContent);
+		textField_chatContent.setBounds(12, 208, 383, 32);
+		panel_chatting.add(textField_chatContent);
 		textField_chatContent.setColumns(10);
 		JButton btn_chatSend = new JButton("Send");
 		btn_chatSend.setEnabled(false);
@@ -401,32 +401,36 @@ public class ARPGUI extends JFrame implements BaseLayer {
 			}
 		});
 		
-		btn_chatSend.setBounds(407, 218, 95, 32);
-		panel.add(btn_chatSend);
+		btn_chatSend.setBounds(407, 208, 95, 32);
+		panel_chatting.add(btn_chatSend);
+		
+		JPanel panel_chatSetting = new JPanel();
+		panel_chatSetting.setBorder(new TitledBorder(new LineBorder(Color.black,1),"Chat Setting"));
+
+		panel_chatSetting.setBounds(514, 28, 172, 223);
+		panel_chatting.add(panel_chatSetting);
+		panel_chatSetting.setLayout(null);
 		
 		JLabel chat_dst_ip = new JLabel("Chat Destination IP");
-		chat_dst_ip.setBounds(524, 41, 135, 15);
-		panel.add(chat_dst_ip);
+		chat_dst_ip.setBounds(12, 32, 148, 15);
+		panel_chatSetting.add(chat_dst_ip);
 		
 		JTextArea textField_ChatDstIP = new JTextArea();
-		textField_ChatDstIP.setText("168.188.129.1");
-		textField_ChatDstIP.setBounds(524, 66, 159, 25);
-		panel.add(textField_ChatDstIP);
+		textField_ChatDstIP.setBounds(12, 57, 148, 25);
+		panel_chatSetting.add(textField_ChatDstIP);
+		textField_ChatDstIP.setText("168.188.129.2");
 		textField_ChatDstIP.setColumns(10);
 		
 		JLabel chat_dst_mac = new JLabel("Chat Destination MAC");
-		chat_dst_mac.setBounds(524, 105, 159, 15);
-		panel.add(chat_dst_mac);
+		chat_dst_mac.setBounds(12, 106, 148, 15);
+		panel_chatSetting.add(chat_dst_mac);
 		
 		JTextArea textField_ChatDstMac = new JTextArea();
-		textField_ChatDstMac.setBounds(524, 129, 159, 25);
-		panel.add(textField_ChatDstMac);
+		textField_ChatDstMac.setBounds(12, 130, 148, 25);
+		panel_chatSetting.add(textField_ChatDstMac);
 		textField_ChatDstMac.setColumns(10);
-		
-		JLabel ARP_1_2_1_1 = new JLabel("Chat Setting");
-		ARP_1_2_1_1.setFont(new Font("굴림", Font.BOLD, 14));
-		ARP_1_2_1_1.setBounds(514, 16, 159, 15);
-		panel.add(ARP_1_2_1_1);
+		btn_chatSet.setBounds(12, 180, 148, 32);
+		panel_chatSetting.add(btn_chatSet);
 		
 		btn_chatSet.setEnabled(false);
 		btn_chatSet.addActionListener(new ActionListener() {
@@ -447,65 +451,59 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 			}
 		});
-		btn_chatSet.setBounds(524, 164, 159, 32);
-		panel.add(btn_chatSet);
-		JLabel lblNewLabel = new JLabel("Chatting");
-		lblNewLabel.setFont(new Font("굴림", Font.BOLD, 14));
-		lblNewLabel.setBounds(27, 340, 118, 15);
-		frmArpgui.getContentPane().add(lblNewLabel);
 		
 		JPanel panel_fileTransfer = new JPanel();
+		panel_fileTransfer.setBorder(new TitledBorder(new LineBorder(Color.black,1),"File Transfer"));
+
 		panel_fileTransfer.setBounds(763, 360, 362, 258);
 		frmArpgui.getContentPane().add(panel_fileTransfer);
 		panel_fileTransfer.setLayout(null);
 		
 		JProgressBar progressBar_fileTransferProgressBar = new JProgressBar();
-		progressBar_fileTransferProgressBar.setBounds(22, 190, 328, 40);
+		progressBar_fileTransferProgressBar.setBounds(22, 208, 328, 40);
 		panel_fileTransfer.add(progressBar_fileTransferProgressBar);
 		
-		JLabel lbl_fileTransferSetting = new JLabel("File Transfer Setting");
-		lbl_fileTransferSetting.setFont(new Font("굴림", Font.BOLD, 14));
-		lbl_fileTransferSetting.setBounds(12, 10, 159, 15);
-		panel_fileTransfer.add(lbl_fileTransferSetting);
-		
-		JLabel fileTransfer_dst_ip_1 = new JLabel("Destination IP");
-		fileTransfer_dst_ip_1.setBounds(22, 35, 135, 15);
-		panel_fileTransfer.add(fileTransfer_dst_ip_1);
-		
-		JTextArea textField_FileTransferDstIP = new JTextArea();
-		textField_FileTransferDstIP.setText("168.188.129.1");
-		textField_FileTransferDstIP.setColumns(10);
-		textField_FileTransferDstIP.setBounds(22, 60, 159, 25);
-		panel_fileTransfer.add(textField_FileTransferDstIP);
-		
-		JLabel fileTransfer_dst_mac_1 = new JLabel("Destination MAC");
-		fileTransfer_dst_mac_1.setBounds(191, 36, 159, 15);
-		panel_fileTransfer.add(fileTransfer_dst_mac_1);
-		
-		JTextArea textField_FileTransferDstMac = new JTextArea();
-		textField_FileTransferDstMac.setColumns(10);
-		textField_FileTransferDstMac.setBounds(191, 60, 159, 25);
-		panel_fileTransfer.add(textField_FileTransferDstMac);
-		
-		JButton btn_fileTransferSet = new JButton("Set");
-		btn_fileTransferSet.setEnabled(false);
-		btn_fileTransferSet.setBounds(22, 95, 328, 32);
-		panel_fileTransfer.add(btn_fileTransferSet);
-		
 		JTextArea textField_filePath = new JTextArea();
+		textField_filePath.setEditable(false);
 		textField_filePath.setColumns(10);
-		textField_filePath.setBounds(22, 145, 222, 32);
+		textField_filePath.setBounds(22, 166, 222, 32);
 		panel_fileTransfer.add(textField_filePath);
 		
 		JButton btn_fileSend = new JButton("Send");
 		btn_fileSend.setEnabled(false);
-		btn_fileSend.setBounds(255, 145, 95, 32);
+		btn_fileSend.setBounds(255, 166, 95, 32);
 		panel_fileTransfer.add(btn_fileSend);
 		
-		JLabel lbl_fileTransfer = new JLabel("File Transfer");
-		lbl_fileTransfer.setFont(new Font("굴림", Font.BOLD, 14));
-		lbl_fileTransfer.setBounds(763, 340, 159, 15);
-		frmArpgui.getContentPane().add(lbl_fileTransfer);
+		JPanel panel_fileTransferSetting = new JPanel();
+		panel_fileTransferSetting.setBorder(new TitledBorder(new LineBorder(Color.black,1),"File Transfer Setting"));
+
+		panel_fileTransferSetting.setBounds(12, 23, 338, 129);
+		panel_fileTransfer.add(panel_fileTransferSetting);
+		panel_fileTransferSetting.setLayout(null);
+		
+		JTextArea textField_FileTransferDstIP = new JTextArea();
+		textField_FileTransferDstIP.setBounds(9, 52, 141, 25);
+		panel_fileTransferSetting.add(textField_FileTransferDstIP);
+		textField_FileTransferDstIP.setText("168.188.129.2");
+		textField_FileTransferDstIP.setColumns(10);
+		
+		JButton btn_fileTransferSet = new JButton("Set");
+		btn_fileTransferSet.setBounds(9, 87, 310, 32);
+		panel_fileTransferSetting.add(btn_fileTransferSet);
+		btn_fileTransferSet.setEnabled(false);
+		
+		JTextArea textField_FileTransferDstMac = new JTextArea();
+		textField_FileTransferDstMac.setBounds(178, 52, 141, 25);
+		panel_fileTransferSetting.add(textField_FileTransferDstMac);
+		textField_FileTransferDstMac.setColumns(10);
+		
+		JLabel fileTransfer_dst_mac_1 = new JLabel("Destination MAC");
+		fileTransfer_dst_mac_1.setBounds(178, 28, 141, 15);
+		panel_fileTransferSetting.add(fileTransfer_dst_mac_1);
+		
+		JLabel fileTransfer_dst_ip_1 = new JLabel("Destination IP");
+		fileTransfer_dst_ip_1.setBounds(9, 27, 113, 15);
+		panel_fileTransferSetting.add(fileTransfer_dst_ip_1);
 		frmArpgui.setVisible(true);
 	}
 	private void SetCombobox() {
