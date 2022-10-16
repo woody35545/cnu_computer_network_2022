@@ -3,14 +3,14 @@ import java.util.Arrays;
 
 public class FileTransferAppLayer implements BaseLayer {
 	private static final int FRAGMENT_SIZE = 1400;
-	private static final int LENGTH_OF_HEADER_EXCEPT_DATA = 9; 
+	private static final int LENGTH_OF_HEADER_EXCEPT_DATA = 9;
 
 	public int nUnderLayerCount = 0;
 	public int nUpperLayerCount = 0;
 	public String pLayerName = null;
 	public ArrayList<BaseLayer> p_UnderLayer = new ArrayList<BaseLayer>();
 	public ArrayList<BaseLayer> p_aUpperLayer = new ArrayList<BaseLayer>();
-	
+
 	_FILE_TRANSFER_HEADER m_sHeader = new _FILE_TRANSFER_HEADER();
 
 	private class _FILE_TRANSFER_HEADER {
@@ -27,7 +27,7 @@ public class FileTransferAppLayer implements BaseLayer {
 		 * 
 		 * [data] - data that user want to send
 		 */
-		private byte[] file_total_length= new byte[4];
+		private byte[] file_total_length = new byte[4];
 		private byte fragment_type;
 		private byte[] fragment_number = new byte[4];
 		private byte[] data;
@@ -45,7 +45,7 @@ public class FileTransferAppLayer implements BaseLayer {
 			this.fragment_type = pFragmentType;
 			this.data = pData;
 		}
-		
+
 		public int getTotalHeaderLength() {
 			// retrun total header length
 			return LENGTH_OF_HEADER_EXCEPT_DATA + data.length;
@@ -55,107 +55,137 @@ public class FileTransferAppLayer implements BaseLayer {
 
 	public byte[] Encapsulate(_FILE_TRANSFER_HEADER pHeader) {
 		// <!> Need to check
-				// Encapsulate function to create byte array type ARP Packet
-				int idx_ptr = 0;
-				byte[] encapsulated = new byte[pHeader.getTotalHeaderLength()];
-				
-				for (int i = 0; i < pHeader.file_total_length.length; i++) {
-					encapsulated[idx_ptr++] = m_sHeader.file_total_length[i];
-				}
-					encapsulated[idx_ptr++] = pHeader.fragment_type; 
-					
-				for (int i = 0; i < pHeader.fragment_number.length; i++) {
-					encapsulated[idx_ptr++] = pHeader.fragment_number[i];
-				}
-				for (int i = 0; i < pHeader.data.length; i++) {
-					encapsulated[idx_ptr++] = pHeader.data[i];
-				}
-				return encapsulated;
-	}
-	
-	public boolean Send(byte[] pData, int pLength) {
-		if (pData.length > FRAGMENT_SIZE) {
-			// Fragmentation needed!
+		// Encapsulate function to create byte array type ARP Packet
+		int idx_ptr = 0;
+		byte[] encapsulated = new byte[pHeader.getTotalHeaderLength()];
 
-			int fragmentTotalLength; // length of fragment
-			int fragmentedLength= 0; // Fragmented size from full data size
-		
-			
-			// Declare variable to check if it is the last fragment during whole fragmentation
-			boolean isLastFragment = false; 
-		
-			
+		for (int i = 0; i < pHeader.file_total_length.length; i++) {
+			encapsulated[idx_ptr++] = m_sHeader.file_total_length[i];
+		}
+		encapsulated[idx_ptr++] = pHeader.fragment_type;
+
+		for (int i = 0; i < pHeader.fragment_number.length; i++) {
+			encapsulated[idx_ptr++] = pHeader.fragment_number[i];
+		}
+		for (int i = 0; i < pHeader.data.length; i++) {
+			encapsulated[idx_ptr++] = pHeader.data[i];
+		}
+		return encapsulated;
+	}
+
+	public boolean Send(byte[] pData, int pLength) {
+		int fragmentTotalLength; // length of fragment
+
+		if (pData.length > FRAGMENT_SIZE) {
+			// If Fragmentation needed!
+
+			int fragmentedLength = 0; // Fragmented size from full data size
+			// Declare variable to check if it is the last fragment during whole
+			// fragmentation
+			boolean isLastFragment = false;
+			boolean isFirstFragment = true;
+
 			// Start fragmentation
-			while(!isLastFragment) { 
+			while (!isLastFragment) {
 				// check if it's last one.
-				if(pData.length - fragmentedLength < FRAGMENT_SIZE) {
-					//If this is the last fragment, it fragments up to this point and does not fragment any more.
+				if (pData.length - fragmentedLength < FRAGMENT_SIZE) {
+					// If this is the last fragment, it fragments up to this point and does not
+					// fragment any more.
 					isLastFragment = false;
-					
+
 					// Assign total length of last fragment
 					fragmentTotalLength = pData.length - fragmentedLength;
-					
+
 					// set Header's File total length
 					this.setFileTotalLength(fragmentTotalLength);
-					
+
 					// Set header's fragment type feild value to last fragment type(0x03)
-					this.m_sHeader.fragment_type = (byte)0x03;
-					
+					this.m_sHeader.fragment_type = (byte) 0x03;
+
 					// Declare an array to hold fragmented data
 					byte[] fragmentedData = new byte[fragmentTotalLength];
-					
+
 					// Allocate the data of the current fragment part from the original data
 					// Part: (Last Fragment offset ~ this fragment length) of original data
-					fragmentedData = Arrays.copyOfRange(pData, fragmentedLength, fragmentedLength+fragmentTotalLength);
-					
+					fragmentedData = Arrays.copyOfRange(pData, fragmentedLength,
+							fragmentedLength + fragmentTotalLength);
+
 					// encapsulate data to call send function of it's Underlayer(TCP)
 					byte[] encapsulated = this.Encapsulate(m_sHeader);
-					
-					// send to TCP Layer
-					((TCPLayer)this.GetUnderLayer(0)).Send(encapsulated,encapsulated.length);
-					
 
+					// send to TCP Layer
+					((TCPLayer) this.GetUnderLayer(0)).Send(encapsulated, encapsulated.length);
 				}
-				
+
 				else {
-					// If it's not last part of fragment(if it's middle part), total length must be FRAGMENT SIZE
+					// If it's not last part of fragment(if it's middle part), total length must be
+					// FRAGMENT SIZE
 					fragmentTotalLength = FRAGMENT_SIZE;
-					
-					// Set header's fragment type feild value to middle fragment type(0x02)
-					this.m_sHeader.fragment_type = (byte)0x02;
-					
+
+					if (isFirstFragment)
+
+					{
+						// Set header's fragment type feild value to initial fragment type(0x01)
+						this.m_sHeader.fragment_type = (byte) 0x01;
+						//After this, next frame is not the first frame, so change isFirstFrame to false
+						isFirstFragment = false;
+					}
+					// If it's not first fragment, Set header's fragment type feild value to middle fragment type(0x02)
+					else this.m_sHeader.fragment_type = (byte) 0x02;
+
 					// set Header's File total length
 					this.setFileTotalLength(fragmentTotalLength);
-					
+
 					// update fragemented length
 					fragmentedLength += fragmentTotalLength;
-					
-					
+
 					// Declare an array to hold fragmented data
 					byte[] fragmentedData = new byte[fragmentTotalLength];
-					
+
 					// Allocate the data of the current fragment part from the original data
 					// Part: (Last Fragment offset ~ this fragment length) of original data
-					fragmentedData = Arrays.copyOfRange(pData, fragmentedLength, fragmentedLength+fragmentTotalLength);
-					
+					fragmentedData = Arrays.copyOfRange(pData, fragmentedLength,
+							fragmentedLength + fragmentTotalLength);
+
 					// Set Header's data field
 					this.setFileData(fragmentedData);
-					
+
 					// encapsulate data to call send function of it's Underlayer(TCP)
 					byte[] encapsulated = this.Encapsulate(m_sHeader);
-					
+
 					// send to TCP Layer
-					((TCPLayer)this.GetUnderLayer(0)).Send(encapsulated,encapsulated.length);
-					
+					((TCPLayer) this.GetUnderLayer(0)).Send(encapsulated, encapsulated.length);
+
 				}
-				
-				
-				
-			
+
 			}
-			
+
 		} else {
-			// Just send normally
+			// If fragmentation is not needed, Just send normally
+
+			fragmentTotalLength = pData.length;
+
+			// Set header's fragment type feild value to not fragmented type(0x00)
+			this.m_sHeader.fragment_type = (byte) 0x00;
+
+			// set Header's File total length
+			this.setFileTotalLength(fragmentTotalLength);
+
+			// Declare an array to hold fragmented data
+			byte[] fragmentedData = new byte[fragmentTotalLength];
+
+			// Allocate the data of the current fragment part from the original data
+			// Part: (Last Fragment offset ~ this fragment length) of original data
+			fragmentedData = Arrays.copyOfRange(pData, 0, fragmentTotalLength);
+
+			// Set Header's data field
+			this.setFileData(fragmentedData);
+
+			// encapsulate data to call send function of it's Underlayer(TCP)
+			byte[] encapsulated = this.Encapsulate(m_sHeader);
+
+			// send to TCP Layer
+			((TCPLayer) this.GetUnderLayer(0)).Send(encapsulated, encapsulated.length);
 
 		}
 		return true;
@@ -164,31 +194,31 @@ public class FileTransferAppLayer implements BaseLayer {
 	public boolean Receive(byte[] pData) {
 		return true;
 	}
-	
-	
-	
+
 	public void setFileTotalLength(int pTotalLengthInt) {
 		// Casting integer type total length to byte using arithmetic shift
 		// Casting to assign a higher digit to a lower index of file_total_length array
 		for (int i = 0; i < this.m_sHeader.file_total_length.length; i++) {
-			this.m_sHeader.file_total_length[i] = (byte)((pTotalLengthInt >> (8*(this.m_sHeader.file_total_length.length-1-i))) & 0xff);
+			this.m_sHeader.file_total_length[i] = (byte) ((pTotalLengthInt >> (8
+					* (this.m_sHeader.file_total_length.length - 1 - i))) & 0xff);
 		}
-	
+
 	}
-	
+
 	public void setFileFragmentNumber(int pFileFramentNumber) {
 		// Casting integer type fragment_number to byte using arithmetic shift
-		
+
 		// Casting to assign a higher digit to a lower index of fragment_number array
 		for (int i = 0; i < this.m_sHeader.fragment_number.length; i++) {
-			this.m_sHeader.fragment_number[i] = (byte)((pFileFramentNumber >> (8*(this.m_sHeader.fragment_number.length-1-i))) & 0xff);
+			this.m_sHeader.fragment_number[i] = (byte) ((pFileFramentNumber >> (8
+					* (this.m_sHeader.fragment_number.length - 1 - i))) & 0xff);
 		}
 	}
 
 	public void setFileData(byte[] pData) {
 		this.m_sHeader.data = pData;
 	}
-	
+
 	@Override
 	public void SetUnderLayer(BaseLayer pUnderLayer) {
 		// TODO Auto-generated method stub
