@@ -120,6 +120,10 @@ public final class Utils {
 
 	public static void convertByteToFile(String pFileName, String pFilePath, byte[] pData) {
 		if (pData != null) {
+			if  (pFilePath.equals("pwd")){ 
+				pFilePath = System.getProperty("user.dir");
+			        System.out.println("[Debug] Output file dir: " + pFilePath);
+			}
 			try {
 				File outputFile = new File(pFilePath + pFileName);
 				FileOutputStream outputFileStream = new FileOutputStream(outputFile);
