@@ -3,6 +3,7 @@ import java.util.Arrays;
 
 public class FileTransferAppLayer implements BaseLayer {
 	private static final int FRAGMENT_SIZE = 1400;
+	private static final int LENGTH_OF_HEADER_EXCEPT_DATA = 9; 
 
 	public int nUnderLayerCount = 0;
 	public int nUpperLayerCount = 0;
@@ -26,9 +27,9 @@ public class FileTransferAppLayer implements BaseLayer {
 		 * 
 		 * [data] - data that user want to send
 		 */
-		private byte[] file_total_length;
+		private byte[] file_total_length= new byte[4];
 		private byte fragment_type;
-		private byte[] fragment_number;
+		private byte[] fragment_number = new byte[4];
 		private byte[] data;
 
 		public _FILE_TRANSFER_HEADER() {
@@ -44,9 +45,33 @@ public class FileTransferAppLayer implements BaseLayer {
 			this.fragment_type = pFragmentType;
 			this.data = pData;
 		}
+		
+		public int getTotalHeaderLength() {
+			// retrun total header length
+			return LENGTH_OF_HEADER_EXCEPT_DATA + data.length;
+		}
 
 	}
 
+	public byte[] Encapsulate(_FILE_TRANSFER_HEADER pHeader) {
+		// <!> Need to check
+				// Encapsulate function to create byte array type ARP Packet
+				int idx_ptr = 0;
+				byte[] encapsulated = new byte[pHeader.getTotalHeaderLength()];
+				
+				for (int i = 0; i < pHeader.file_total_length.length; i++) {
+					encapsulated[idx_ptr++] = m_sHeader.file_total_length[i];
+				}
+					encapsulated[idx_ptr++] = pHeader.fragment_type; 
+					
+				for (int i = 0; i < pHeader.fragment_number.length; i++) {
+					encapsulated[idx_ptr++] = pHeader.fragment_number[i];
+				}
+				for (int i = 0; i < pHeader.data.length; i++) {
+					encapsulated[idx_ptr++] = pHeader.data[i];
+				}
+				return encapsulated;
+	}
 	
 	public boolean Send(byte[] pData, int pLength) {
 		if (pData.length > FRAGMENT_SIZE) {
