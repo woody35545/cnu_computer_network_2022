@@ -109,9 +109,14 @@ public class FileTransferAppLayer implements BaseLayer {
 					fragmentedData = Arrays.copyOfRange(pData, fragmentedLength, fragmentedLength+fragmentTotalLength);
 					
 					// encapsulate data to call send function of it's Underlayer(TCP)
-
+					byte[] encapsulated = this.Encapsulate(m_sHeader);
+					
+					// send to TCP Layer
+					((TCPLayer)this.GetUnderLayer(0)).Send(encapsulated,encapsulated.length);
+					
 
 				}
+				
 				else {
 					// If it's not last part of fragment(if it's middle part), total length must be FRAGMENT SIZE
 					fragmentTotalLength = FRAGMENT_SIZE;
@@ -137,7 +142,10 @@ public class FileTransferAppLayer implements BaseLayer {
 					this.setFileData(fragmentedData);
 					
 					// encapsulate data to call send function of it's Underlayer(TCP)
+					byte[] encapsulated = this.Encapsulate(m_sHeader);
 					
+					// send to TCP Layer
+					((TCPLayer)this.GetUnderLayer(0)).Send(encapsulated,encapsulated.length);
 					
 				}
 				
