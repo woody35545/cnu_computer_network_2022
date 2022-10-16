@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.regex.Pattern;
@@ -96,18 +97,18 @@ public final class Utils {
 		else// if it's MAC address
 			return convertByteFormatMacToStrFormat(pByteFormatAddr);
 	}
-	
+
 	public static byte[] convertAddrFormat(String pStrFormatAddr) {
 		// String to byte[]
-		if (pStrFormatAddr.split(Pattern.quote(".")).length == 4) 
+		if (pStrFormatAddr.split(Pattern.quote(".")).length == 4)
 			// if it's IP address
-			return convertStrFormatIpToByteFormat(pStrFormatAddr);	
-		else 
+			return convertStrFormatIpToByteFormat(pStrFormatAddr);
+		else
 			// else it's MAC address
 			return convertStrFormatMacToByteFormat(pStrFormatAddr);
 	}
 
-	public static byte[] convertFileToByte(String pFilePath) { 
+	public static byte[] convertFileToByte(String pFilePath) {
 		byte[] byteTypeFileData = null;
 		try {
 			byteTypeFileData = Files.readAllBytes(new File(pFilePath).toPath());
@@ -117,6 +118,20 @@ public final class Utils {
 		return byteTypeFileData;
 	}
 
-	
+	public static void convertByteToFile(String pFileName, String pFilePath, byte[] pData) {
+		if (pData != null) {
+			try {
+				File outputFile = new File(pFilePath + pFileName);
+				FileOutputStream outputFileStream = new FileOutputStream(outputFile);
+				outputFileStream.write(pData);
+				outputFileStream.close();
+
+			} catch (Throwable e) {
+				e.printStackTrace(System.out);
+
+			}
+		}
+
+	}
 
 }
