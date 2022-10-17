@@ -72,10 +72,13 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		
 		// Connect all currently existing layers
 		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *TCP ( *ChatApp ( *ARPGUI ( ) ) *FileApp ( *ARPGUI ) ) ) ) +IP ( -Ethernet ) ) ");
+		((ARPLayer)m_LayerMgr.GetLayer("ARP")).SetUpperLayer(m_LayerMgr.GetLayer("ARPGUI"));
 		System.out.println("");
 		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(0).GetLayerName());
 		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(1).GetLayerName());
 		System.out.println(m_LayerMgr.GetLayer("ARP").GetUnderLayer(0).GetLayerName());
+		System.out.println(m_LayerMgr.GetLayer("ARP").GetUpperLayer(0).GetLayerName());
+		System.out.println(m_LayerMgr.GetLayer("ARP").GetUpperLayer(1).GetLayerName());
 		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(0).GetLayerName());
 		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(1).GetLayerName());
 		System.out.println(m_LayerMgr.GetLayer("TCP").GetUpperLayer(0).GetLayerName());
@@ -84,7 +87,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		System.out.println(m_LayerMgr.GetLayer("ChatApp").GetUpperLayer(0).GetLayerName());
 		System.out.println(m_LayerMgr.GetLayer("FileApp").GetUnderLayer(0).GetLayerName());
 		System.out.println(m_LayerMgr.GetLayer("FileApp").GetUpperLayer(0).GetLayerName());
-
+		
 
 		
 	}
