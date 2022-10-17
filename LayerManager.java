@@ -100,8 +100,10 @@ public class LayerManager {
 		BaseLayer pLayer = null;
 		
 		while(pNode != null){
-			if( pLayer == null)
+			if( pLayer == null) {
 				pLayer = GetLayer (pNode.token);
+				System.out.println("pLayer = "+ pLayer.GetLayerName() );}
+			
 			else{
 				if(pNode.token.equals("(")) 
 					{
@@ -122,7 +124,8 @@ public class LayerManager {
 					String pcName = pNode.token.substring(1, pNode.token.length());
 					
 					pLayer = GetLayer (pcName);
-					
+					System.out.println("pLayer = "+ pLayer.GetLayerName() );
+
 					switch(cMode){
 					case '*':
 						Top().SetUpperUnderLayer( pLayer );

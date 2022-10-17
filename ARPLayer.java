@@ -466,8 +466,8 @@ public class ARPLayer implements BaseLayer {
 	public boolean SendGARP() {
 		// called by GarpSend button in ARPGUI for GARP
 		_ARP_HEADER GarpRequestHeader = this.MakeGARPRequestHeader();
-		System.out.println(GarpRequestHeader.senderIp.addr[3]);
-		System.out.println(GarpRequestHeader.targetIp.addr[3]);
+//		System.out.println(GarpRequestHeader.senderIp.addr[3]);
+//		System.out.println(GarpRequestHeader.targetIp.addr[3]);
 
 		// set targetIP's address and senderIP's address equal, because this is GARP
 		byte[] encapsulated = this.Encapsulate(GarpRequestHeader);
