@@ -41,7 +41,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	private JTextArea textField_4;
 	
 	private int selected_index;
-	JComboBox comboBox = new JComboBox();
+	JComboBox comboBox_nicList = new JComboBox();
 	private static JTable table_ARPTable;
 	private JTextField textField_chatContent;
 	private static JTable table_ProxyTable;
@@ -50,8 +50,11 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	
 	private static String HOST_IP_ADDR; 
 	private static String HOST_MAC_ADDR;
-	private static String DEST_IP_ADDR;
-	private static String DEST_MAC_ADDR;
+	private static String CHAT_DEST_IP_ADDR;
+	private static String CHAT_DEST_MAC_ADDR;
+	private static String FILE_DEST_IP_ADDR;
+	private static String FILE_DEST_MAC_ADDR;
+	private static String ARP_DEST_IP_ADDR;
 	
 	
 	/**
@@ -134,9 +137,9 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		btn_sendArpRequest.setEnabled(false);
 		btn_sendArpRequest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String targetIp = textField_targetIp.getText();
+				ARP_DEST_IP_ADDR = textField_targetIp.getText();
 				((ARPLayer) m_LayerMgr.GetLayer("ARP"))
-						.setARPHeaderDstIp(Utils.convertStrFormatIpToByteFormat(targetIp));
+						.setARPHeaderDstIp(Utils.convertAddrFormat(ARP_DEST_IP_ADDR));
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).Send();
 			}
 		});
@@ -278,20 +281,41 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		JButton btn_addrSettingReset = new JButton("Reset");
 		JButton btn_addrSet = new JButton("Set");
 		JButton btn_chatSet = new JButton("Set");
+		JButton btn_fileTransferSet = new JButton("Set");
+		JButton btn_fileSend = new JButton("Send");
+		btn_fileSend.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		JTextArea textField_FileTransferDstMac = new JTextArea();
+		JTextArea textField_FileTransferDstIP = new JTextArea();
+		btn_fileTransferSet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				btn_fileSend.setEnabled(true);
+				textField_FileTransferDstIP.setEnabled(false);
+				textField_FileTransferDstMac.setEnabled(false);
+				btn_fileTransferSet.setEnabled(false);
+
+			}
+		});
 
 		btn_addrSet.setEnabled(false);
 		
 		btn_addrSet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String srcMac = textArea_srcMacAddr.getText();
+				
+				HOST_MAC_ADDR = textArea_srcMacAddr.getText();
+				HOST_IP_ADDR = textArea_srcIpAddr.getText();
+				
+
 				String srcIP = textArea_srcIpAddr.getText();
 				((EthernetLayer) m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderType(new byte[] { 0x08, 0x00 });
 				((EthernetLayer) m_LayerMgr.GetLayer("Ethernet"))
-						.setEthernetHeaderSrcMacAddr(Utils.convertStrFormatMacToByteFormat(srcMac));
-				((ARPLayer) m_LayerMgr.GetLayer("ARP")).setARPHeaderSrcIp(Utils.convertStrFormatIpToByteFormat(srcIP));
+						.setEthernetHeaderSrcMacAddr(Utils.convertStrFormatMacToByteFormat(HOST_MAC_ADDR));
+				((ARPLayer) m_LayerMgr.GetLayer("ARP")).setARPHeaderSrcIp(Utils.convertStrFormatIpToByteFormat(HOST_IP_ADDR));
 				((ARPLayer) m_LayerMgr.GetLayer("ARP"))
-						.setARPHeaderSrcMac(Utils.convertStrFormatMacToByteFormat(srcMac));
-				((IPLayer) m_LayerMgr.GetLayer("IP")).setIpHeaderSrcIPAddr(Utils.convertStrFormatIpToByteFormat(srcIP));
+						.setARPHeaderSrcMac(Utils.convertStrFormatMacToByteFormat(HOST_MAC_ADDR));
+				((IPLayer) m_LayerMgr.GetLayer("IP")).setIpHeaderSrcIPAddr(Utils.convertStrFormatIpToByteFormat(HOST_IP_ADDR));
 				((NILayer) m_LayerMgr.GetLayer("NI")).SetAdapterNumber(selected_index);
 				
 				
@@ -304,9 +328,13 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				btn_arpItemDelete.setEnabled(true);
 				btn_arpAllDelete.setEnabled(true);
 				btn_proxyArpAdd.setEnabled(true);
+				btn_fileTransferSet.setEnabled(true);
 				btn_proxyArpDelete.setEnabled(true);
 				btn_chatSet.setEnabled(true);
 				btn_addrSettingReset.setEnabled(true);
+				
+				comboBox_nicList.setEditable(false);
+				comboBox_nicList.setEnabled(false);
 				btn_addrSet.setEnabled(false);
 				btn_addrSelect.setEnabled(false);
 
@@ -317,8 +345,8 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		JLabel ARP_1_3_1_1_1_1_1 = new JLabel("IP");
 		ARP_1_3_1_1_1_1_1.setBounds(12, 99, 64, 15);
 		panel_addressSetting.add(ARP_1_3_1_1_1_1_1);
-		comboBox.setBounds(12, 36, 266, 23);
-		panel_addressSetting.add(comboBox);
+		comboBox_nicList.setBounds(12, 36, 266, 23);
+		panel_addressSetting.add(comboBox_nicList);
 		
 		btn_addrSettingReset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -334,7 +362,12 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				btn_proxyArpDelete.setEnabled(false);
 				btn_chatSet.setEnabled(false);
 				btn_addrSettingReset.setEnabled(false);
+				btn_fileTransferSet.setEnabled(false);
+				btn_fileSend.setEnabled(false);
 				
+				btn_addrSelect.setEnabled(true);
+				comboBox_nicList.setEditable(true);
+				comboBox_nicList.setEnabled(true);
 				btn_addrSet.setEnabled(true);
 				btn_addrSettingReset.setEnabled(false);
 
@@ -345,8 +378,8 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		panel_addressSetting.add(btn_addrSettingReset);
 		btn_addrSelect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String selected = comboBox.getSelectedItem().toString();
-				selected_index = comboBox.getSelectedIndex();
+				String selected = comboBox_nicList.getSelectedItem().toString();
+				selected_index = comboBox_nicList.getSelectedIndex();
 				textArea_srcMacAddr.setText("");
 				try {
 					byte[] MacAddress = ((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(selected_index)
@@ -456,11 +489,11 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		btn_chatSet.setEnabled(false);
 		btn_chatSet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String chatDstIPStr = textField_ChatDstIP.getText();
-				String chatDstMACStr =textField_ChatDstMac.getText();				
+				CHAT_DEST_IP_ADDR= textField_ChatDstIP.getText();
+				CHAT_DEST_MAC_ADDR =textField_ChatDstMac.getText();				
 		
-				((IPLayer) m_LayerMgr.GetLayer("IP")).setIpHeaderDstIPAddr(Utils.convertAddrFormat(chatDstIPStr));
-				((EthernetLayer) m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(chatDstMACStr));
+				((IPLayer) m_LayerMgr.GetLayer("IP")).setIpHeaderDstIPAddr(Utils.convertAddrFormat(CHAT_DEST_IP_ADDR));
+				((EthernetLayer) m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(CHAT_DEST_MAC_ADDR));
 				
 				textField_ChatDstIP.setEditable(false);
 				textField_ChatDstIP.setEnabled(false);
@@ -491,7 +524,6 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		textField_filePath.setBounds(22, 166, 222, 32);
 		panel_fileTransfer.add(textField_filePath);
 		
-		JButton btn_fileSend = new JButton("Send");
 		btn_fileSend.setEnabled(false);
 		btn_fileSend.setBounds(255, 166, 95, 32);
 		panel_fileTransfer.add(btn_fileSend);
@@ -503,18 +535,15 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		panel_fileTransfer.add(panel_fileTransferSetting);
 		panel_fileTransferSetting.setLayout(null);
 		
-		JTextArea textField_FileTransferDstIP = new JTextArea();
 		textField_FileTransferDstIP.setBounds(9, 52, 141, 25);
 		panel_fileTransferSetting.add(textField_FileTransferDstIP);
 		textField_FileTransferDstIP.setText("168.188.129.2");
 		textField_FileTransferDstIP.setColumns(10);
 		
-		JButton btn_fileTransferSet = new JButton("Set");
 		btn_fileTransferSet.setBounds(9, 87, 310, 32);
 		panel_fileTransferSetting.add(btn_fileTransferSet);
 		btn_fileTransferSet.setEnabled(false);
 		
-		JTextArea textField_FileTransferDstMac = new JTextArea();
 		textField_FileTransferDstMac.setBorder(new LineBorder(Color.gray));
 		textField_FileTransferDstMac.setBounds(178, 52, 141, 25);
 		panel_fileTransferSetting.add(textField_FileTransferDstMac);
@@ -538,7 +567,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 			return;
 		}
 		for (int i = 0; i < m_pAdapterList.size(); i++)
-			this.comboBox.addItem(m_pAdapterList.get(i).getDescription());
+			this.comboBox_nicList.addItem(m_pAdapterList.get(i).getDescription());
 	}
 	public static void initTableValue(String[] pDataArr) {
 		/*
