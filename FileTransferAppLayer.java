@@ -91,7 +91,7 @@ public class FileTransferAppLayer implements BaseLayer {
 		int fileTotalLength = pData.length;
 		if (fileTotalLength > FRAGMENT_SIZE) {
 			// If Fragmentation needed!
-			
+			System.out.println("Fragmenting Process Start");
 			
 			int fragmentedLength = 0; // Fragmented size from full data size
 			
@@ -140,6 +140,7 @@ public class FileTransferAppLayer implements BaseLayer {
 					// update fragemented length
 					fragmentedLength += fragmentTotalLength;
 					System.out.print("Sending file.... ("+ fragmentedLength + "/" + fileTotalLength + ")");
+					System.out.println("File Send Complete !");
 
 				}
 
@@ -192,7 +193,7 @@ public class FileTransferAppLayer implements BaseLayer {
 
 		} else {
 			// If fragmentation is not needed, Just send normally
-
+			System.out.println("Fragmenting Process is not needed. Just send normally");
 			fragmentTotalLength = pData.length;
 
 			// Set header's fragment type feild value to not fragmented type(0x00)
@@ -219,6 +220,7 @@ public class FileTransferAppLayer implements BaseLayer {
 
 			// send to TCP Layer
 			((TCPLayer) this.GetUnderLayer(0)).Send(encapsulated, encapsulated.length);
+			System.out.println("File Send Complete!");	
 
 		}
 		return true;

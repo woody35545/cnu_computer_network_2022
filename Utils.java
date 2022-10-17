@@ -137,5 +137,43 @@ public final class Utils {
 		}
 
 	}
+	
+	public static boolean checkIsIpFormatString(String pString) {
+
+		String[] pStringSplited = pString.split(Pattern.quote("."));
+
+		if (pStringSplited.length != 4) {
+			return false;
+		}
+		for (int i = 0; i < 4; i++) {
+			if (Pattern.matches("^[0-9]*$", pStringSplited[i])) {
+				if (Integer.parseInt(pStringSplited[i]) > 255) {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static boolean checkIsMacFormatString(String pString) {
+
+		String[] pStringSplited = pString.split(Pattern.quote(":"));
+
+		if (pStringSplited.length != 6) {
+			return false;
+		}
+		for (int i = 0; i < 6; i++) {
+			if (Pattern.matches("^[0-9a-zA-Z]*$", pStringSplited[i])) {
+				if (pStringSplited[i].length() > 2) {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
 
 }
