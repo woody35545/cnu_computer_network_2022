@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +64,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	private static String CHAT_DEST_MAC_ADDR;
 	private static String FILE_DEST_IP_ADDR;
 	private static String FILE_DEST_MAC_ADDR;
+	private static String FILE_PATH;
 	private static String ARP_DEST_IP_ADDR;
 
 	/**
@@ -76,7 +78,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		m_LayerMgr.AddLayer(new IPLayer("IP"));
 		m_LayerMgr.AddLayer(new TCPLayer("TCP"));
 		m_LayerMgr.AddLayer(new ChatAppLayer("ChatApp"));
-		m_LayerMgr.AddLayer(new ChatAppLayer("FileApp"));
+		m_LayerMgr.AddLayer(new FileTransferAppLayer("FileApp"));
 		m_LayerMgr.AddLayer(new ARPGUI("ARPGUI"));
 
 		// Connect all currently existing layers
@@ -325,6 +327,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		JTextArea textField_FileTransferDstMac = new JTextArea();
 		JTextArea textField_FileTransferDstIP = new JTextArea();
 		textField_FileTransferDstIP.setBorder(new LineBorder(Color.GRAY));
+		JLabel lbl_fileSize = new JLabel("");
 
 		JButton btn_fileSend = new JButton("Send");
 		JTextArea textField_filePath = new JTextArea();
@@ -342,12 +345,17 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				else {
 					FILE_DEST_MAC_ADDR = textField_FileTransferDstMac.getText();
 					FILE_DEST_IP_ADDR = textField_FileTransferDstIP.getText();
-
+					FILE_PATH = textField_filePath.getText();
+					
+					lbl_fileSize.setText(Integer.toString(Utils.getFileLength(textField_filePath.getText())) + " Bytes");
+					
 					textField_FileTransferDstIP.setEnabled(false);
 					textField_FileTransferDstMac.setEnabled(false);
 					btn_fileTransferSet.setEnabled(false);
 					btn_fileOpen.setEnabled(false);
 					btn_fileSend.setEnabled(true);
+					
+				
 				}
 			}
 		});
@@ -437,29 +445,43 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		panel_addressSetting.add(btn_addrSettingReset);
 		btn_addrSelect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				
+				
 				String selected = comboBox_nicList.getSelectedItem().toString();
 				selected_index = comboBox_nicList.getSelectedIndex();
+				
+			
 				textArea_srcMacAddr.setText("");
 				try {
 					byte[] MacAddress = ((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(selected_index)
 							.getHardwareAddress();
+					if(!(((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(selected_index).getAddresses().toString().length()==2)) {
+						//System.out.println("select another one");
+					
 					String hexNumber;
 					for (int i = 0; i < 6; i++) {
 						hexNumber = Integer.toHexString(0xff & MacAddress[i]);
 						textArea_srcMacAddr.append(hexNumber.toUpperCase());
 						if (i != 5)
 							textArea_srcMacAddr.append(":");
+					
+				}
 					}
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-
+				if(((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(selected_index).getAddresses().toString().length()==2) {
+					JOptionPane.showMessageDialog(null, "Please select another device\nBecause it doesn't have MAC address.");
+				}
+				else {
 				textArea_srcMacAddr.setEditable(true);
 				textArea_srcMacAddr.setEnabled(true);
 				textArea_srcIpAddr.setEditable(true);
 				textArea_srcIpAddr.setEnabled(true);
 				btn_addrSet.setEnabled(true);
+				}
 			}
 		});
 		btn_arpItemDelete.addActionListener(new ActionListener() {
@@ -692,6 +714,9 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		JLabel lbl_filePath = new JLabel("File Path");
 		lbl_filePath.setBounds(9, 81, 113, 15);
 		panel_fileTransferSetting.add(lbl_filePath);
+		
+		lbl_fileSize.setBounds(73, 81, 162, 15);
+		panel_fileTransferSetting.add(lbl_fileSize);
 
 		JProgressBar progressBar_fileTransferProgressBar = new JProgressBar();
 		progressBar_fileTransferProgressBar.setBounds(22, 200, 234, 32);
@@ -700,6 +725,14 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		btn_fileSend.setEnabled(false);
 		btn_fileSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				// Make file to byte[]
+				byte[] fileToByteArr = Utils.convertFileToByte(FILE_PATH);
+				
+				
+				 
+				// Send to File transfer application layer
+				((FileTransferAppLayer) m_LayerMgr.GetLayer("FileApp")).Send(fileToByteArr,fileToByteArr.length);
+
 			}
 		});
 		btn_fileSend.setBounds(266, 200, 74, 32);

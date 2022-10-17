@@ -17,6 +17,12 @@ public class FileTransferAppLayer implements BaseLayer {
 	int receivedLength = 0;
 	private ByteBuffer receivedBuffer = ByteBuffer.allocate(FRAGMENT_SIZE*10);
 	
+	public FileTransferAppLayer(String pName) {
+		//super(pName);
+		// TODO Auto-generated constructor stub
+		pLayerName = pName;
+	}
+	
 	private class _FILE_TRANSFER_HEADER {
 		/*
 		 * Data structure for File Trasfer type message.
@@ -56,6 +62,7 @@ public class FileTransferAppLayer implements BaseLayer {
 		}
 
 	}
+	
 
 	public byte[] Encapsulate(_FILE_TRANSFER_HEADER pHeader) {
 		// <!> Need to check

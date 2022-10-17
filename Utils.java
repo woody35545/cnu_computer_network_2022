@@ -175,5 +175,17 @@ public final class Utils {
 		}
 		return true;
 	}
+	
+	public static int getFileLength(String pFilePath) {
+	    int size = -1;
+
+		File file = new File(pFilePath);
+	    if (file.exists() )
+	    {
+	        size = (int) file.length();
+	    }
+	
+	    return size;
+	}
 
 }
