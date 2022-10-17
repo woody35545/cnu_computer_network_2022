@@ -88,8 +88,8 @@ public class FileTransferAppLayer implements BaseLayer {
 	}
 	public boolean Send(byte[] pData, int pLength) {
 		int fragmentTotalLength; // length of fragment
-
-		if (pData.length > FRAGMENT_SIZE) {
+		int fileTotalLength = pData.length;
+		if (fileTotalLength > FRAGMENT_SIZE) {
 			// If Fragmentation needed!
 			
 			
@@ -106,7 +106,7 @@ public class FileTransferAppLayer implements BaseLayer {
 			// Start fragmentation
 			while (!isLastFragment) {
 				// check if it's last one.
-				if (pData.length - fragmentedLength < FRAGMENT_SIZE) {
+				if (fileTotalLength- fragmentedLength < FRAGMENT_SIZE) {
 					// If this is the last fragment, it fragments up to this point and does not
 					// fragment any more.
 					isLastFragment = false;
@@ -139,6 +139,7 @@ public class FileTransferAppLayer implements BaseLayer {
 					
 					// update fragemented length
 					fragmentedLength += fragmentTotalLength;
+					System.out.print("Sending file.... ("+ fragmentedLength + "/" + fileTotalLength + ")");
 
 				}
 
@@ -183,6 +184,7 @@ public class FileTransferAppLayer implements BaseLayer {
 					
 					// update fragemented length
 					fragmentedLength += fragmentTotalLength;
+					System.out.print("Sending file.... ("+ fragmentedLength + "/" + fileTotalLength + ")");
 
 				}
 
@@ -238,47 +240,43 @@ public class FileTransferAppLayer implements BaseLayer {
 		else { 
 			// if this is Fragmented type data (if type == 0x01 or 0x02 or 0x03)
 			
-			/*
-			 * When defining the file app transfer header, 
-			 * the location of the fragment was specified as the fragment type field, 
-			 * but I ignored it because it seemed unnecessary and received
-			 */
-			
 			// Assign total length of received file.
 			int receivedFileTotalLength = this.castByteArrToInt(this.getFileTotalLengthFromByte(pData));
 			
-			// reallocate receivedBuffer size to total length of received file
-			this.receivedBuffer = ByteBuffer.allocate(receivedFileTotalLength);
-			
-			// initialize receivedLength to 0 before collecting fragments.
-			this.receivedLength = 0;
-			
-			// Declare value to check whether collecting fragment is finish
-			boolean isLastFragment = false;
-		
-			// Start collecting Fragment to Receive Buffer
-			while(!isLastFragment) {
-				if(this.getFragmentTypeFromByte(pData)==(byte)0x03) {
-					// If this fragment is last one, set isLastFragment true.
-					isLastFragment = true;
-				}
-				
-				// Declare variable to store fragmentNumber of received fragment
-				int fragmentNumber = this.castByteArrToInt(this.getFileFragmentNumberFromByte(pData));
-				
-				// Put fragment into buffer with considering fragment number
-				for(int i=0; i<decapsulated.length; i++)
-				this.receivedBuffer.put(fragmentNumber*FRAGMENT_SIZE + i, decapsulated[i]);
-				
-				// Update received length
-				this.receivedLength += decapsulated.length;			
+			if(this.getFragmentTypeFromByte(pData) == (byte)0x01) {
+				// if it's first fragment data of whole data, then initialize receivedBuffer size to total length of received file
+				this.receivedBuffer = ByteBuffer.allocate(receivedFileTotalLength);
+				// initialize receivedLength to 0 before collecting fragments.
+				this.receivedLength = 0;
 			}
 			
-			// After complete collecting all fragments, then make file with collecting bytes			
-			Utils.convertByteToFile("ReceivedFile", "pwd", this.receivedBuffer.array());
+					
+			// Start collecting Fragment to Receive Buffer
+				
+			// Declare variable to store fragmentNumber of received fragment
+			int fragmentNumber = this.castByteArrToInt(this.getFileFragmentNumberFromByte(pData));
 			
-			// Reset receivedBuffer after making file for next receive.
-			this.receivedBuffer.clear();
+			// Put fragment into buffer with considering fragment number
+			for(int i=0; i<decapsulated.length; i++)
+			this.receivedBuffer.put(fragmentNumber*FRAGMENT_SIZE + i, decapsulated[i]);
+			
+			// Update received length
+			this.receivedLength += decapsulated.length;			
+			
+			if(this.getFragmentTypeFromByte(pData)==(byte)0x03) {
+				// If it's last fragment, it means that it collected all fragments of whole file.
+				// After complete collecting all fragments, then make file with collecting bytes			
+				Utils.convertByteToFile("ReceivedFile", "pwd", this.receivedBuffer.array());
+				
+				// Reset receivedBuffer after making file for next receive.
+				this.receivedBuffer.clear();
+				
+				// Reset ReceivedLength to '0' for next collecting.
+				this.receivedLength = 0;
+				}
+			
+			
+			
 		}
 		return true;
 	}
