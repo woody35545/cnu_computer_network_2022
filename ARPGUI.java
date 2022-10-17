@@ -31,6 +31,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	
 	private static LayerManager m_LayerMgr = new LayerManager();
 	
+	
 	private JTextArea textField_targetIp;
 	private JFrame frmArpgui;
 	private JTextArea textField;
@@ -46,7 +47,13 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	private JTable table_ProxyTable;
 	JButton btn_addrSettingReset;
 	private JTextArea textArea_chatView = new JTextArea();
-
+	
+	private static String HOST_IP_ADDR; 
+	private static String HOST_MAC_ADDR;
+	private static String DEST_IP_ADDR;
+	private static String DEST_MAC_ADDR;
+	
+	
 	/**
 	 * Launch the application.
 	 */
@@ -217,8 +224,9 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		btn_sendGarp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String srcMac = textField_srcMac.getText();
+				// Set ARP header's src mac to new one
 				((ARPLayer) m_LayerMgr.GetLayer("ARP"))
-						.setARPHeaderSrcMac(Utils.convertStrFormatIpToByteFormat(srcMac));
+						.setARPHeaderSrcMac(Utils.convertAddrFormat(srcMac));
 				((ARPLayer) m_LayerMgr.GetLayer("ARP")).SendGARP();
 			}
 		});

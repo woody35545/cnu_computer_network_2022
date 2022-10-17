@@ -4,6 +4,8 @@ import java.util.stream.IntStream;
 public class ARPLayer implements BaseLayer {
 	private static final byte[] UNKNOWN_DESTINATION_MAC_ADDR = new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00,
 			(byte) 0x00, (byte) 0x00, (byte) 0x00 };
+	private static final byte[] DESTINATION_MAC_ZERO_PADDING = new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00,
+			(byte) 0x00, (byte) 0x00, (byte) 0x00 };
 	private static final byte[] OPCODE_ARP_REQUEST = new byte[] { 0x00, 0x01 };
 	private static final byte[] OPCODE_ARP_REPLY = new byte[] { 0x00, 0x02 };
 
@@ -423,12 +425,23 @@ public class ARPLayer implements BaseLayer {
 		return decapsulated;
 	}
 	public _ARP_HEADER MakeARPRequestHeader() {
-		_ARP_HEADER header = new _ARP_HEADER(DEFAULT_HARDWARE_TYPE, DEFAULT_PROTOCOL_TYPE,
+		_ARP_HEADER arpHeader = new _ARP_HEADER(DEFAULT_HARDWARE_TYPE, DEFAULT_PROTOCOL_TYPE,
 				DEFAULT_LENGTH_OF_HARDWARE_ADDRESS, DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS, OPCODE_ARP_REQUEST,
 				this.m_sHeader.senderMac, this.m_sHeader.senderIp, new _MAC_ADDR(UNKNOWN_DESTINATION_MAC_ADDR),
 				this.m_sHeader.targetIp);
-		return header;
+		return arpHeader;
 	}
+	
+	public _ARP_HEADER MakeGARPRequestHeader() {
+		// Garp Packet's destination ip is same with it's source ip, and it's destination mac address must be set to zero.
+		_ARP_HEADER garpHeader = new _ARP_HEADER(DEFAULT_HARDWARE_TYPE, DEFAULT_PROTOCOL_TYPE,
+				DEFAULT_LENGTH_OF_HARDWARE_ADDRESS, DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS, OPCODE_ARP_REQUEST,
+				this.m_sHeader.senderMac, this.m_sHeader.senderIp, new _MAC_ADDR(DESTINATION_MAC_ZERO_PADDING),
+				this.m_sHeader.senderIp);
+		
+		return garpHeader;
+	}
+	
 	public boolean Send() {
 		// <!> additional implementation required later
 		// if (!this.arpCacheTable.isExist(this.m_sHeader.target_ip.getByteAddr())) {
@@ -451,11 +464,13 @@ public class ARPLayer implements BaseLayer {
 		return true;
 	}
 	public boolean SendGARP() {
-		// called by btnNewButton_4_1 in ARPGUI for GARP
-		_ARP_HEADER ARPRequestHeader = this.MakeARPRequestHeader();
+		// called by GarpSend button in ARPGUI for GARP
+		_ARP_HEADER GarpRequestHeader = this.MakeGARPRequestHeader();
+		System.out.println(GarpRequestHeader.senderIp.addr[3]);
+		System.out.println(GarpRequestHeader.targetIp.addr[3]);
+
 		// set targetIP's address and senderIP's address equal, because this is GARP
-		ARPRequestHeader.targetIp.addr = ARPRequestHeader.senderIp.addr;
-		byte[] encapsulated = this.Encapsulate(ARPRequestHeader);
+		byte[] encapsulated = this.Encapsulate(GarpRequestHeader);
 		System.out.println("ARPLayer Send(GARP): ");
 		Utils.showPacket(encapsulated);
 		this.GetUnderLayer(0).Send(encapsulated, encapsulated.length);
