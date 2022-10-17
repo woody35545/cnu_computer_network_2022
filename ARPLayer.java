@@ -503,6 +503,9 @@ public class ARPLayer implements BaseLayer {
 		this.m_sHeader.targetMac.addr = pTargetMac;
 	}
 
+	public void setARPHeaderOpcode(byte[] pOpcode) {
+		this.m_sHeader.opCode = pOpcode;
+	}
 	public void resetPROXYCacheTableGUI() { 
 		((ARPGUI) this.GetUpperLayer(1)).resetProxyTable();
 	}
@@ -533,38 +536,7 @@ public class ARPLayer implements BaseLayer {
 		this.proxyCacheTable.resetProxyCacheTable();
 		this.resetPROXYCacheTableGUI();
 	}
-
-	public void setPROXYHeaderSrcIp(byte[] pSrcIP) {
-		this.m_sHeader.senderIp.addr = pSrcIP;
-	}
-
-	public void setPROXYHeaderDstIp(byte[] pTargetIP) {
-		this.m_sHeader.targetIp.addr = pTargetIP;
-	}
-
-	public void setPROXYHeaderSrcMac(byte[] pSrcMac) {
-		this.m_sHeader.senderMac.addr = pSrcMac;
-	}
-
-	public void setPROXYHeaderDstMac(byte[] pTargetMac) {
-		this.m_sHeader.targetMac.addr = pTargetMac;
-	}
-
-	
-	/*
-	 * 		    ARP Request
-	 * Host A      ====================>     Host B
-	 *  
-	 *                  ARP Reply
-	 * Host A      <====================     Host B
-	 *                 
-	 *              header : 14 ~ 17 : Host B(ARP Reply 를 보내는 측) 의 IP : target_IP
-	 *              header : 06 ~ 13 : Host B(ARP Reply 를 보내는 측) 의 MAC : target_Mac
-	 *              header : 24 ~ 27 : Host B(ARP Reply 를 보내는 측) 가 응답을 보내려는 타겟 Host A 의 IP 주소 : src_IP
-	 * 				
-	 */
-	
-	
+		
 	public boolean Receive(byte[] input) {	
 		byte[] receivedSenderMAC = Arrays.copyOfRange(input,8,14);
 		byte[] receivedSenderIP  = Arrays.copyOfRange(input,14,18);
