@@ -42,9 +42,9 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	
 	private int selected_index;
 	JComboBox comboBox = new JComboBox();
-	private JTable table_ARPTable;
+	private static JTable table_ARPTable;
 	private JTextField textField_chatContent;
-	private JTable table_ProxyTable;
+	private static JTable table_ProxyTable;
 	JButton btn_addrSettingReset;
 	private JTextArea textArea_chatView = new JTextArea();
 	
@@ -540,7 +540,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		for (int i = 0; i < m_pAdapterList.size(); i++)
 			this.comboBox.addItem(m_pAdapterList.get(i).getDescription());
 	}
-	public void initTableValue(String[] pDataArr) {
+	public static void initTableValue(String[] pDataArr) {
 		/*
 		 * pDataArr # index 0 - Index of Element # index 1 - IP Address # index 2 - MAC
 		 * Address # index 3 - State
@@ -555,7 +555,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 	}
 
-	public void initProxyTableValue(String[] pDataArr) {
+	public static void initProxyTableValue(String[] pDataArr) {
 		/*
 		 * pDataArr # index 0 - Index of Element # index 1 - IP Address # index 2 - MAC
 		 * Address # index 3 - State
@@ -571,7 +571,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	}
 
 
-	public void resetTable() {
+	public static void resetArpTableGui() {
 		for (int i = 0; i < 30; i++) {
 			for (int j = 0; j < 3; j++) {
 				table_ARPTable.setValueAt("", i, j);
@@ -579,7 +579,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		}
 	}
 
-	public void resetProxyTable() {
+	public static void resetProxyTable() {
 		for (int i = 0; i < 30; i++) {
 			for (int j = 0; j < 3; j++) {
 				table_ProxyTable.setValueAt("", i, j);

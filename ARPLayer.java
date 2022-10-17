@@ -479,12 +479,12 @@ public class ARPLayer implements BaseLayer {
 	}
 	
 	public void resetARPCacheTableGUI() { 
-		((ARPGUI) this.GetUpperLayer(1)).resetTable();
+		ARPGUI.resetArpTableGui();
 	}
 	public void refreshARPCacheTableGUI() {
 		for (int i = 0; i < this.arpCacheTable.size; i++) {
-			((ARPGUI) this.GetUpperLayer(1)).initTableValue(new String[] { Integer.toString(i),
-					this.arpCacheTable.ipAddr[i], this.arpCacheTable.macAddr[i], this.arpCacheTable.state[i] });
+		ARPGUI.initTableValue(new String[] { Integer.toString(i), this.arpCacheTable.ipAddr[i], this.arpCacheTable.macAddr[i], this.arpCacheTable.state[i] });
+		
 		}
 	}
 	public void addARPCacheTableElement(String pIpAddr, String pMacAddr, String pState) {
@@ -522,12 +522,11 @@ public class ARPLayer implements BaseLayer {
 		this.m_sHeader.opCode = pOpcode;
 	}
 	public void resetPROXYCacheTableGUI() { 
-		((ARPGUI) this.GetUpperLayer(1)).resetProxyTable();
+		ARPGUI.resetProxyTable();
 	}
 	public void refreshPROXYCacheTableGUI() {
 		for (int i = 0; i < this.proxyCacheTable.size; i++) {
-			((ARPGUI) this.GetUpperLayer(1)).initProxyTableValue(new String[] { Integer.toString(i),
-					this.proxyCacheTable.deviceName[i], this.proxyCacheTable.ipAddr[i], this.proxyCacheTable.macAddr[i]});
+			ARPGUI.initProxyTableValue(new String[] { Integer.toString(i), this.proxyCacheTable.deviceName[i], this.proxyCacheTable.ipAddr[i], this.proxyCacheTable.macAddr[i]});
 		}
 	}
 
