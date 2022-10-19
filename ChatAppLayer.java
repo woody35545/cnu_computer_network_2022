@@ -78,6 +78,7 @@ public class ChatAppLayer implements BaseLayer{
 		Utils.consoleMsg("Send to TCPLayer..\n");
 
 		((TCPLayer)this.GetUnderLayer(0)).setSourcePort(TCPLayer.CHAT_APP_PROT);
+		((TCPLayer)this.GetUnderLayer(0)).setDestinationPort(TCPLayer.CHAT_APP_PROT);
     	this.GetUnderLayer(0).Send(encapsulated,encapsulated.length);
     	
 		return true;

@@ -73,33 +73,40 @@ public class IPLayer implements BaseLayer {
 	}
 
 	public boolean Send(byte[] input, int length) {
+		Utils.consoleMsg("Call by TCPLayer.send");			
+		Utils.consoleMsg("### IPLayer.send() ###");
+		Utils.consoleMsg("<IP Header>");
+		Utils.consoleMsg("*Source IP | " + Utils.convertAddrFormat(m_sHeader.ip_srcaddr));
+		Utils.consoleMsg("*Target IP | " + Utils.convertAddrFormat(m_sHeader.ip_dstaddr));
+		Utils.consoleMsg("Send to EthernetLayer..\n");
+		
 		//port 0x2080 : Chat App Layer , port 0x2090 : File App Layer
-		if((input[0]==(byte)0x20 && input[1]==(byte)0x80) || (input[0]==(byte)0x20 && input[1]==(byte)0x90) ) {
-
-			Utils.consoleMsg("Call by TCPLayer.send");			
-			Utils.consoleMsg("### IPLayer.send() ###");
-			Utils.consoleMsg("<IP Header>");
-			Utils.consoleMsg("*Source IP | " + Utils.convertAddrFormat(m_sHeader.ip_srcaddr));
-			Utils.consoleMsg("*Target IP | " + Utils.convertAddrFormat(m_sHeader.ip_dstaddr));
-			Utils.consoleMsg("Send to EthernetLayer..\n");
+		if((input[0]==(byte)0x20 && input[1]==(byte)0x80 )) {
+			// from Chat App Layer
+		
 			
 			
 			m_sHeader.ip_offset[0] = 0x00;
 			m_sHeader.ip_offset[1] = 0x03;
-			byte[] bytes = ObjToByte(m_sHeader,input,length);	//IP �뿤�뜑 異붽� (EnCapsulate)
+			byte[] bytes = ObjToByte(m_sHeader,input,length);	//IP 占쎈엘占쎈쐭 �빊遺쏙옙 (EnCapsulate)
 		
-			//((EthernetLayer)this.GetUnderLayer(0)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(ARPGUI.));
-			this.GetUnderLayer(1).Send(bytes,length+IPHEADER);	//IP �뿤�뜑 湲몄씠留뚰겮 異붽��맂 �뜲�씠�꽣瑜� �븘�옒 �젅�씠�뼱�뿉 �쟾�넚
-
-
-			
+			((EthernetLayer)this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(ARPGUI.CHAT_DEST_MAC_ADDR));
+			this.GetUnderLayer(1).Send(bytes,length+IPHEADER);
 			return true;
 		}
+
+		
+		else if (input[0]==(byte)0x20 && input[1]==(byte)0x90){
+			// from Chat File App Layer
+			return true;
+		}
+			
+		
 		return false;
 	}
 	
 	public byte[] RemoveCappHeader(byte[] input, int length) {
-		//罹≪뒓�솕 �뻽�뜕 IP �뿤�뜑�뱾�쓣 �젣嫄고븳�떎. 
+		//筌╈돦�뮄占쎌넅 占쎈뻥占쎈쐲 IP 占쎈엘占쎈쐭占쎈굶占쎌뱽 占쎌젫椰꾧퀬釉놂옙�뼄. 
 		byte[] remvHeader = new byte[length-IPHEADER];
 		for(int i=0;i<length-IPHEADER;i++) {
 			remvHeader[i] = input[i+IPHEADER];
@@ -130,14 +137,14 @@ public class IPLayer implements BaseLayer {
 		}
 	}
 	
-	public boolean me_equals_dst_Addr(byte[] input) {//�뙣�궥�쓽 dst 二쇱냼�옉 �궡 二쇱냼�옉 媛숈�吏� �솗�씤
+	public boolean me_equals_dst_Addr(byte[] input) {//占쎈솭占쎄땅占쎌벥 dst 雅뚯눘�꺖占쎌삂 占쎄땀 雅뚯눘�꺖占쎌삂 揶쏆늿占쏙쭪占� 占쎌넇占쎌뵥
 		for(int i = 0;i<4;i++) {
 			if(input[i+16]!=m_sHeader.ip_srcaddr[i]) return false;
 		}
 
 		return true;
 	}
-	public boolean me_equals_src_Addr(byte[] input) {//�뙣�궥�쓽 src 二쇱냼�옉 �궡 二쇱냼�옉 媛숈�吏� �솗�씤
+	public boolean me_equals_src_Addr(byte[] input) {//占쎈솭占쎄땅占쎌벥 src 雅뚯눘�꺖占쎌삂 占쎄땀 雅뚯눘�꺖占쎌삂 揶쏆늿占쏙쭪占� 占쎌넇占쎌뵥
 		for(int i = 0;i<4;i++) {
 			if(input[i+12]!=m_sHeader.ip_srcaddr[i]) return false;
 		}
