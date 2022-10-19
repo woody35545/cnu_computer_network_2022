@@ -7,9 +7,10 @@ public class FileTransferAppLayer implements BaseLayer {
 	public static final byte TYPE_INITIAL_FRAGMENT = (byte)0x01;
 	public static final byte TYPE_MIDDLE_FRAGMENT = (byte)0x02;
 	public static final byte TYPE_LAST_FRAGMENT = (byte)0x03;
+	public static final byte TYPE_FILENAME = (byte)0x04;
 
 	private static final int FRAGMENT_SIZE = 1400;
-	private static final int LENGTH_OF_HEADER_EXCEPT_DATA = 9;
+	private static final int LENGTH_OF_HEADER_EXCEPT_DATA = 29;
 
 	public int nUnderLayerCount = 0;
 	public int nUpperLayerCount = 0;
@@ -20,7 +21,7 @@ public class FileTransferAppLayer implements BaseLayer {
 	_FILE_TRANSFER_HEADER m_sHeader = new _FILE_TRANSFER_HEADER();
 
 	int receivedLength = 0;
-	private ByteBuffer receivedBuffer = ByteBuffer.allocate(FRAGMENT_SIZE*10);
+	private ByteBuffer receivedBuffer = ByteBuffer.allocate(FRAGMENT_SIZE*100000);
 	
 	public FileTransferAppLayer(String pName) {
 		//super(pName);
@@ -45,6 +46,7 @@ public class FileTransferAppLayer implements BaseLayer {
 		private byte[] file_total_length = new byte[4];
 		private byte fragment_type;
 		private byte[] fragment_number = new byte[4];
+		private byte[] file_name = new byte[20];
 		private byte[] data;
 
 		public _FILE_TRANSFER_HEADER() {
@@ -52,12 +54,13 @@ public class FileTransferAppLayer implements BaseLayer {
 
 		}
 
-		public _FILE_TRANSFER_HEADER(byte[] pFileTotalLength, byte pFragmentType, byte[] pFragmentNumber,
+		public _FILE_TRANSFER_HEADER(byte[] pFileTotalLength, byte pFragmentType, byte[] pFragmentNumber, byte[] pFileName,
 				byte[] pData) {
 			// Constructor of file transfer header
 			this.file_total_length = pFileTotalLength;
 			this.fragment_number = pFragmentNumber;
 			this.fragment_type = pFragmentType;
+			this.file_name = pFileName;
 			this.data = pData;
 		}
 
@@ -83,6 +86,9 @@ public class FileTransferAppLayer implements BaseLayer {
 		for (int i = 0; i < pHeader.fragment_number.length; i++) {
 			encapsulated[idx_ptr++] = pHeader.fragment_number[i];
 		}
+		for (int i =0; i< pHeader.file_name.length; i++){
+			encapsulated[idx_ptr++] = pHeader.file_name[i];
+		}
 		for (int i = 0; i < pHeader.data.length; i++) {
 			encapsulated[idx_ptr++] = pHeader.data[i];
 		}
@@ -101,10 +107,11 @@ public class FileTransferAppLayer implements BaseLayer {
 	public boolean Send(byte[] pData, int pLength) {
 		int fragmentTotalLength; // length of fragment
 		int fileTotalLength = pData.length;
+		System.out.println(new String(this.m_sHeader.file_name));
 		if (fileTotalLength > FRAGMENT_SIZE) {
 			// If Fragmentation needed!
 			System.out.println("Fragmenting Process Start");
-			
+
 			int fragmentedLength = 0; // Fragmented size from full data size
 			
 			// Sequence of Fragment start with 0 
@@ -120,14 +127,14 @@ public class FileTransferAppLayer implements BaseLayer {
 				// check if it's last one.
 				if (fileTotalLength- fragmentedLength < FRAGMENT_SIZE) {
 					// If this is the last fragment, it fragments up to this point and does not
-					// fragment any more.
-					isLastFragment = false;
+					// fragmenting any more.
+					isLastFragment = true;
 					
 					// Assign total length of last fragment
 					fragmentTotalLength = pData.length - fragmentedLength;
 
 					// set Header's File total length
-					this.setFileTotalLength(fragmentTotalLength);
+					this.setFileTotalLength(fileTotalLength);
 
 					// Set header's fragment type feild value to last fragment type(0x03)
 					this.m_sHeader.fragment_type = (byte) 0x03;
@@ -166,7 +173,8 @@ public class FileTransferAppLayer implements BaseLayer {
 					
 					// update fragemented length
 					fragmentedLength += fragmentTotalLength;
-					System.out.print("Sending file.... ("+ fragmentedLength + "/" + fileTotalLength + ")");
+					System.out.println("Fragment Number = " + this.castByteArrToInt(this.m_sHeader.fragment_number));
+					System.out.println("Sending file.... ("+ fragmentedLength + "/" + fileTotalLength + ")");
 					System.out.println("File Send Complete !");
 
 				}
@@ -188,7 +196,7 @@ public class FileTransferAppLayer implements BaseLayer {
 					else this.m_sHeader.fragment_type = (byte) 0x02;
 
 					// set Header's File total length
-					this.setFileTotalLength(fragmentTotalLength);
+					this.setFileTotalLength(fileTotalLength);
 
 					// Set header's fragment's sequence
 					this.setFileFragmentNumber(fragmentNumber++);
@@ -227,7 +235,8 @@ public class FileTransferAppLayer implements BaseLayer {
 					
 					// update fragemented length
 					fragmentedLength += fragmentTotalLength;
-					System.out.print("Sending file.... ("+ fragmentedLength + "/" + fileTotalLength + ")");
+					System.out.println("Fragment Number = " + this.castByteArrToInt(this.m_sHeader.fragment_number));
+					System.out.println("Sending file.... ("+ fragmentedLength + "/" + fileTotalLength + ")");
 
 				}
 
@@ -242,7 +251,7 @@ public class FileTransferAppLayer implements BaseLayer {
 			this.m_sHeader.fragment_type = (byte) 0x00;
 
 			// set Header's File total length
-			this.setFileTotalLength(fragmentTotalLength);
+			this.setFileTotalLength(fileTotalLength);
 
 			// Set Header's Fragement Number to '0', Cause it won't be used when Fragmentation is not needed
 			this.setFileFragmentNumber(0);
@@ -298,14 +307,14 @@ public class FileTransferAppLayer implements BaseLayer {
 		Utils.consoleMsg("*Fragment_type | " +  receivedFragmentTypeStr);
 		Utils.consoleMsg("*Fragment_number | " + this.castByteArrToInt(this.getFileFragmentNumberFromByte(pData)));
 		Utils.consoleMsg("---------------------------------\n\n");
-		
+		String fileNameStr = new String(this.getFileNameFromByte(pData));
 		// Check if Received Data is Fragmented data
 		if(this.getFragmentTypeFromByte(pData) == (byte)0x00) {
 			// this is not Fragmented type data
 			
 			
 			// Converting Byte type original data(= decapsulated data) to file type
-			Utils.convertByteToFile("ReceivedFile", "pwd", decapsulated);
+			Utils.convertByteToFile(fileNameStr, "pwd", decapsulated);
 			
 		}
 		else { 
@@ -316,7 +325,7 @@ public class FileTransferAppLayer implements BaseLayer {
 			
 			if(this.getFragmentTypeFromByte(pData) == (byte)0x01) {
 				// if it's first fragment data of whole data, then initialize receivedBuffer size to total length of received file
-				this.receivedBuffer = ByteBuffer.allocate(receivedFileTotalLength);
+				//this.receivedBuffer = ByteBuffer.allocate(receivedFileTotalLength);
 				// initialize receivedLength to 0 before collecting fragments.
 				this.receivedLength = 0;
 			}
@@ -337,7 +346,9 @@ public class FileTransferAppLayer implements BaseLayer {
 			if(this.getFragmentTypeFromByte(pData)==(byte)0x03) {
 				// If it's last fragment, it means that it collected all fragments of whole file.
 				// After complete collecting all fragments, then make file with collecting bytes			
-				Utils.convertByteToFile("ReceivedFile", "pwd", this.receivedBuffer.array());
+				
+				byte[] bufferToByteArr = Arrays.copyOfRange(this.receivedBuffer.array(),0,receivedFileTotalLength);
+				Utils.convertByteToFile(fileNameStr, "pwd", bufferToByteArr);
 				
 				// Reset receivedBuffer after making file for next receive.
 				this.receivedBuffer.clear();
@@ -351,7 +362,13 @@ public class FileTransferAppLayer implements BaseLayer {
 		}
 		return true;
 	}
-
+	public void setFileName(String pFileName){
+		byte[] pFileNameBytes = pFileName.getBytes();
+		for(int i =0; i<pFileNameBytes.length; i++){
+			this.m_sHeader.file_name[i] =pFileNameBytes[i] ;
+		}	
+		}
+	
 	public void setFileTotalLength(int pTotalLengthInt) {
 		// Casting integer type total length to byte using arithmetic shift
 		// Casting to assign a higher digit to a lower index of file_total_length array
@@ -395,12 +412,14 @@ public class FileTransferAppLayer implements BaseLayer {
 		
 		return fileFragmentNumber;
 	} 
-	
+	public byte[] getFileNameFromByte(byte[] pHeaderByte){
+		return Arrays.copyOfRange(pHeaderByte,9,29);
+	}
 	public int castByteArrToInt(byte[] pByte) { 
 		// Casting Byte array values to one integer value
 		int byteArrToInt = 0;
 		for (int i = 0; i < pByte.length; i++) {
-			byteArrToInt |=  ((pByte[i] & 0xff) << (pByte.length-1-i)) ;
+			byteArrToInt |=  ((pByte[i] & 0xff) << 8*(pByte.length-1-i)) ;
 		}
 		return byteArrToInt;
 	}

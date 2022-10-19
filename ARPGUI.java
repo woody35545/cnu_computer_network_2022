@@ -4,6 +4,8 @@ import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -12,22 +14,29 @@ import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+
 import org.jnetpcap.Pcap;
 import org.jnetpcap.PcapIf;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
+
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+
 import java.awt.Font;
+
 import javax.swing.JProgressBar;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JFileChooser;
 import javax.swing.SwingConstants;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.SystemColor;
@@ -67,7 +76,9 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	public static String FILE_DEST_IP_ADDR;
 	public static String FILE_DEST_MAC_ADDR;
 	public static String FILE_PATH;
+	public static String FILE_NAME;
 	public static String ARP_DEST_IP_ADDR;
+	
 
 	/**
 	 * Launch the application.
@@ -660,12 +671,15 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 				if (result == JFileChooser.APPROVE_OPTION) {
 					File selectedFile = fileChooser.getSelectedFile();
-
+				
 					// In Java, you have to put back slash twice when entering the fild path.
-					String selectedFileName = selectedFile.toString().replace("\\", "\\\\");
-					textField_filePath.setText(selectedFileName.toString());
+					String selectedFilePath = selectedFile.toString().replace("\\", "\\\\");
+					// pMacStr.split(Pattern.quote(":"));
+					FILE_NAME = selectedFilePath.split(Pattern.quote("\\\\"))[(selectedFilePath.split(Pattern.quote("\\\\")).length) - 1];
+					System.out.println(FILE_NAME);
+					textField_filePath.setText(selectedFilePath.toString());
 
-					System.out.println(selectedFileName);
+					System.out.println(selectedFilePath);
 				}
 
 			}
@@ -739,6 +753,8 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 				((EthernetLayer) m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(textField_FileTransferDstMac.getText()));;
 				// Send to File transfer application layer
+				((FileTransferAppLayer)m_LayerMgr.GetLayer("FileApp")).setFileName(FILE_NAME);
+
 				((FileTransferAppLayer) m_LayerMgr.GetLayer("FileApp")).Send(fileToByteArr,fileToByteArr.length);
 
 			}
