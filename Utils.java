@@ -79,7 +79,7 @@ public final class Utils {
 		return strFormatIpAddr;
 	}
 
-	public static String convertByteFormatMacToStrFormat(byte[] pMacByte) { // mac 정보 담은 바이트 배열 String 변환
+	public static String convertByteFormatMacToStrFormat(byte[] pMacByte) { // mac �젙蹂� �떞�� 諛붿씠�듃 諛곗뿴 String 蹂��솚
 		// byte[] mac addr ->"0:0:0:0:0:0"
 
 		String strFormatMacAddr = "";
@@ -128,7 +128,7 @@ public final class Utils {
 			        System.out.println("[Debug] Output file dir: " + pFilePath);
 			}
 			try {
-				File outputFile = new File(pFilePath + pFileName);
+				File outputFile = new File(pFilePath +"\\" + pFileName.trim());
 				FileOutputStream outputFileStream = new FileOutputStream(outputFile);
 				outputFileStream.write(pData);
 				outputFileStream.close();
