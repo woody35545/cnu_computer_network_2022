@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class EthernetLayer implements BaseLayer {
+	public static final byte[] TYPE_ARP = new byte[] {(byte)0x08 ,(byte)0x06};
+	public static final byte[] TYPE_IPv4 = {(byte)0x08 ,(byte)0x00};
+
 	public int nUnderLayerCount = 0;
 	public int nUpperLayerCount = 0;
 	public String pLayerName = null;
@@ -145,23 +148,35 @@ public class EthernetLayer implements BaseLayer {
 
 			// ARP Request Packet should be sent as broadcast
 			// Make BroadCast Frame
-			System.out.println("Ethernet >> This is ARP Packet");
+			Utils.consoleMsg("Call by ARPLayer.send");
+
 			this.m_sHeader.set_enet_type(new byte[] {0x08,0x06});
 			this.m_sHeader.set_destination_address(new byte[]{(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff});
+			
 		}	
 		/* else, This is from the IP layer */		
 		else{
-			System.out.println("Ethernet >> This is IP Packet");
+			Utils.consoleMsg("Call by IPLayer.send");
 			this.m_sHeader.set_enet_type(new byte[] {0x08,0x00});
 		}
 		
-			
+
+		Utils.consoleMsg("### EthernetLayer.send() ###");
+		Utils.consoleMsg("<Ethernet Header>");
+		if(Utils.compareBytes(m_sHeader.enet_type, new byte[] {0x08, 0x06}))
+		Utils.consoleMsg("*Type | ARP");
+		else Utils.consoleMsg("*Type | IPv4");
+		Utils.consoleMsg("*Source Mac | " + Utils.convertAddrFormat(this.m_sHeader.enet_srcaddr.addr));
+		Utils.consoleMsg("*Destination Mac | " + Utils.convertAddrFormat(this.m_sHeader.enet_dstaddr.addr));
+		Utils.consoleMsg("Send to NILayer..\n");
 			byte[] encapsulated = Encapsulate(this.m_sHeader,input);
 			
-			System.out.println("Ethernet Send: ");
-
-			Utils.showPacket(encapsulated);
+//			System.out.println("Ethernet Send: ");
+//
+//			Utils.showPacket(encapsulated);
 			this.GetUnderLayer(0).Send(encapsulated, length);
+
+
 			return true;
 	}
 
@@ -172,9 +187,9 @@ public class EthernetLayer implements BaseLayer {
 		 * to test whether the inter-layer data forwarding function is performed
 		 * smoothly
 		 */
-		byte[] dstMacAddr = Arrays.copyOfRange(input,0,6);
-		byte[] srcMacAddr = Arrays.copyOfRange(input,6,12);
-		
+		byte[] receivedDstMacAddr = Arrays.copyOfRange(input,0,6);
+		byte[] receivedSrcMacAddr = Arrays.copyOfRange(input,6,12);
+		byte[] receivedType = Arrays.copyOfRange(input, 12, 14);
 		boolean isFrameISent = false;
 		boolean isFrameForMe = false;
 		boolean isBroadcastFrame = true;
@@ -186,13 +201,13 @@ public class EthernetLayer implements BaseLayer {
 			}
 			/* Check whether received frame is the frame I sent */
 			//if (this.GetEthernetHeader().get_source_address().addr[i] != input[i+6]) {
-				if(Utils.compareBytes(this.m_sHeader.enet_srcaddr.addr, srcMacAddr)){
+				if(Utils.compareBytes(this.m_sHeader.enet_srcaddr.addr, receivedSrcMacAddr)){
 				isFrameISent = true;
 			}
 
 			/* Check whether I am the destination of this frame */
 			//if (this.GetEthernetHeader().get_source_address().addr[i] != input[i]) {
-				if(Utils.compareBytes(this.m_sHeader.enet_srcaddr.addr, dstMacAddr)){
+				if(Utils.compareBytes(this.m_sHeader.enet_srcaddr.addr, receivedDstMacAddr)){
 				isFrameForMe = true;
 			}
 		}
@@ -203,23 +218,31 @@ public class EthernetLayer implements BaseLayer {
 			 * conditions are satisfied, the sending layer is determined
 			 * according to the protocol type in the frame.
 			 */
-			System.out.println("Ethernet Received: ");
-			Utils.showPacket(input);
-
-			if (input[12] == (byte) 0x08 && input[13] == (byte) 0x00) {
-				System.out.println("Ethernet >> This is IP Packet: ");
+			
+			Utils.consoleMsg("### EthernetLayer.Receive() ###");
+			Utils.consoleMsg("<Received Ethernet Header>");
+			if(Utils.compareBytes(receivedType, TYPE_ARP))
+			Utils.consoleMsg("*Type | ARP");
+			else if(Utils.compareBytes(receivedType, TYPE_IPv4)) Utils.consoleMsg("*Type | IPv4");
+			Utils.consoleMsg("*Source Mac | " + Utils.convertAddrFormat(receivedSrcMacAddr));
+			Utils.consoleMsg("*Destination Mac | " + Utils.convertAddrFormat(receivedDstMacAddr));
+			Utils.consoleMsg("Send up to IP Layer..\n");
+			
+			if (Utils.compareBytes(receivedType, TYPE_IPv4)) {
 
 				// if protocol type == IPv4 : 1
 				byte[] decapsulated = this.Decapsulate(input);
+				
 				// call IPLayer.receive(..);
+				Utils.consoleMsg("Send up to IP Layer..\n");
 				this.GetUpperLayer(1).Receive(decapsulated);
 			}
 
-			else if (input[12] == (byte) 0x08 && input[13] == (byte) 0x06) {
+			else if (Utils.compareBytes(receivedType, TYPE_ARP)) {
 				// if protocol type == ARP : 0
-				System.out.println("Ethernet >> This is ARP Packet: ");
 				byte[] decapsulated = this.Decapsulate(input);
 				// call ARPLayer.Recevie(..);
+				Utils.consoleMsg("Send up to ARP Layer..\n");
 				this.GetUpperLayer(0).Receive(decapsulated);
 			}
 			return true;

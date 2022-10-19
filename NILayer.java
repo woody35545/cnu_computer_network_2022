@@ -60,13 +60,16 @@ public class NILayer implements BaseLayer {
 
 	public boolean Send(byte[] input, int length) {
 		ByteBuffer buf = ByteBuffer.wrap(input);
-		System.out.println("NILayer Send: ");
-		Utils.showPacket(input);
+
 		if (m_AdapterObject.sendPacket(buf) != Pcap.OK) {
 			System.err.println(m_AdapterObject.getErr());
 			return false;
 		}
-		System.out.println("## Data is sent to network ## ");
+		Utils.consoleMsg("Call by EthernetLayer.send");
+		Utils.consoleMsg("### NI.send() ###");
+		Utils.consoleMsg("[>] Data is sent to network !!");
+		Utils.consoleMsg("---------------------------------\n\n");
+		
 		return true;
 	}
 
@@ -148,8 +151,12 @@ class Receive_Thread implements Runnable {
 					System.out.printf("Capture >> Time: %s, Length: %d\n", new Date(packet.getCaptureHeader().timestampInMillis()), packet.getCaptureHeader().caplen());
 
 					data = packet.getByteArray(0, packet.size());
-					System.out.println("NI received");
-					Utils.showPacket(data);
+					
+					Utils.consoleMsg("### NILayer.Receive() ###");
+					Utils.consoleMsg("<Received Info>");	
+					Utils.consoleMsg("*Data Length | " + data.length);
+					Utils.consoleMsg("Send up to Ethernet Layer..\n");
+					
 					UpperLayer.Receive(data);
 				}
 			};

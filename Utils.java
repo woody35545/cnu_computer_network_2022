@@ -2,6 +2,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 public final class Utils {
@@ -36,6 +38,7 @@ public final class Utils {
 			System.out.println("\n");
 		}
 	}
+	
 
 	public static byte[] convertStrFormatIpToByteFormat(String strFormatIp) {
 		// "0.0.0.0" -> byte[]
@@ -188,4 +191,10 @@ public final class Utils {
 	    return size;
 	}
 
+	public static void consoleMsg(String pMsg) {
+		SimpleDateFormat formatter= new SimpleDateFormat("HH:mm");
+		String dateFormatStr = formatter.format(new Date(System.currentTimeMillis()));
+		ARPGUI.consoleView.append("[" +dateFormatStr+ "] " +pMsg + "\n");
+		ARPGUI.consoleView.setCaretPosition(ARPGUI.consoleView.getText().length());
+	}
 }

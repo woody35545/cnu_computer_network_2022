@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class IPLayer implements BaseLayer {
 	public int nUnderLayerCount = 0;
@@ -70,18 +71,28 @@ public class IPLayer implements BaseLayer {
 		}
 		return buf;
 	}
-	// Ethernet 怨꾩링�쑝濡� �쟾�넚 
+
 	public boolean Send(byte[] input, int length) {
 		//port 0x2080 : Chat App Layer , port 0x2090 : File App Layer
 		if((input[0]==(byte)0x20 && input[1]==(byte)0x80) || (input[0]==(byte)0x20 && input[1]==(byte)0x90) ) {
+
+			Utils.consoleMsg("Call by TCPLayer.send");			
+			Utils.consoleMsg("### IPLayer.send() ###");
+			Utils.consoleMsg("<IP Header>");
+			Utils.consoleMsg("*Source IP | " + Utils.convertAddrFormat(m_sHeader.ip_srcaddr));
+			Utils.consoleMsg("*Target IP | " + Utils.convertAddrFormat(m_sHeader.ip_dstaddr));
+			Utils.consoleMsg("Send to EthernetLayer..\n");
+			
+			
 			m_sHeader.ip_offset[0] = 0x00;
 			m_sHeader.ip_offset[1] = 0x03;
-			
 			byte[] bytes = ObjToByte(m_sHeader,input,length);	//IP �뿤�뜑 異붽� (EnCapsulate)
-			System.out.println("IPLayer Send:");
-			Utils.showPacket(bytes);
+		
+			//((EthernetLayer)this.GetUnderLayer(0)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(ARPGUI.));
 			this.GetUnderLayer(1).Send(bytes,length+IPHEADER);	//IP �뿤�뜑 湲몄씠留뚰겮 異붽��맂 �뜲�씠�꽣瑜� �븘�옒 �젅�씠�뼱�뿉 �쟾�넚
 
+
+			
 			return true;
 		}
 		return false;
@@ -98,10 +109,17 @@ public class IPLayer implements BaseLayer {
 	}
 	
 	
-	//Receive �븿�닔
+
 	public synchronized boolean Receive(byte[] input) {
-		System.out.println("IPLayer received:");
-		Utils.showPacket(input);
+		byte[] receivedSrcIP = Arrays.copyOfRange(input, 12, 16);
+		byte[] receivedDstIP = Arrays.copyOfRange(input, 16, 20);
+
+		Utils.consoleMsg("### IPLayer.Receive() ###");
+		Utils.consoleMsg("<Received IP Header>");
+		Utils.consoleMsg("*Source IP | " + Utils.convertAddrFormat(receivedSrcIP));
+		Utils.consoleMsg("*Destination IP | " + Utils.convertAddrFormat(receivedDstIP));
+		Utils.consoleMsg("Send up to TCP Layer..\n");
+		
 		byte[] data = RemoveCappHeader(input, input.length);
 		
 		if(me_equals_dst_Addr(input)) {

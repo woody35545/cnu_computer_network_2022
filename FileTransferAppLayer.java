@@ -3,6 +3,11 @@ import java.util.Arrays;
 import java.nio.ByteBuffer;
 
 public class FileTransferAppLayer implements BaseLayer {
+	public static final byte TYPE_NOT_FRAGMENTED = (byte)0x00;
+	public static final byte TYPE_INITIAL_FRAGMENT = (byte)0x01;
+	public static final byte TYPE_MIDDLE_FRAGMENT = (byte)0x02;
+	public static final byte TYPE_LAST_FRAGMENT = (byte)0x03;
+
 	private static final int FRAGMENT_SIZE = 1400;
 	private static final int LENGTH_OF_HEADER_EXCEPT_DATA = 9;
 
@@ -141,7 +146,21 @@ public class FileTransferAppLayer implements BaseLayer {
 					// encapsulate data to call send function of it's Underlayer(TCP)
 					byte[] encapsulated = this.Encapsulate(m_sHeader);
 
+					
 					// send to TCP Layer
+					Utils.consoleMsg("### FileTransferAppLayer.send() ###");
+					Utils.consoleMsg("<FileTransfer Header>");
+					String fragmentTypeStr = "Null";
+					if (this.m_sHeader.fragment_type == (TYPE_NOT_FRAGMENTED))fragmentTypeStr="Not Fragmented";
+					else if (this.m_sHeader.fragment_type == (TYPE_INITIAL_FRAGMENT))fragmentTypeStr="Fragmented(Frist of Fragment)";
+					else if (this.m_sHeader.fragment_type == (TYPE_MIDDLE_FRAGMENT))fragmentTypeStr="Fragmented(Middle of Fragment)";
+					else if (this.m_sHeader.fragment_type == (TYPE_LAST_FRAGMENT))fragmentTypeStr="Fragmented(Last of Fragment)";
+					
+					Utils.consoleMsg("*File total Length | "  + this.m_sHeader.data.length + " bytes");
+					Utils.consoleMsg("*Fragment_type | " + fragmentTypeStr);
+					Utils.consoleMsg("*Fragment_number | " + this.castByteArrToInt(this.getFileFragmentNumberFromByte(pData)));
+					Utils.consoleMsg("Send to TCPLayer..\n");
+					((TCPLayer)this.GetUnderLayer(0)).setSourcePort(TCPLayer.FILE_TRANSFER_APP_PROT);
 					((TCPLayer) this.GetUnderLayer(0)).Send(encapsulated, encapsulated.length);
 					
 					// update fragemented length
@@ -187,7 +206,21 @@ public class FileTransferAppLayer implements BaseLayer {
 					// encapsulate data to call send function of it's Underlayer(TCP)
 					byte[] encapsulated = this.Encapsulate(m_sHeader);
 
+
 					// send to TCP Layer
+					Utils.consoleMsg("### FileTransferAppLayer.send() ###");
+					Utils.consoleMsg("<FileTransfer Header>");
+					String fragmentTypeStr = "Null";
+					if (this.m_sHeader.fragment_type == (TYPE_NOT_FRAGMENTED))fragmentTypeStr="Not Fragmented";
+					else if (this.m_sHeader.fragment_type == (TYPE_INITIAL_FRAGMENT))fragmentTypeStr="Fragmented(Frist of Fragment)";
+					else if (this.m_sHeader.fragment_type == (TYPE_MIDDLE_FRAGMENT))fragmentTypeStr="Fragmented(Middle of Fragment)";
+					else if (this.m_sHeader.fragment_type == (TYPE_LAST_FRAGMENT))fragmentTypeStr="Fragmented(Last of Fragment)";
+					
+					Utils.consoleMsg("*File total Length | "  + this.m_sHeader.data.length + " bytes");
+					Utils.consoleMsg("*Fragment_type | " + fragmentTypeStr);
+					Utils.consoleMsg("*Fragment_number | " + this.castByteArrToInt(this.m_sHeader.fragment_number));
+					Utils.consoleMsg("Send to TCPLayer..\n");
+					((TCPLayer)this.GetUnderLayer(0)).setSourcePort(TCPLayer.FILE_TRANSFER_APP_PROT);
 					((TCPLayer) this.GetUnderLayer(0)).Send(encapsulated, encapsulated.length);
 					
 					// update fragemented length
@@ -226,6 +259,20 @@ public class FileTransferAppLayer implements BaseLayer {
 			byte[] encapsulated = this.Encapsulate(m_sHeader);
 
 			// send to TCP Layer
+			Utils.consoleMsg("### FileTransferAppLayer.send() ###");
+			Utils.consoleMsg("<FileTransfer Header>");
+			String fragmentTypeStr = "Null";
+			if (this.m_sHeader.fragment_type == (TYPE_NOT_FRAGMENTED))fragmentTypeStr="Not Fragmented";
+			else if (this.m_sHeader.fragment_type == (TYPE_INITIAL_FRAGMENT))fragmentTypeStr="Fragmented(Frist of Fragment)";
+			else if (this.m_sHeader.fragment_type == (TYPE_MIDDLE_FRAGMENT))fragmentTypeStr="Fragmented(Middle of Fragment)";
+			else if (this.m_sHeader.fragment_type == (TYPE_LAST_FRAGMENT))fragmentTypeStr="Fragmented(Last of Fragment)";
+			
+			Utils.consoleMsg("*File total Length | "  + this.m_sHeader.data.length + " bytes");
+			Utils.consoleMsg("*Fragment_type | " + fragmentTypeStr);
+			Utils.consoleMsg("*Fragment_number | " + this.castByteArrToInt(this.getFileFragmentNumberFromByte(pData)));
+			Utils.consoleMsg("Send to TCPLayer..\n");
+			
+			((TCPLayer)this.GetUnderLayer(0)).setSourcePort(TCPLayer.FILE_TRANSFER_APP_PROT);
 			((TCPLayer) this.GetUnderLayer(0)).Send(encapsulated, encapsulated.length);
 			System.out.println("File Send Complete!");	
 
@@ -236,7 +283,19 @@ public class FileTransferAppLayer implements BaseLayer {
 	public boolean Receive(byte[] pData) {
 		// Assign Decapsulated data
 		byte[] decapsulated = this.Decapulate(pData);
-
+		byte receivedFragmentType = pData[4];
+		Utils.consoleMsg("### FileTransferApp.Receive() ###");
+		Utils.consoleMsg("<Received FileTransferApp Header>");
+		String receivedFragmentTypeStr = "Null";
+		if (receivedFragmentType == (TYPE_NOT_FRAGMENTED))receivedFragmentTypeStr="Not Fragmented";
+		else if (receivedFragmentType == (TYPE_INITIAL_FRAGMENT))receivedFragmentTypeStr="Fragmented(Frist of Fragment)";
+		else if (receivedFragmentType == (TYPE_MIDDLE_FRAGMENT))receivedFragmentTypeStr="Fragmented(Middle of Fragment)";
+		else if (receivedFragmentType == (TYPE_LAST_FRAGMENT))receivedFragmentTypeStr="Fragmented(Last of Fragment)";
+		Utils.consoleMsg("*File total Length | "  + this.m_sHeader.data.length + " bytes");
+		Utils.consoleMsg("*Fragment_type | " +  receivedFragmentTypeStr);
+		Utils.consoleMsg("*Fragment_number | " + this.castByteArrToInt(this.getFileFragmentNumberFromByte(pData)));
+		Utils.consoleMsg("---------------------------------\n\n");
+		
 		// Check if Received Data is Fragmented data
 		if(this.getFragmentTypeFromByte(pData) == (byte)0x00) {
 			// this is not Fragmented type data

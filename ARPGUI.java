@@ -30,6 +30,7 @@ import javax.swing.JFileChooser;
 import javax.swing.SwingConstants;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.SystemColor;
 
 public class ARPGUI extends JFrame implements BaseLayer {
 
@@ -49,6 +50,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	private JTextArea textField_proxyDeviceName;
 	private JTextArea textField_proxyIpAddr;
 	private JTextArea textField_proxyMacAddr;
+	static JTextArea consoleView = new JTextArea();
 
 	private int selected_index;
 	JComboBox comboBox_nicList = new JComboBox();
@@ -58,14 +60,14 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	JButton btn_addrSettingReset;
 	private JTextArea textArea_chatView = new JTextArea();
 
-	private static String HOST_IP_ADDR;
-	private static String HOST_MAC_ADDR;
-	private static String CHAT_DEST_IP_ADDR;
-	private static String CHAT_DEST_MAC_ADDR;
-	private static String FILE_DEST_IP_ADDR;
-	private static String FILE_DEST_MAC_ADDR;
-	private static String FILE_PATH;
-	private static String ARP_DEST_IP_ADDR;
+	public static String HOST_IP_ADDR;
+	public static String HOST_MAC_ADDR;
+	public static String CHAT_DEST_IP_ADDR;
+	public static String CHAT_DEST_MAC_ADDR;
+	public static String FILE_DEST_IP_ADDR;
+	public static String FILE_DEST_MAC_ADDR;
+	public static String FILE_PATH;
+	public static String ARP_DEST_IP_ADDR;
 
 	/**
 	 * Launch the application.
@@ -85,20 +87,20 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		m_LayerMgr.ConnectLayers(
 				" NI ( *Ethernet ( *ARP ( *IP ( *TCP ( *ChatApp ( *ARPGUI ( ) ) *FileApp ( *ARPGUI ) ) ) ) +IP ( -Ethernet ) ) ");
 		((ARPLayer) m_LayerMgr.GetLayer("ARP")).SetUpperLayer(m_LayerMgr.GetLayer("ARPGUI"));
-		System.out.println("");
-		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(0).GetLayerName());
-		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(1).GetLayerName());
-		System.out.println(m_LayerMgr.GetLayer("ARP").GetUnderLayer(0).GetLayerName());
-		System.out.println(m_LayerMgr.GetLayer("ARP").GetUpperLayer(0).GetLayerName());
-		System.out.println(m_LayerMgr.GetLayer("ARP").GetUpperLayer(1).GetLayerName());
-		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(0).GetLayerName());
-		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(1).GetLayerName());
-		System.out.println(m_LayerMgr.GetLayer("TCP").GetUpperLayer(0).GetLayerName());
-		System.out.println(m_LayerMgr.GetLayer("TCP").GetUpperLayer(1).GetLayerName());
-		System.out.println(m_LayerMgr.GetLayer("ChatApp").GetUnderLayer(0).GetLayerName());
-		System.out.println(m_LayerMgr.GetLayer("ChatApp").GetUpperLayer(0).GetLayerName());
-		System.out.println(m_LayerMgr.GetLayer("FileApp").GetUnderLayer(0).GetLayerName());
-		System.out.println(m_LayerMgr.GetLayer("FileApp").GetUpperLayer(0).GetLayerName());
+//		System.out.println("");
+//		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(0).GetLayerName());
+//		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(1).GetLayerName());
+//		System.out.println(m_LayerMgr.GetLayer("ARP").GetUnderLayer(0).GetLayerName());
+//		System.out.println(m_LayerMgr.GetLayer("ARP").GetUpperLayer(0).GetLayerName());
+//		System.out.println(m_LayerMgr.GetLayer("ARP").GetUpperLayer(1).GetLayerName());
+//		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(0).GetLayerName());
+//		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(1).GetLayerName());
+//		System.out.println(m_LayerMgr.GetLayer("TCP").GetUpperLayer(0).GetLayerName());
+//		System.out.println(m_LayerMgr.GetLayer("TCP").GetUpperLayer(1).GetLayerName());
+//		System.out.println(m_LayerMgr.GetLayer("ChatApp").GetUnderLayer(0).GetLayerName());
+//		System.out.println(m_LayerMgr.GetLayer("ChatApp").GetUpperLayer(0).GetLayerName());
+//		System.out.println(m_LayerMgr.GetLayer("FileApp").GetUnderLayer(0).GetLayerName());
+//		System.out.println(m_LayerMgr.GetLayer("FileApp").GetUpperLayer(0).GetLayerName());
 
 	}
 
@@ -115,8 +117,9 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	 */
 	private void initialize() {
 		frmArpgui = new JFrame();
+		frmArpgui.setForeground(Color.BLACK);
 		frmArpgui.setTitle("ARPGUI");
-		frmArpgui.setBounds(100, 100, 1149, 675);
+		frmArpgui.setBounds(100, 100, 1566, 675);
 		frmArpgui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmArpgui.getContentPane().setLayout(null);
 		JPanel panel_ARP = new JPanel();
@@ -155,6 +158,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 					ARP_DEST_IP_ADDR = textField_targetIp.getText();
 					((ARPLayer) m_LayerMgr.GetLayer("ARP"))
 							.setARPHeaderDstIp(Utils.convertAddrFormat(ARP_DEST_IP_ADDR));
+					Utils.consoleMsg("-------- ARP SEND START --------");
 					((ARPLayer) m_LayerMgr.GetLayer("ARP")).Send();
 				}
 			}
@@ -530,6 +534,8 @@ public class ARPGUI extends JFrame implements BaseLayer {
 					((ChatAppLayer) m_LayerMgr.GetLayer("ChatApp")).setAppType((byte) 0x00);
 
 					// Call ChatAppLayer.Send
+					Utils.consoleMsg("-------- CHATTING SEND START --------");
+
 					((ChatAppLayer) m_LayerMgr.GetLayer("ChatApp")).Send(contentByte, contentByte.length);
 
 					// Reset value of chatContent textArea
@@ -728,8 +734,9 @@ public class ARPGUI extends JFrame implements BaseLayer {
 				// Make file to byte[]
 				byte[] fileToByteArr = Utils.convertFileToByte(FILE_PATH);
 				
-				
-				 
+				Utils.consoleMsg("------- FILE TRANSFER SEND START -------");
+
+				((EthernetLayer) m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(textField_FileTransferDstMac.getText()));;
 				// Send to File transfer application layer
 				((FileTransferAppLayer) m_LayerMgr.GetLayer("FileApp")).Send(fileToByteArr,fileToByteArr.length);
 
@@ -737,6 +744,18 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		});
 		btn_fileSend.setBounds(266, 200, 74, 32);
 		panel_fileTransfer.add(btn_fileSend);
+		
+		JScrollPane scrollPane_console = new JScrollPane();
+		scrollPane_console.setBorder(new TitledBorder(new LineBorder(Color.black, 1), "Debugger"));
+
+		scrollPane_console.setBounds(1137, 10, 403, 608);
+		frmArpgui.getContentPane().add(scrollPane_console);
+		scrollPane_console.setViewportView(consoleView);
+		consoleView.setEditable(false);
+		
+		consoleView.setForeground(new Color(0, 0, 0));
+		consoleView.setFont(new Font("Monospaced", Font.BOLD, 13));
+		consoleView.setBackground(SystemColor.control);
 		frmArpgui.setVisible(true);
 	}
 

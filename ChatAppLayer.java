@@ -72,8 +72,12 @@ public class ChatAppLayer implements BaseLayer{
 	    // Need to check
     	this.m_sHeader.capp_data = input; 
     	byte[] encapsulated = this.Encapsulate(m_sHeader, input);
-    	System.out.println("ChatApp Send: ");
-    	Utils.showPacket(encapsulated);
+    	Utils.consoleMsg("### ChatAppLayer.send() ###");
+		Utils.consoleMsg("<ChatApp Header>");
+		Utils.consoleMsg("*Data | " + new String(input));
+		Utils.consoleMsg("Send to TCPLayer..\n");
+
+		((TCPLayer)this.GetUnderLayer(0)).setSourcePort(TCPLayer.CHAT_APP_PROT);
     	this.GetUnderLayer(0).Send(encapsulated,encapsulated.length);
     	
 		return true;
@@ -81,9 +85,17 @@ public class ChatAppLayer implements BaseLayer{
 
           
 	public boolean Receive(byte[] input){
-		System.out.println(this.GetUpperLayer(0).GetLayerName());
+
+		
 		byte[] decapsulated = this.Decapsulate(input);
 		String decapsulatedToStr = new String(decapsulated);
+
+		Utils.consoleMsg("### ChatAppLayer.Receive() ###");
+		Utils.consoleMsg("<Received ChatAppLayer Header>");
+		Utils.consoleMsg("*Data | " + decapsulatedToStr );
+		Utils.consoleMsg("---------------------------------\n\n");
+
+		//Utils.consoleMsg("Send up to GUI Layer..\n");
 		((ARPGUI)this.GetUpperLayer(0)).appendToChatView(decapsulatedToStr);
 		
 		return true;

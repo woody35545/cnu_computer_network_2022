@@ -1,8 +1,10 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TCPLayer implements BaseLayer {
-	private static final byte[] CHAT_APP_PROT = new byte[] {(byte)0x20,(byte)0x80};
-	private static final byte[] FILE_TRANSFER_APP_PROT = new byte[] {(byte)0x20,(byte)0x90};
+	public static final byte[] CHAT_APP_PROT = new byte[] {(byte)0x20,(byte)0x80};
+	public static final byte[] FILE_TRANSFER_APP_PROT = new byte[] {(byte)0x20,(byte)0x90};
 
 	
 	
@@ -88,24 +90,54 @@ public class TCPLayer implements BaseLayer {
 		
 		this.m_sHeader.tcp_data = input;
 		
-		//if(app == this.GetUpperLayer(0).GetLayerName()){
-		if (input[2] == (byte)0x00) {
-			System.out.println("TCPLayer >> This is from Chatting Application");
-		//ChatAppLayer(0x2080) : 0
-			this.setSourcePort(CHAT_APP_PROT);
-			this.setDestinationPort(CHAT_APP_PROT);
- 		}
-		//else if(app == this.GetUpperLayer(1).GetLayerName()){
-		else if(input[2] == (byte)0x01) {
-			//FileAppLayer(0x2090) : 1
-			System.out.println("TCPLayer >> This is from File Transfer Application");
-			this.setSourcePort(FILE_TRANSFER_APP_PROT);
-			this.setDestinationPort(FILE_TRANSFER_APP_PROT);
-		}
+//		//if(app == this.GetUpperLayer(0).GetLayerName()){
+//		if (input[2] == (byte)0x00) {
+//		//ChatAppLayer(0x2080) : 0
+//			this.setSourcePort(CHAT_APP_PROT);
+//			this.setDestinationPort(CHAT_APP_PROT);
+//			
+//			Utils.consoleMsg("Call by ChatAppLayer.send");			
+//
+// 		}
+//		//else if(app == this.GetUpperLayer(1).GetLayerName()){
+//		else if(input[2] == (byte)0x01) {
+//			//FileAppLayer(0x2090) : 1
+//			this.setSourcePort(FILE_TRANSFER_APP_PROT);
+//			this.setDestinationPort(FILE_TRANSFER_APP_PROT);
+//
+//			Utils.consoleMsg("Call by FileAppLayer.send");			
+//			
+//		}
 		
-		System.out.println("TCP Send: ");
-		Utils.showPacket(objToByte(this.m_sHeader, input, length));
-		this.GetUnderLayer(0).Send(objToByte(this.m_sHeader, input, length), length+24);
+
+		String srcPortAppName = "Null";
+		String dstPortAppName = "Null";
+		if (Utils.compareBytes(this.m_sHeader.tcp_sport, CHAT_APP_PROT))
+			{Utils.consoleMsg("Call by ChatAppLayer.send");
+			srcPortAppName = "Chatting Application";
+			}
+		else if (Utils.compareBytes(this.m_sHeader.tcp_sport, FILE_TRANSFER_APP_PROT))
+			{Utils.consoleMsg("Call by FileTrasnferLayer.send");
+			srcPortAppName = "File Transfer Application";
+			}
+		if (Utils.compareBytes(this.m_sHeader.tcp_dport,CHAT_APP_PROT ))
+			dstPortAppName = "Chatting Application";
+
+		else if (Utils.compareBytes(this.m_sHeader.tcp_dport,FILE_TRANSFER_APP_PROT ))
+			dstPortAppName = "File Transfer Application";
+
+
+		Utils.consoleMsg("### TCPLayer.send() ###");
+		Utils.consoleMsg("<TCP Header>");
+		Utils.consoleMsg("*Source Port | (" + srcPortAppName + ")");
+		Utils.consoleMsg("*Destination Port | (" + dstPortAppName + ")");
+
+		Utils.consoleMsg("Send to IPLayer..\n");
+
+		
+		// send to IPLayer
+		((IPLayer)this.GetUnderLayer(0)).setIpHeaderDstIPAddr(Utils.convertAddrFormat(ARPGUI.FILE_DEST_IP_ADDR));
+		this.GetUnderLayer(0).Send(objToByte(this.m_sHeader, input, length), length + 24);
 		
 		return true;
 
@@ -124,20 +156,33 @@ public class TCPLayer implements BaseLayer {
 		byte[] data;
 		System.out.println("TCP received:");
 		Utils.showPacket(input);
+		byte[] receivedSrcAppPort = Arrays.copyOfRange(input,0,2);
+		byte[] receivedDstAppPort = Arrays.copyOfRange(input,2,4);
+		
+		String srcPortAppName = "Null";
+		String dstPortAppName = "Null";
+		if(Utils.compareBytes(receivedSrcAppPort, CHAT_APP_PROT))srcPortAppName = "Chatting Application";
+		else srcPortAppName = "File Transfer Application";
+		
+		if(Utils.compareBytes(receivedDstAppPort, CHAT_APP_PROT))dstPortAppName = "Chatting Application";
+		else dstPortAppName = "File Transfer Application";
+		
+		Utils.consoleMsg("### TCPLayer.Receive() ###");
+		Utils.consoleMsg("<Received TCP Header>");
+		Utils.consoleMsg("*Source Port | (" + srcPortAppName + ")");
+		Utils.consoleMsg("*Destination Port | (" + dstPortAppName + ")");
 		if(input[2]==(byte)0x20 && input[3]==(byte)0x80){
 			
-			System.out.println("TCP >> This is ChatAppLayer data:");
-
 			//ChatAppLayer(0x2080) : 0
 			data = RemoveCappHeader(input, input.length);
+			Utils.consoleMsg("Send up to ChatAppLayer..\n");
 			this.GetUpperLayer(0).Receive(data);
 			
 			return true;
 		}
 		else if(input[2]==(byte)0x20 && input[3]==(byte)0x90){
 			//FileAppLayer(0x2090) : 1
-			System.out.println("TCP >> This is FileAppLayer data:");
-
+			Utils.consoleMsg("Send up to FileAppLayer..\n");
 			data = RemoveCappHeader(input, input.length);
 			this.GetUpperLayer(1).Receive(data);
 			
