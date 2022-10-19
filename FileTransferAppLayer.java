@@ -294,7 +294,7 @@ public class FileTransferAppLayer implements BaseLayer {
 		else if (receivedFragmentType == (TYPE_INITIAL_FRAGMENT))receivedFragmentTypeStr="Fragmented(Frist of Fragment)";
 		else if (receivedFragmentType == (TYPE_MIDDLE_FRAGMENT))receivedFragmentTypeStr="Fragmented(Middle of Fragment)";
 		else if (receivedFragmentType == (TYPE_LAST_FRAGMENT))receivedFragmentTypeStr="Fragmented(Last of Fragment)";
-		Utils.consoleMsg("*File total Length | "  + this.m_sHeader.data.length + " bytes");
+		Utils.consoleMsg("*File total Length | "  + pData.length + " bytes");
 		Utils.consoleMsg("*Fragment_type | " +  receivedFragmentTypeStr);
 		Utils.consoleMsg("*Fragment_number | " + this.castByteArrToInt(this.getFileFragmentNumberFromByte(pData)));
 		Utils.consoleMsg("---------------------------------\n\n");
