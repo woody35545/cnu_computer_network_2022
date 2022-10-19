@@ -90,7 +90,7 @@ public class TCPLayer implements BaseLayer {
 		
 		//if(app == this.GetUpperLayer(0).GetLayerName()){
 		if (input[2] == (byte)0x00) {
-			System.out.println("TCPLayer >> Thisis from Chatting Application");
+			System.out.println("TCPLayer >> This is from Chatting Application");
 		//ChatAppLayer(0x2080) : 0
 			this.setSourcePort(CHAT_APP_PROT);
 			this.setDestinationPort(CHAT_APP_PROT);
@@ -98,7 +98,7 @@ public class TCPLayer implements BaseLayer {
 		//else if(app == this.GetUpperLayer(1).GetLayerName()){
 		else if(input[2] == (byte)0x01) {
 			//FileAppLayer(0x2090) : 1
-			System.out.println("TCPLayer >> Thisis from File Transfer Application");
+			System.out.println("TCPLayer >> This is from File Transfer Application");
 			this.setSourcePort(FILE_TRANSFER_APP_PROT);
 			this.setDestinationPort(FILE_TRANSFER_APP_PROT);
 		}

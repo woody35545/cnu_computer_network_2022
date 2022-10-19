@@ -74,7 +74,7 @@ public class ChatAppLayer implements BaseLayer{
     	byte[] encapsulated = this.Encapsulate(m_sHeader, input);
     	System.out.println("ChatApp Send: ");
     	Utils.showPacket(encapsulated);
-    	this.GetUnderLayer(0).Send(encapsulated,encapsulated.length, pLayerName);
+    	this.GetUnderLayer(0).Send(encapsulated,encapsulated.length);
     	
 		return true;
 	}
