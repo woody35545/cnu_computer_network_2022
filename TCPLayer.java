@@ -136,7 +136,7 @@ public class TCPLayer implements BaseLayer {
 
 		
 		// send to IPLayer
-		((IPLayer)this.GetUnderLayer(0)).setIpHeaderDstIPAddr(Utils.convertAddrFormat(ARPGUI.FILE_DEST_IP_ADDR));
+		((IPLayer)this.GetUnderLayer(0)).setIpHeaderDstIPAddr(Utils.convertAddrFormat(ARPGUI.CHAT_DEST_IP_ADDR));
 		this.GetUnderLayer(0).Send(objToByte(this.m_sHeader, input, length), length + 24);
 		
 		return true;

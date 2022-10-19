@@ -148,14 +148,14 @@ class Receive_Thread implements Runnable {
 		while (true) {
 			PcapPacketHandler<String> jpacketHandler = new PcapPacketHandler<String>() {
 				public void nextPacket(PcapPacket packet, String user) {
-					System.out.printf("Capture >> Time: %s, Length: %d\n", new Date(packet.getCaptureHeader().timestampInMillis()), packet.getCaptureHeader().caplen());
+					//System.out.printf("Capture >> Time: %s, Length: %d\n", new Date(packet.getCaptureHeader().timestampInMillis()), packet.getCaptureHeader().caplen());
 
 					data = packet.getByteArray(0, packet.size());
 					
-					Utils.consoleMsg("### NILayer.Receive() ###");
-					Utils.consoleMsg("<Received Info>");	
-					Utils.consoleMsg("*Data Length | " + data.length);
-					Utils.consoleMsg("Send up to Ethernet Layer..\n");
+					//Utils.consoleMsg("### NILayer.Receive() ###");
+					//Utils.consoleMsg("<Received Info>");	
+					//Utils.consoleMsg("*Data Length | " + data.length);
+					//Utils.consoleMsg("Send up to Ethernet Layer..\n");
 					
 					UpperLayer.Receive(data);
 				}
