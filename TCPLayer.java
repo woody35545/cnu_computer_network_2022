@@ -114,9 +114,12 @@ public class TCPLayer implements BaseLayer {
 		String dstPortAppName = "Null";
 		if (Utils.compareBytes(this.m_sHeader.tcp_sport, CHAT_APP_PROT))
 			{Utils.consoleMsg("Call by ChatAppLayer.send");
+			((IPLayer)this.GetUnderLayer(0)).setIpHeaderDstIPAddr(Utils.convertAddrFormat(ARPGUI.CHAT_DEST_IP_ADDR));
 			srcPortAppName = "Chatting Application";
 			}
 		else if (Utils.compareBytes(this.m_sHeader.tcp_sport, FILE_TRANSFER_APP_PROT))
+			((IPLayer)this.GetUnderLayer(0)).setIpHeaderDstIPAddr(Utils.convertAddrFormat(ARPGUI.FILE_DEST_IP_ADDR));
+
 			{Utils.consoleMsg("Call by FileTrasnferLayer.send");
 			srcPortAppName = "File Transfer Application";
 			}
@@ -136,7 +139,7 @@ public class TCPLayer implements BaseLayer {
 
 		
 		// send to IPLayer
-		((IPLayer)this.GetUnderLayer(0)).setIpHeaderDstIPAddr(Utils.convertAddrFormat(ARPGUI.CHAT_DEST_IP_ADDR));
+	
 		this.GetUnderLayer(0).Send(objToByte(this.m_sHeader, input, length), length + 24);
 		
 		return true;

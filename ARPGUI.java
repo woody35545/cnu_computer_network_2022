@@ -733,7 +733,8 @@ public class ARPGUI extends JFrame implements BaseLayer {
 			public void actionPerformed(ActionEvent e) {
 				// Make file to byte[]
 				byte[] fileToByteArr = Utils.convertFileToByte(FILE_PATH);
-				
+				FILE_DEST_IP_ADDR = textField_FileTransferDstIP.getText();
+				FILE_DEST_MAC_ADDR = textField_FileTransferDstMac.getText();
 				Utils.consoleMsg("------- FILE TRANSFER SEND START -------");
 
 				((EthernetLayer) m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(textField_FileTransferDstMac.getText()));;

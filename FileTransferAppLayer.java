@@ -158,7 +158,7 @@ public class FileTransferAppLayer implements BaseLayer {
 					
 					Utils.consoleMsg("*File total Length | "  + this.m_sHeader.data.length + " bytes");
 					Utils.consoleMsg("*Fragment_type | " + fragmentTypeStr);
-					Utils.consoleMsg("*Fragment_number | " + this.castByteArrToInt(this.getFileFragmentNumberFromByte(pData)));
+					Utils.consoleMsg("*Fragment_number | " + this.castByteArrToInt(this.m_sHeader.fragment_number));
 					Utils.consoleMsg("Send to TCPLayer..\n");
 					((TCPLayer)this.GetUnderLayer(0)).setSourcePort(TCPLayer.FILE_TRANSFER_APP_PROT);
 					((TCPLayer)this.GetUnderLayer(0)).setDestinationPort(TCPLayer.FILE_TRANSFER_APP_PROT);
@@ -271,7 +271,7 @@ public class FileTransferAppLayer implements BaseLayer {
 			
 			Utils.consoleMsg("*File total Length | "  + this.m_sHeader.data.length + " bytes");
 			Utils.consoleMsg("*Fragment_type | " + fragmentTypeStr);
-			Utils.consoleMsg("*Fragment_number | " + this.castByteArrToInt(this.getFileFragmentNumberFromByte(pData)));
+			Utils.consoleMsg("*Fragment_number | " + this.castByteArrToInt(this.m_sHeader.fragment_number));
 			Utils.consoleMsg("Send to TCPLayer..\n");
 			
 			((TCPLayer)this.GetUnderLayer(0)).setSourcePort(TCPLayer.FILE_TRANSFER_APP_PROT);

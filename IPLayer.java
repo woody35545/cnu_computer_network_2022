@@ -79,17 +79,19 @@ public class IPLayer implements BaseLayer {
 		Utils.consoleMsg("*Source IP | " + Utils.convertAddrFormat(m_sHeader.ip_srcaddr));
 		Utils.consoleMsg("*Target IP | " + Utils.convertAddrFormat(m_sHeader.ip_dstaddr));
 		Utils.consoleMsg("Send to EthernetLayer..\n");
+	
+		m_sHeader.ip_offset[0] = 0x00;
+		m_sHeader.ip_offset[1] = 0x03;
+		byte[] bytes = ObjToByte(m_sHeader,input,length);	
 		
 		//port 0x2080 : Chat App Layer , port 0x2090 : File App Layer
-		if((input[0]==(byte)0x20 && input[1]==(byte)0x80 )) {
+		if(input[0]==(byte)0x20 && input[1]==(byte)0x80) {
 			// from Chat App Layer
 		
 			
 			
-			m_sHeader.ip_offset[0] = 0x00;
-			m_sHeader.ip_offset[1] = 0x03;
-			byte[] bytes = ObjToByte(m_sHeader,input,length);	//IP 占쎈엘占쎈쐭 �빊遺쏙옙 (EnCapsulate)
-		
+	
+			((EthernetLayer)this.GetUnderLayer(1)).setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(ARPGUI.HOST_MAC_ADDR));
 			((EthernetLayer)this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(ARPGUI.CHAT_DEST_MAC_ADDR));
 			this.GetUnderLayer(1).Send(bytes,length+IPHEADER);
 			return true;
@@ -98,6 +100,10 @@ public class IPLayer implements BaseLayer {
 		
 		else if (input[0]==(byte)0x20 && input[1]==(byte)0x90){
 			// from Chat File App Layer
+			((EthernetLayer)this.GetUnderLayer(1)).setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(ARPGUI.HOST_MAC_ADDR));
+			((EthernetLayer)this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(ARPGUI.FILE_DEST_MAC_ADDR));
+
+			this.GetUnderLayer(1).Send(bytes,length+IPHEADER);
 			return true;
 		}
 			
