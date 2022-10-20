@@ -79,7 +79,7 @@ public final class Utils {
 		return strFormatIpAddr;
 	}
 
-	public static String convertByteFormatMacToStrFormat(byte[] pMacByte) { // mac �젙蹂� �떞�� 諛붿씠�듃 諛곗뿴 String 蹂��솚
+	public static String convertByteFormatMacToStrFormat(byte[] pMacByte) { // mac 占쎌젟癰귨옙 占쎈뼖占쏙옙 獄쏅뗄�뵠占쎈뱜 獄쏄퀣肉� String 癰귨옙占쎌넎
 		// byte[] mac addr ->"0:0:0:0:0:0"
 
 		String strFormatMacAddr = "";
@@ -192,9 +192,13 @@ public final class Utils {
 	}
 
 	public static void consoleMsg(String pMsg) {
-		SimpleDateFormat formatter= new SimpleDateFormat("HH:mm");
-		String dateFormatStr = formatter.format(new Date(System.currentTimeMillis()));
-		ARPGUI.consoleView.append("[" +dateFormatStr+ "] " +pMsg + "\n");
-		ARPGUI.consoleView.setCaretPosition(ARPGUI.consoleView.getText().length());
+		if (DEBUG_MODE) {
+			SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+			String dateFormatStr = formatter.format(new Date(System
+					.currentTimeMillis()));
+			ARPGUI.consoleView.append("[" + dateFormatStr + "] " + pMsg + "\n");
+			ARPGUI.consoleView.setCaretPosition(ARPGUI.consoleView.getText()
+					.length());
+		}
 	}
 }

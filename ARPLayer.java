@@ -600,7 +600,7 @@ public class ARPLayer implements BaseLayer {
 						
 			 			// send Reply Packet to ethernet
 						Utils.consoleMsg("*[>] Send ARP reply");
-						this.GetUnderLayer(0).Send(replyPacket, replyPacket.length);
+						//this.GetUnderLayer(0).Send(replyPacket, replyPacket.length);
 			}
 
 			// If I'm not target of this request packet, Searching my proxy table (Proxy ARP)

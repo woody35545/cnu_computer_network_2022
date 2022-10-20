@@ -154,7 +154,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		textField_targetIp = new JTextArea();
 		textField_targetIp.setBorder(new LineBorder(Color.gray));
 
-		textField_targetIp.setText("168.188.129.2");
+		textField_targetIp.setText("169.254.32.212");
 		textField_targetIp.setBounds(22, 285, 175, 25);
 		panel_ARP.add(textField_targetIp);
 		textField_targetIp.setColumns(10);
@@ -330,7 +330,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		textArea_srcIpAddr.setEditable(false);
 		textArea_srcIpAddr.setColumns(10);
 		textArea_srcIpAddr.setBounds(77, 99, 201, 21);
-		textArea_srcIpAddr.setText("168.188.129.1");
+		textArea_srcIpAddr.setText("169.254.217.136");
 		panel_addressSetting.add(textArea_srcIpAddr);
 		JButton btn_fileOpen = new JButton("Open");
 		btn_fileOpen.setEnabled(false);
@@ -575,7 +575,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 		textField_ChatDstIP.setBounds(12, 57, 148, 25);
 		panel_chatSetting.add(textField_ChatDstIP);
-		textField_ChatDstIP.setText("168.188.129.2");
+		textField_ChatDstIP.setText("169.254.32.212");
 		textField_ChatDstIP.setColumns(10);
 
 		JLabel chat_dst_mac = new JLabel("Chat Destination MAC");
@@ -635,7 +635,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 
 		textField_FileTransferDstIP.setBounds(9, 46, 141, 25);
 		panel_fileTransferSetting.add(textField_FileTransferDstIP);
-		textField_FileTransferDstIP.setText("168.188.129.2");
+		textField_FileTransferDstIP.setText("169.254.32.212");
 		textField_FileTransferDstIP.setColumns(10);
 
 		btn_fileTransferSet.setBounds(9, 133, 319, 25);
