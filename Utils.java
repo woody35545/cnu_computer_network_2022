@@ -191,14 +191,4 @@ public final class Utils {
 	    return size;
 	}
 
-	public static void consoleMsg(String pMsg) {
-		if (DEBUG_MODE) {
-			SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
-			String dateFormatStr = formatter.format(new Date(System
-					.currentTimeMillis()));
-			ARPGUI.consoleView.append("[" + dateFormatStr + "] " + pMsg + "\n");
-			ARPGUI.consoleView.setCaretPosition(ARPGUI.consoleView.getText()
-					.length());
-		}
-	}
 }

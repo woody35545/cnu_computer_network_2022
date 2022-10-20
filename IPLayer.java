@@ -73,13 +73,6 @@ public class IPLayer implements BaseLayer {
 	}
 
 	public boolean Send(byte[] input, int length) {
-		Utils.consoleMsg("Call by TCPLayer.send");			
-		Utils.consoleMsg("### IPLayer.send() ###");
-		Utils.consoleMsg("<IP Header>");
-		Utils.consoleMsg("*Source IP | " + Utils.convertAddrFormat(m_sHeader.ip_srcaddr));
-		Utils.consoleMsg("*Target IP | " + Utils.convertAddrFormat(m_sHeader.ip_dstaddr));
-		Utils.consoleMsg("Send to EthernetLayer..\n");
-	
 		m_sHeader.ip_offset[0] = 0x00;
 		m_sHeader.ip_offset[1] = 0x03;
 		byte[] bytes = ObjToByte(m_sHeader,input,length);	
@@ -124,15 +117,7 @@ public class IPLayer implements BaseLayer {
 	
 
 	public synchronized boolean Receive(byte[] input) {
-		byte[] receivedSrcIP = Arrays.copyOfRange(input, 12, 16);
-		byte[] receivedDstIP = Arrays.copyOfRange(input, 16, 20);
 
-		Utils.consoleMsg("### IPLayer.Receive() ###");
-		Utils.consoleMsg("<Received IP Header>");
-		Utils.consoleMsg("*Source IP | " + Utils.convertAddrFormat(receivedSrcIP));
-		Utils.consoleMsg("*Destination IP | " + Utils.convertAddrFormat(receivedDstIP));
-		Utils.consoleMsg("Send up to TCP Layer..\n");
-		
 		byte[] data = RemoveCappHeader(input, input.length);
 		
 		if(me_equals_dst_Addr(input)) {

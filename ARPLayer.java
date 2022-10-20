@@ -442,52 +442,24 @@ public class ARPLayer implements BaseLayer {
 	}
 	
 	public boolean Send() {
-		// <!> additional implementation required later
-		// if (!this.arpCacheTable.isExist(this.m_sHeader.target_ip.getByteAddr())) {
 		/*
 		 * If there is no Mac address for the destination IP in the ARP cache table,
 		 * then Send ARP Request
 		 */
-		// OpCode of ARP Request = 0x0001
 		_ARP_HEADER ARPRequestHeader = this.MakeARPRequestHeader();
-		Utils.consoleMsg("### ARPLayer.send() ###");
-		Utils.consoleMsg("<ARP Header>");
-		if(Utils.compareBytes(ARPRequestHeader.opCode, OPCODE_ARP_REQUEST))
-		Utils.consoleMsg("*Opcode | Request" );
-		else
-		Utils.consoleMsg("*Opcode | Reply" );
-
-		Utils.consoleMsg("*Source MAC | " + Utils.convertAddrFormat(ARPRequestHeader.senderMac.addr));
-		Utils.consoleMsg("*Source IP | " + Utils.convertAddrFormat(ARPRequestHeader.senderIp.addr));
-		Utils.consoleMsg("*Target MAC | " + Utils.convertAddrFormat(ARPRequestHeader.targetMac.addr));
-		Utils.consoleMsg("*Target IP | " + Utils.convertAddrFormat(ARPRequestHeader.targetIp.addr));
-		Utils.consoleMsg("Send to EthernetLayer..\n");
-
 		byte[] encapsulated = this.Encapsulate(ARPRequestHeader);
 		this.addARPCacheTableElement(Utils.convertByteFormatIpToStrFormat(ARPRequestHeader.targetIp.addr));
-		
 		this.GetUnderLayer(0).Send(encapsulated, encapsulated.length);
-		// }
 		return true;
 	}
+	
+	
 	public boolean SendGARP() {
 		// called by GarpSend button in ARPGUI for GARP
 		_ARP_HEADER GarpRequestHeader = this.MakeGARPRequestHeader();
 
 		// set targetIP's address and senderIP's address equal, because this is GARP
 		byte[] encapsulated = this.Encapsulate(GarpRequestHeader);
-		Utils.consoleMsg("### ARPLayer.send() ###");
-		Utils.consoleMsg("<ARP Header>");
-		if(Utils.compareBytes(GarpRequestHeader.opCode, OPCODE_ARP_REQUEST))
-		Utils.consoleMsg("*Opcode | Request(GARP)" );
-		else
-		Utils.consoleMsg("*Opcode | Reply" );
-
-		Utils.consoleMsg("*Source MAC | " + Utils.convertAddrFormat(GarpRequestHeader.senderMac.addr));
-		Utils.consoleMsg("*Source IP | " + Utils.convertAddrFormat(GarpRequestHeader.senderIp.addr));
-		Utils.consoleMsg("*Target MAC | " + Utils.convertAddrFormat(GarpRequestHeader.targetMac.addr));
-		Utils.consoleMsg("*Target IP | " + Utils.convertAddrFormat(GarpRequestHeader.targetIp.addr));
-		Utils.consoleMsg("Send to EthernetLayer..\n");
 		this.GetUnderLayer(0).Send(encapsulated, encapsulated.length);
 		
 		return true;
@@ -573,17 +545,6 @@ public class ARPLayer implements BaseLayer {
 		byte[] receivedTargetIP = Arrays.copyOfRange(input,24,28);
 		byte[] receivedOpcode = new byte[] {(byte) input[6], (byte) input[7]};
 		
-		Utils.consoleMsg("### ARPLayer.Receive() ###");
-		Utils.consoleMsg("<Received ARP Header>");
-		if(Utils.compareBytes(receivedOpcode, OPCODE_ARP_REQUEST))
-		Utils.consoleMsg("*Opcode | Request");
-		else if(Utils.compareBytes(receivedOpcode, OPCODE_ARP_REPLY))Utils.consoleMsg("*Type | Reply");
-		Utils.consoleMsg("*Source Mac | " + Utils.convertAddrFormat(receivedSenderMAC));
-		Utils.consoleMsg("*Source IP | " + Utils.convertAddrFormat(receivedSenderIP));
-		Utils.consoleMsg("*Target Mac | " + Utils.convertAddrFormat(receivedTargetMAC));
-		Utils.consoleMsg("*Target IP | " + Utils.convertAddrFormat(receivedTargetIP));
-		
-		
 		if (Utils.compareBytes(receivedOpcode, OPCODE_ARP_REQUEST)) {
 			// If I received ARP Request type packet.
 			
@@ -599,15 +560,12 @@ public class ARPLayer implements BaseLayer {
 						byte[] replyPacket = this.Encapsulate(arpReplyHeader);
 						
 			 			// send Reply Packet to ethernet
-						Utils.consoleMsg("*[>] Send ARP reply");
 						//this.GetUnderLayer(0).Send(replyPacket, replyPacket.length);
 			}
 
 			// If I'm not target of this request packet, Searching my proxy table (Proxy ARP)
 			else if (proxyCacheTable.isExist(Utils.convertAddrFormat(receivedTargetIP))) {
 				// if target IP exists in my proxy table
-			 	
-
 				//Create a reply packet by adding my MAC address instead
 			 	_ARP_HEADER arpReplyHeader = new _ARP_HEADER(DEFAULT_HARDWARE_TYPE, DEFAULT_PROTOCOL_TYPE,
 						DEFAULT_LENGTH_OF_HARDWARE_ADDRESS, DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS, OPCODE_ARP_REPLY,
@@ -618,14 +576,12 @@ public class ARPLayer implements BaseLayer {
 			 	byte[] replyPacket = this.Encapsulate(arpReplyHeader);
 			 	
 			 	// send Proxy-Reply to ethernet
-				Utils.consoleMsg("*[>] Send ARP reply(Proxy)");
 				this.GetUnderLayer(0).Send(replyPacket, replyPacket.length);
 			}
 	        else if(Utils.compareBytes(receivedSenderIP, receivedTargetIP)) { 
 	        	// if Sender IP == Target IP , It's GARP Packet
 	      
 	                   if (arpCacheTable.isExist(Utils.convertByteFormatIpToStrFormat(receivedSenderIP))) {
-	           			Utils.consoleMsg("*[>] GARP Received, Update ARP Cache Table");
 	                           this.addARPCacheTableElement(Utils.convertByteFormatIpToStrFormat(receivedSenderIP), Utils.convertByteFormatMacToStrFormat(receivedSenderMAC), "Complete");   //   add   -> updateARPCacheTableElement
 	                }
 		}
@@ -634,7 +590,6 @@ public class ARPLayer implements BaseLayer {
 		
 		else if(Utils.compareBytes(receivedOpcode, OPCODE_ARP_REPLY)) {
 			// If I Received ARP reply packet, Then Update ARP cache table 
-			Utils.consoleMsg("*[>] ARP Reply Received, Update ARP Cache Table");
 			this.addARPCacheTableElement(Utils.convertAddrFormat(receivedSenderIP), Utils.convertAddrFormat(receivedSenderMAC), "Complete");
 			return true;
 		}

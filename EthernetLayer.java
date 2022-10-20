@@ -148,7 +148,6 @@ public class EthernetLayer implements BaseLayer {
 
 			// ARP Request Packet should be sent as broadcast
 			// Make BroadCast Frame
-			Utils.consoleMsg("Call by ARPLayer.send");
 
 			this.m_sHeader.set_enet_type(new byte[] {0x08,0x06});
 			this.m_sHeader.set_destination_address(new byte[]{(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff});
@@ -156,19 +155,10 @@ public class EthernetLayer implements BaseLayer {
 		}	
 		/* else, This is from the IP layer */		
 		else{
-			Utils.consoleMsg("Call by IPLayer.send");
 			this.m_sHeader.set_enet_type(new byte[] {0x08,0x00});
 		}
 		
 
-		Utils.consoleMsg("### EthernetLayer.send() ###");
-		Utils.consoleMsg("<Ethernet Header>");
-		if(Utils.compareBytes(m_sHeader.enet_type, new byte[] {0x08, 0x06}))
-		Utils.consoleMsg("*Type | ARP");
-		else Utils.consoleMsg("*Type | IPv4");
-		Utils.consoleMsg("*Source Mac | " + Utils.convertAddrFormat(this.m_sHeader.enet_srcaddr.addr));
-		Utils.consoleMsg("*Destination Mac | " + Utils.convertAddrFormat(this.m_sHeader.enet_dstaddr.addr));
-		Utils.consoleMsg("Send to NILayer..\n");
 			byte[] encapsulated = Encapsulate(this.m_sHeader,input);
 			
 //			System.out.println("Ethernet Send: ");
@@ -219,22 +209,12 @@ public class EthernetLayer implements BaseLayer {
 			 * according to the protocol type in the frame.
 			 */
 			
-			Utils.consoleMsg("### EthernetLayer.Receive() ###");
-			Utils.consoleMsg("<Received Ethernet Header>");
-			if(Utils.compareBytes(receivedType, TYPE_ARP))
-			Utils.consoleMsg("*Type | ARP");
-			else if(Utils.compareBytes(receivedType, TYPE_IPv4)) Utils.consoleMsg("*Type | IPv4");
-			Utils.consoleMsg("*Source Mac | " + Utils.convertAddrFormat(receivedSrcMacAddr));
-			Utils.consoleMsg("*Destination Mac | " + Utils.convertAddrFormat(receivedDstMacAddr));
-			Utils.consoleMsg("Send up to IP Layer..\n");
-			
 			if (Utils.compareBytes(receivedType, TYPE_IPv4)) {
 
 				// if protocol type == IPv4 : 1
 				byte[] decapsulated = this.Decapsulate(input);
 				
 				// call IPLayer.receive(..);
-				Utils.consoleMsg("Send up to IP Layer..\n");
 				this.GetUpperLayer(1).Receive(decapsulated);
 			}
 
@@ -242,7 +222,6 @@ public class EthernetLayer implements BaseLayer {
 				// if protocol type == ARP : 0
 				byte[] decapsulated = this.Decapsulate(input);
 				// call ARPLayer.Recevie(..);
-				Utils.consoleMsg("Send up to ARP Layer..\n");
 				this.GetUpperLayer(0).Receive(decapsulated);
 			}
 			return true;

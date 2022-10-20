@@ -65,11 +65,6 @@ public class NILayer implements BaseLayer {
 			System.err.println(m_AdapterObject.getErr());
 			return false;
 		}
-		Utils.consoleMsg("Call by EthernetLayer.send");
-		Utils.consoleMsg("### NI.send() ###");
-		Utils.consoleMsg("[>] Data is sent to network !!");
-		Utils.consoleMsg("---------------------------------\n\n");
-		
 		return true;
 	}
 
@@ -149,14 +144,7 @@ class Receive_Thread implements Runnable {
 			PcapPacketHandler<String> jpacketHandler = new PcapPacketHandler<String>() {
 				public void nextPacket(PcapPacket packet, String user) {
 					//System.out.printf("Capture >> Time: %s, Length: %d\n", new Date(packet.getCaptureHeader().timestampInMillis()), packet.getCaptureHeader().caplen());
-
 					data = packet.getByteArray(0, packet.size());
-					
-					//Utils.consoleMsg("### NILayer.Receive() ###");
-					//Utils.consoleMsg("<Received Info>");	
-					//Utils.consoleMsg("*Data Length | " + data.length);
-					//Utils.consoleMsg("Send up to Ethernet Layer..\n");
-					
 					UpperLayer.Receive(data);
 				}
 			};
