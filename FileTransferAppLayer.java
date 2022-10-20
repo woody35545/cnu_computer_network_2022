@@ -169,6 +169,7 @@ public class FileTransferAppLayer implements BaseLayer {
 					fragmentedLength += fragmentTotalLength;
 					System.out.println("Fragment Number = " + this.castByteArrToInt(this.m_sHeader.fragment_number));
 					System.out.println("Sending file.... ("+ fragmentedLength + "/" + fileTotalLength + ")");
+					ARPGUI.progressBar.setValue((fragmentedLength*100)/fileTotalLength);
 					System.out.println("File Send Complete !");
 
 				}
@@ -225,6 +226,8 @@ public class FileTransferAppLayer implements BaseLayer {
 					fragmentedLength += fragmentTotalLength;
 					System.out.println("Fragment Number = " + this.castByteArrToInt(this.m_sHeader.fragment_number));
 					System.out.println("Sending file.... ("+ fragmentedLength + "/" + fileTotalLength + ")");
+					ARPGUI.progressBar.setValue((fragmentedLength*100)/fileTotalLength);
+
 
 				}
 
@@ -268,6 +271,8 @@ public class FileTransferAppLayer implements BaseLayer {
 			((TCPLayer)this.GetUnderLayer(0)).setSourcePort(TCPLayer.FILE_TRANSFER_APP_PROT);
 			((TCPLayer)this.GetUnderLayer(0)).setDestinationPort(TCPLayer.FILE_TRANSFER_APP_PROT);
 			((TCPLayer) this.GetUnderLayer(0)).Send(encapsulated, encapsulated.length);
+			ARPGUI.progressBar.setValue(100);
+
 			System.out.println("File Send Complete!");	
 
 		}
