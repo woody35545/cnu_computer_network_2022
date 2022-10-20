@@ -105,25 +105,22 @@ public class FileTransferAppLayer implements BaseLayer {
 		
 	}
 	public boolean Send(byte[] pData, int pLength) {
-		int fragmentTotalLength = 0; // length of fragment
-		int fragmentNumber=0;
+		int fragmentTotalLength; // length of fragment
 		int fileTotalLength = pData.length;
-		byte fragmentType;
-	
-		String filename;
-		int fragmentedLength = 0;
-		
-		((TCPLayer)this.GetUnderLayer(0)).setSourcePort(TCPLayer.FILE_TRANSFER_APP_PROT);
-		((TCPLayer)this.GetUnderLayer(0)).setDestinationPort(TCPLayer.FILE_TRANSFER_APP_PROT);
-				
+		System.out.println(new String(this.m_sHeader.file_name));
 		if (fileTotalLength > FRAGMENT_SIZE) {
 			// If Fragmentation needed!
 			System.out.println("Fragmenting Process Start");
 
+			int fragmentedLength = 0; // Fragmented size from full data size
+			
+			// Sequence of Fragment start with 0 
+			int fragmentNumber = 0;
+			
+			// Declare variable to check if it is the last fragment during whole
+			// fragmentation
 			boolean isLastFragment = false;
 			boolean isFirstFragment = true;
-			
-	
 
 			// Start fragmentation
 			while (!isLastFragment) {
@@ -133,71 +130,101 @@ public class FileTransferAppLayer implements BaseLayer {
 					// fragmenting any more.
 					isLastFragment = true;
 					
+					// Assign total length of last fragment
+					fragmentTotalLength = pData.length - fragmentedLength;
 
-					_FILE_TRANSFER_HEADER fragmentHeader = new _FILE_TRANSFER_HEADER(
-							this.castIntToByteArr(pData.length), TYPE_LAST_FRAGMENT,
-							this.castIntToByteArr(fragmentNumber++), ARPGUI.FILE_NAME.getBytes(), Arrays.copyOfRange(pData, fragmentedLength,
-									fragmentedLength + fragmentTotalLength));					
+					// set Header's File total length
+					this.setFileTotalLength(fileTotalLength);
+
+					// Set header's fragment type feild value to last fragment type(0x03)
+					this.m_sHeader.fragment_type = (byte) 0x03;
+
+					// Set header's fragment's sequence
+					this.setFileFragmentNumber(fragmentNumber++);
 					
+					// Declare an array to hold fragmented data
+					byte[] fragmentedData = new byte[fragmentTotalLength];
+
+					// Allocate the data of the current fragment part from the original data
+					// Part: (Last Fragment offset ~ this fragment length) of original data
+					fragmentedData = Arrays.copyOfRange(pData, fragmentedLength,
+							fragmentedLength + fragmentTotalLength);
+
 					// encapsulate data to call send function of it's Underlayer(TCP)
-					byte[] encapsulated = this.Encapsulate(fragmentHeader);
+					byte[] encapsulated = this.Encapsulate(m_sHeader);
 
 					
 					// send to TCP Layer
+					String fragmentTypeStr = "Null";
+					if (this.m_sHeader.fragment_type == (TYPE_NOT_FRAGMENTED))fragmentTypeStr="Not Fragmented";
+					else if (this.m_sHeader.fragment_type == (TYPE_INITIAL_FRAGMENT))fragmentTypeStr="Fragmented(Frist of Fragment)";
+					else if (this.m_sHeader.fragment_type == (TYPE_MIDDLE_FRAGMENT))fragmentTypeStr="Fragmented(Middle of Fragment)";
+					else if (this.m_sHeader.fragment_type == (TYPE_LAST_FRAGMENT))fragmentTypeStr="Fragmented(Last of Fragment)";
+					
+					((TCPLayer)this.GetUnderLayer(0)).setSourcePort(TCPLayer.FILE_TRANSFER_APP_PROT);
+					((TCPLayer)this.GetUnderLayer(0)).setDestinationPort(TCPLayer.FILE_TRANSFER_APP_PROT);
 					((TCPLayer) this.GetUnderLayer(0)).Send(encapsulated, encapsulated.length);
 					
 					// update fragemented length
-					fragmentedLength += pData.length - fragmentedLength;
-				
+					fragmentedLength += fragmentTotalLength;
 					System.out.println("Fragment Number = " + this.castByteArrToInt(this.m_sHeader.fragment_number));
 					System.out.println("Sending file.... ("+ fragmentedLength + "/" + fileTotalLength + ")");
-					ARPGUI.progressBar.setValue(fragmentedLength/fileTotalLength);
 					System.out.println("File Send Complete !");
-					
-					if (fileTotalLength == fragmentedLength) 
-					System.out.println("[Check] All bytes send well");
-					else {
-						System.out.println("[Error] Some Bytes are Missng!");
-						System.out.println("Missing Bytes: "+ (fileTotalLength-fragmentedLength));
-					}
-					
-					
+
 				}
 
 				else {
+					// If it's not last part of fragment(if it's middle part), total length must be
+					// FRAGMENT SIZE
+					fragmentTotalLength = FRAGMENT_SIZE;
 
 					if (isFirstFragment)
 
 					{
 						// Set header's fragment type feild value to initial fragment type(0x01)
-						fragmentType = TYPE_INITIAL_FRAGMENT;
+						this.m_sHeader.fragment_type = (byte) 0x01;
 						//After this, next frame is not the first frame, so change isFirstFrame to false
 						isFirstFragment = false;
 					}
 					// If it's not first fragment, Set header's fragment type feild value to middle fragment type(0x02)
-						fragmentType = TYPE_MIDDLE_FRAGMENT;
+					else this.m_sHeader.fragment_type = (byte) 0x02;
 
 					// set Header's File total length
 					this.setFileTotalLength(fileTotalLength);
 
-					_FILE_TRANSFER_HEADER fragmentHeader = new _FILE_TRANSFER_HEADER(
-							this.castIntToByteArr(pData.length), fragmentType,
-							this.castIntToByteArr(fragmentNumber++), ARPGUI.FILE_NAME.getBytes(), Arrays.copyOfRange(pData, fragmentedLength,
-									fragmentedLength + FRAGMENT_SIZE));	
+					// Set header's fragment's sequence
+					this.setFileFragmentNumber(fragmentNumber++);
+					
+					// Declare an array to hold fragmented data
+					byte[] fragmentedData = new byte[fragmentTotalLength];
+
+					// Allocate the data of the current fragment part from the original data
+					// Part: (Last Fragment offset ~ this fragment length) of original data
+					fragmentedData = Arrays.copyOfRange(pData, fragmentedLength,
+							fragmentedLength + fragmentTotalLength);
+
+					// Set Header's data field
+					this.setFileData(fragmentedData);
 
 					// encapsulate data to call send function of it's Underlayer(TCP)
-					byte[] encapsulated = this.Encapsulate(fragmentHeader);
+					byte[] encapsulated = this.Encapsulate(m_sHeader);
 
 
 					// send to TCP Layer
+					String fragmentTypeStr = "Null";
+					if (this.m_sHeader.fragment_type == (TYPE_NOT_FRAGMENTED))fragmentTypeStr="Not Fragmented";
+					else if (this.m_sHeader.fragment_type == (TYPE_INITIAL_FRAGMENT))fragmentTypeStr="Fragmented(Frist of Fragment)";
+					else if (this.m_sHeader.fragment_type == (TYPE_MIDDLE_FRAGMENT))fragmentTypeStr="Fragmented(Middle of Fragment)";
+					else if (this.m_sHeader.fragment_type == (TYPE_LAST_FRAGMENT))fragmentTypeStr="Fragmented(Last of Fragment)";
+					
+					((TCPLayer)this.GetUnderLayer(0)).setSourcePort(TCPLayer.FILE_TRANSFER_APP_PROT);
+					((TCPLayer)this.GetUnderLayer(0)).setDestinationPort(TCPLayer.FILE_TRANSFER_APP_PROT);
 					((TCPLayer) this.GetUnderLayer(0)).Send(encapsulated, encapsulated.length);
 					
 					// update fragemented length
-					fragmentedLength += FRAGMENT_SIZE;
+					fragmentedLength += fragmentTotalLength;
 					System.out.println("Fragment Number = " + this.castByteArrToInt(this.m_sHeader.fragment_number));
 					System.out.println("Sending file.... ("+ fragmentedLength + "/" + fileTotalLength + ")");
-					ARPGUI.progressBar.setValue(fragmentedLength/fileTotalLength);
-
 
 				}
 
@@ -206,20 +233,41 @@ public class FileTransferAppLayer implements BaseLayer {
 		} else {
 			// If fragmentation is not needed, Just send normally
 			System.out.println("Fragmenting Process is not needed. Just send normally");
+			fragmentTotalLength = pData.length;
 
 			// Set header's fragment type feild value to not fragmented type(0x00)
-			fragmentType = TYPE_NOT_FRAGMENTED;
+			this.m_sHeader.fragment_type = (byte) 0x00;
 
-			_FILE_TRANSFER_HEADER fragmentHeader = new _FILE_TRANSFER_HEADER(this.castIntToByteArr(pData.length),
-					fragmentType, this.castIntToByteArr(0), ARPGUI.FILE_NAME.getBytes(),
-					Arrays.copyOfRange(pData, 0, pData.length));
+			// set Header's File total length
+			this.setFileTotalLength(fileTotalLength);
+
+			// Set Header's Fragement Number to '0', Cause it won't be used when Fragmentation is not needed
+			this.setFileFragmentNumber(0);
 			
+			// Declare an array to hold fragmented data
+			byte[] fragmentedData = new byte[fragmentTotalLength];
+
+			// Allocate the data of the current fragment part from the original data
+			// Part: (Last Fragment offset ~ this fragment length) of original data
+			fragmentedData = Arrays.copyOfRange(pData, 0, fragmentTotalLength);
+
+			// Set Header's data field
+			this.setFileData(fragmentedData);
+
 			// encapsulate data to call send function of it's Underlayer(TCP)
-			byte[] encapsulated = this.Encapsulate(fragmentHeader);
+			byte[] encapsulated = this.Encapsulate(m_sHeader);
 
 			// send to TCP Layer
+			String fragmentTypeStr = "Null";
+			if (this.m_sHeader.fragment_type == (TYPE_NOT_FRAGMENTED))fragmentTypeStr="Not Fragmented";
+			else if (this.m_sHeader.fragment_type == (TYPE_INITIAL_FRAGMENT))fragmentTypeStr="Fragmented(Frist of Fragment)";
+			else if (this.m_sHeader.fragment_type == (TYPE_MIDDLE_FRAGMENT))fragmentTypeStr="Fragmented(Middle of Fragment)";
+			else if (this.m_sHeader.fragment_type == (TYPE_LAST_FRAGMENT))fragmentTypeStr="Fragmented(Last of Fragment)";
+			
+			
+			((TCPLayer)this.GetUnderLayer(0)).setSourcePort(TCPLayer.FILE_TRANSFER_APP_PROT);
+			((TCPLayer)this.GetUnderLayer(0)).setDestinationPort(TCPLayer.FILE_TRANSFER_APP_PROT);
 			((TCPLayer) this.GetUnderLayer(0)).Send(encapsulated, encapsulated.length);
-			ARPGUI.progressBar.setValue(100);
 			System.out.println("File Send Complete!");	
 
 		}
@@ -230,9 +278,12 @@ public class FileTransferAppLayer implements BaseLayer {
 		// Assign Decapsulated data
 		byte[] decapsulated = this.Decapulate(pData);
 		byte receivedFragmentType = pData[4];
-		
+		String receivedFragmentTypeStr = "Null";
+		if (receivedFragmentType == (TYPE_NOT_FRAGMENTED))receivedFragmentTypeStr="Not Fragmented";
+		else if (receivedFragmentType == (TYPE_INITIAL_FRAGMENT))receivedFragmentTypeStr="Fragmented(Frist of Fragment)";
+		else if (receivedFragmentType == (TYPE_MIDDLE_FRAGMENT))receivedFragmentTypeStr="Fragmented(Middle of Fragment)";
+		else if (receivedFragmentType == (TYPE_LAST_FRAGMENT))receivedFragmentTypeStr="Fragmented(Last of Fragment)";
 		String fileNameStr = new String(this.getFileNameFromByte(pData));
-		
 		// Check if Received Data is Fragmented data
 		if(this.getFragmentTypeFromByte(pData) == (byte)0x00) {
 			// this is not Fragmented type data
@@ -348,15 +399,7 @@ public class FileTransferAppLayer implements BaseLayer {
 		}
 		return byteArrToInt;
 	}
-	public byte[] castIntToByteArr(int pInt) { 
-		// Casting Byte array values to one integer value
-		byte[] byteArr = new byte[4];
-		for (int i = 0; i < byteArr.length; i++) {
-		byteArr[i] = (byte) ((pInt >> (8
-					* (byteArr.length - 1 - i))) & 0xff);
-		}
-		return byteArr;
-	}
+	
 	
 	public void setFileData(byte[] pData) {
 		this.m_sHeader.data = pData;

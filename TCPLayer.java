@@ -115,7 +115,6 @@ public class TCPLayer implements BaseLayer {
 	
 	public boolean Receive(byte[] input){
 		byte[] data;
-		System.out.println("TCP received:");
 		
 		if(input[2]==(byte)0x20 && input[3]==(byte)0x80){
 			
