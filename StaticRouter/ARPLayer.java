@@ -1,3 +1,4 @@
+package StaticRouter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.IntStream;
@@ -466,11 +467,11 @@ public class ARPLayer implements BaseLayer {
 	}
 	
 	public void resetARPCacheTableGUI() { 
-		ARPGUI.resetArpTableGui();
+		StaticRouterGUI.resetArpTableGui();
 	}
 	public void refreshARPCacheTableGUI() {
 		for (int i = 0; i < this.arpCacheTable.size; i++) {
-		ARPGUI.initTableValue(new String[] { Integer.toString(i), this.arpCacheTable.ipAddr[i], this.arpCacheTable.macAddr[i], this.arpCacheTable.state[i] });
+		StaticRouterGUI.initTableValue(new String[] { Integer.toString(i), this.arpCacheTable.ipAddr[i], this.arpCacheTable.macAddr[i], this.arpCacheTable.state[i] });
 		
 		}
 	}
@@ -509,11 +510,11 @@ public class ARPLayer implements BaseLayer {
 		this.m_sHeader.opCode = pOpcode;
 	}
 	public void resetPROXYCacheTableGUI() { 
-		ARPGUI.resetProxyTable();
+		StaticRouterGUI.resetProxyTable();
 	}
 	public void refreshPROXYCacheTableGUI() {
 		for (int i = 0; i < this.proxyCacheTable.size; i++) {
-			ARPGUI.initProxyTableValue(new String[] { Integer.toString(i), this.proxyCacheTable.deviceName[i], this.proxyCacheTable.ipAddr[i], this.proxyCacheTable.macAddr[i]});
+			StaticRouterGUI.initProxyTableValue(new String[] { Integer.toString(i), this.proxyCacheTable.deviceName[i], this.proxyCacheTable.ipAddr[i], this.proxyCacheTable.macAddr[i]});
 		}
 	}
 
@@ -528,7 +529,7 @@ public class ARPLayer implements BaseLayer {
 	}
 
 	public void deletePROXYCacheTableElement(String pIpAddr) {
-		this.resetPROXYCacheTableGUI();
+		//this.resetPROXYCacheTableGUI();
 		this.proxyCacheTable.deleteProxyCacheTable(pIpAddr);
 		this.refreshPROXYCacheTableGUI();
 	}

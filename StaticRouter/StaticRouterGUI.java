@@ -1,4 +1,4 @@
-package ARP;
+package StaticRouter;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Desktop;
@@ -42,7 +42,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.SystemColor;
 
-public class ARPGUI extends JFrame implements BaseLayer {
+public class StaticRouterGUI extends JFrame implements BaseLayer {
 
 	public int nUnderLayerCount = 0;
 	public int nUpperLayerCount = 0;
@@ -79,7 +79,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 	public static String FILE_PATH;
 	public static String FILE_NAME;
 	public static String ARP_DEST_IP_ADDR;
-	
+	public RoutingTableGUI routingTableGUI = new RoutingTableGUI();
 
 	/**
 	 * Launch the application.
@@ -93,19 +93,27 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		m_LayerMgr.AddLayer(new TCPLayer("TCP"));
 		m_LayerMgr.AddLayer(new ChatAppLayer("ChatApp"));
 		m_LayerMgr.AddLayer(new FileTransferAppLayer("FileApp"));
-		m_LayerMgr.AddLayer(new ARPGUI("ARPGUI"));
+		m_LayerMgr.AddLayer(new StaticRouterGUI("ARPGUI"));
 
 		// Connect all currently existing layers
 		m_LayerMgr.ConnectLayers(
 				" NI ( *Ethernet ( *ARP ( *IP ( *TCP ( *ChatApp ( *ARPGUI ( ) ) *FileApp ( *ARPGUI ) ) ) ) +IP ( -Ethernet ) ) ");
 		((ARPLayer) m_LayerMgr.GetLayer("ARP")).SetUpperLayer(m_LayerMgr.GetLayer("ARPGUI"));
+		
+
+		//routingTableManager
+		//RoutingTable
+		//routingtable.addElement("1", "1", "1", "1", "1", "1");
+	//	routingtable.addElement("2", "1", "1", "1", "1", "1");
+
+		//routingtable.showTable();
 
 	}
 
 	/**
 	 * Create the application.
 	 */
-	public ARPGUI(String pName) {
+	public StaticRouterGUI(String pName) {
 		this.pLayerName = pName;
 		initialize();
 	}
@@ -117,7 +125,7 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		frmArpgui = new JFrame();
 		frmArpgui.setForeground(Color.BLACK);
 		frmArpgui.setTitle("ARPGUI");
-		frmArpgui.setBounds(100, 100, 1163, 675);
+		frmArpgui.setBounds(100, 100, 1166, 740);
 		frmArpgui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmArpgui.getContentPane().setLayout(null);
 		JPanel panel_ARP = new JPanel();
@@ -746,6 +754,15 @@ public class ARPGUI extends JFrame implements BaseLayer {
 		});
 		btn_fileSend.setBounds(266, 200, 74, 32);
 		panel_fileTransfer.add(btn_fileSend);
+		
+		JButton btn_routingTable = new JButton("routing table");
+		btn_routingTable.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				routingTableGUI.setVisible(true);
+			}
+		});
+		btn_routingTable.setBounds(773, 628, 136, 48);
+		frmArpgui.getContentPane().add(btn_routingTable);
 		frmArpgui.setVisible(true);
 	}
 

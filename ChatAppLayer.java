@@ -1,4 +1,3 @@
-package StaticRouter;
 import java.util.ArrayList;
 
 public class ChatAppLayer implements BaseLayer{
@@ -88,7 +87,7 @@ public class ChatAppLayer implements BaseLayer{
 		byte[] decapsulated = this.Decapsulate(input);
 		String decapsulatedToStr = new String(decapsulated);
 
-		((StaticRouterGUI)this.GetUpperLayer(0)).appendToChatView(decapsulatedToStr);
+		((ARPGUI)this.GetUpperLayer(0)).appendToChatView(decapsulatedToStr);
 		
 		return true;
 	}

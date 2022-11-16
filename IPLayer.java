@@ -1,4 +1,3 @@
-package StaticRouter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -85,8 +84,8 @@ public class IPLayer implements BaseLayer {
 			
 			
 	
-			((EthernetLayer)this.GetUnderLayer(1)).setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(StaticRouterGUI.HOST_MAC_ADDR));
-			((EthernetLayer)this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(StaticRouterGUI.CHAT_DEST_MAC_ADDR));
+			((EthernetLayer)this.GetUnderLayer(1)).setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(ARPGUI.HOST_MAC_ADDR));
+			((EthernetLayer)this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(ARPGUI.CHAT_DEST_MAC_ADDR));
 			this.GetUnderLayer(1).Send(bytes,length+IPHEADER);
 			return true;
 		}
@@ -94,8 +93,8 @@ public class IPLayer implements BaseLayer {
 		
 		else if (input[0]==(byte)0x20 && input[1]==(byte)0x90){
 			// from Chat File App Layer
-			((EthernetLayer)this.GetUnderLayer(1)).setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(StaticRouterGUI.HOST_MAC_ADDR));
-			((EthernetLayer)this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(StaticRouterGUI.FILE_DEST_MAC_ADDR));
+			((EthernetLayer)this.GetUnderLayer(1)).setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(ARPGUI.HOST_MAC_ADDR));
+			((EthernetLayer)this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(ARPGUI.FILE_DEST_MAC_ADDR));
 
 			this.GetUnderLayer(1).Send(bytes,length+IPHEADER);
 			return true;

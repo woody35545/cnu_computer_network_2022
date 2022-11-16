@@ -1,4 +1,3 @@
-package StaticRouter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.nio.ByteBuffer;
@@ -170,7 +169,7 @@ public class FileTransferAppLayer implements BaseLayer {
 					fragmentedLength += fragmentTotalLength;
 					System.out.println("Fragment Number = " + this.castByteArrToInt(this.m_sHeader.fragment_number));
 					System.out.println("Sending file.... ("+ fragmentedLength + "/" + fileTotalLength + ")");
-					StaticRouterGUI.progressBar.setValue((fragmentedLength*100)/fileTotalLength);
+					ARPGUI.progressBar.setValue((fragmentedLength*100)/fileTotalLength);
 					System.out.println("File Send Complete !");
 
 				}
@@ -227,7 +226,7 @@ public class FileTransferAppLayer implements BaseLayer {
 					fragmentedLength += fragmentTotalLength;
 					System.out.println("Fragment Number = " + this.castByteArrToInt(this.m_sHeader.fragment_number));
 					System.out.println("Sending file.... ("+ fragmentedLength + "/" + fileTotalLength + ")");
-					StaticRouterGUI.progressBar.setValue((fragmentedLength*100)/fileTotalLength);
+					ARPGUI.progressBar.setValue((fragmentedLength*100)/fileTotalLength);
 
 
 				}
@@ -272,7 +271,7 @@ public class FileTransferAppLayer implements BaseLayer {
 			((TCPLayer)this.GetUnderLayer(0)).setSourcePort(TCPLayer.FILE_TRANSFER_APP_PROT);
 			((TCPLayer)this.GetUnderLayer(0)).setDestinationPort(TCPLayer.FILE_TRANSFER_APP_PROT);
 			((TCPLayer) this.GetUnderLayer(0)).Send(encapsulated, encapsulated.length);
-			//StaticRouterGUI.progressBar.setValue(100);
+			ARPGUI.progressBar.setValue(100);
 
 			System.out.println("File Send Complete!");	
 

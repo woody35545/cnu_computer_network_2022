@@ -1,3 +1,4 @@
+package StaticRouter;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -91,10 +92,10 @@ public class TCPLayer implements BaseLayer {
 		this.m_sHeader.tcp_data = input;
 		
 		if (Utils.compareBytes(this.m_sHeader.tcp_sport, CHAT_APP_PROT))
-			((IPLayer)this.GetUnderLayer(0)).setIpHeaderDstIPAddr(Utils.convertAddrFormat(ARPGUI.CHAT_DEST_IP_ADDR));
+			((IPLayer)this.GetUnderLayer(0)).setIpHeaderDstIPAddr(Utils.convertAddrFormat(StaticRouterGUI.CHAT_DEST_IP_ADDR));
 			
 		else if (Utils.compareBytes(this.m_sHeader.tcp_sport, FILE_TRANSFER_APP_PROT))
-			((IPLayer)this.GetUnderLayer(0)).setIpHeaderDstIPAddr(Utils.convertAddrFormat(ARPGUI.FILE_DEST_IP_ADDR));
+			((IPLayer)this.GetUnderLayer(0)).setIpHeaderDstIPAddr(Utils.convertAddrFormat(StaticRouterGUI.FILE_DEST_IP_ADDR));
 
 		// send to IPLayer
 	
