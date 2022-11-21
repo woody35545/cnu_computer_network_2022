@@ -99,8 +99,8 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 		m_LayerMgr.ConnectLayers(
 				" NI ( *Ethernet ( *ARP ( *IP ( *TCP ( *ChatApp ( *ARPGUI ( ) ) *FileApp ( *ARPGUI ) ) ) ) +IP ( -Ethernet ) ) ");
 		((ARPLayer) m_LayerMgr.GetLayer("ARP")).SetUpperLayer(m_LayerMgr.GetLayer("ARPGUI"));
-		
 
+		System.out.println(m_LayerMgr.GetLayer("ARP").GetUpperLayer(0).GetLayerName());
 		//routingTableManager
 		//RoutingTable
 		//routingtable.addElement("1", "1", "1", "1", "1", "1");
@@ -763,6 +763,15 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 		});
 		btn_routingTable.setBounds(773, 628, 136, 48);
 		frmArpgui.getContentPane().add(btn_routingTable);
+		
+		JButton btn_send = new JButton("Send");
+		btn_send.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				((IPLayer)m_LayerMgr.GetLayer("IP")).Send(new byte[] {0x00, 0x00}, 2);
+			}
+		});
+		btn_send.setBounds(921, 628, 136, 48);
+		frmArpgui.getContentPane().add(btn_send);
 		frmArpgui.setVisible(true);
 	}
 

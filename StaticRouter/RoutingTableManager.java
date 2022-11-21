@@ -1,10 +1,10 @@
 package StaticRouter;
 
-public class RoutingTableManager {
-	public _ROUTING_TABLE routingTable = new _ROUTING_TABLE();
+public final class RoutingTableManager {
+	public static _ROUTING_TABLE routingTable = new _ROUTING_TABLE();
 
 	// Destination
-	public class _ROUTING_TABLE {
+	public static class _ROUTING_TABLE {
 
 		private final static int Capacity = 30;
 		private int size = 0;
@@ -134,24 +134,29 @@ public class RoutingTableManager {
 		}
 	}
 
-	public void refreshTableGUI() {
-		for (int i = 0; i < this.routingTable.size; i++) {
-			RoutingTableGUI.initTableValue(new String[] { Integer.toString(i), this.routingTable.Destination[i],
-					this.routingTable.NetMask[i], this.routingTable.Gateway[i], this.routingTable.Flag[i],
-					this.routingTable.Interface[i], this.routingTable.Metric[i] });
+	public static void refreshTableGUI() {
+		for (int i = 0; i < routingTable.size; i++) {
+			RoutingTableGUI.initTableValue(new String[] { Integer.toString(i), routingTable.Destination[i],
+					routingTable.NetMask[i], routingTable.Gateway[i], routingTable.Flag[i], routingTable.Interface[i],
+					routingTable.Metric[i] });
 		}
 	}
 
-	public void addElementAndRefresh(String pDestination, String pNetMask, String pGateway, String pFlag,
+	public static void addElementAndRefresh(String pDestination, String pNetMask, String pGateway, String pFlag,
 			String pInterface, String pMetric) {
-		this.routingTable.addElement(pDestination, pNetMask, pGateway, pFlag, pInterface, pMetric);
-		this.refreshTableGUI();
+		routingTable.addElement(pDestination, pNetMask, pGateway, pFlag, pInterface, pMetric);
+		refreshTableGUI();
 	}
 
-	public void deleteTableElement(String pDestination) {
+	public static void deleteTableElement(String pDestination) {
 		RoutingTableGUI.resetTableGui();
-		this.routingTable.deleteElement(pDestination);
-		this.refreshTableGUI();
+		routingTable.deleteElement(pDestination);
+		refreshTableGUI();
+	}
+
+	public static _ROUTING_TABLE getRoutingTable() {
+		routingTable.showTable();
+		return routingTable;
 	}
 
 }

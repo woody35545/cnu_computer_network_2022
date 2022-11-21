@@ -17,7 +17,8 @@ public class RoutingTableGUI extends JFrame {
 	private RoutingTableAddForm routingTableAddForm = new RoutingTableAddForm();
 	private JPanel contentPane;
 	private static JTable routingTable;
-	static RoutingTableManager routingTableManager = new RoutingTableManager();
+	// static final RoutingTableManager routingTableManager = new
+	// RoutingTableManager();
 
 	/**
 	 * Launch the application.
@@ -76,7 +77,7 @@ public class RoutingTableGUI extends JFrame {
 				int selected_row = routingTable.getSelectedRow();
 				String value = String.valueOf(routingTable.getValueAt(selected_row, 0));
 				System.out.println("sel row: " + selected_row);
-				routingTableManager.deleteTableElement(value);
+				RoutingTableManager.deleteTableElement(value);
 			}
 		});
 		btn_delete.setBounds(336, 207, 95, 23);
@@ -100,7 +101,7 @@ public class RoutingTableGUI extends JFrame {
 
 	public static void addElement(String pDestination, String pNetMask, String pGateway, String pFlag,
 			String pInterface, String pMetric) {
-		routingTableManager.addElementAndRefresh(pDestination, pNetMask, pGateway, pFlag, pInterface, pMetric);
+		RoutingTableManager.addElementAndRefresh(pDestination, pNetMask, pGateway, pFlag, pInterface, pMetric);
 	}
 
 	public static void resetTableGui() {
@@ -110,4 +111,8 @@ public class RoutingTableGUI extends JFrame {
 			}
 		}
 	}
+
+//	public RoutingTableManager getRoutingTableManager() {
+//		return this.routingTableManager;
+//	}
 }

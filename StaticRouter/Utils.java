@@ -191,5 +191,10 @@ public final class Utils {
 	
 	    return size;
 	}
-
+	
+	// 좀더 고민..
+	public boolean getSubnet(byte[] pDestinationIP)
+	{
+		return true; 
+	}
 }
