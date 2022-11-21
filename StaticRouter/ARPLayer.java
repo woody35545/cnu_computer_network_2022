@@ -210,6 +210,16 @@ public class ARPLayer implements BaseLayer {
 			}
 			return false;
 		}
+		
+		public String getMacAddr(String pIpAddr) {
+			if (this.isExist(pIpAddr)) {
+				for (int i = 0; i < size; i++) {
+					if (this.ipAddr[i].equals(pIpAddr))
+						return this.macAddr[i];
+				}
+			}
+			return "IsNotExist";
+		}
 
 		private String[] removeElementFromArray(String[] arr, int index) {
 			if (arr == null || index < 0 || index >= arr.length) {

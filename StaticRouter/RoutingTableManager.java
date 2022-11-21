@@ -1,5 +1,7 @@
 package StaticRouter;
 
+import java.util.Arrays;
+
 public final class RoutingTableManager {
 	public static _ROUTING_TABLE routingTable = new _ROUTING_TABLE();
 
@@ -106,6 +108,21 @@ public final class RoutingTableManager {
 				}
 			}
 			return false;
+		}
+		
+		public byte[] getSubnet(byte[] pIpByte) {
+			byte[] tmp = {0,0,0,0};
+			byte[] drop = {-1,-1,-1,-1};
+			for(int i =0; i< this.size;i++) {
+				for(int j = 0; j<4; j++) {
+					// xor netmask&ipAddr
+					tmp[j] = (byte)((Utils.convertAddrFormat(this.NetMask[i])[j])^pIpByte[j]);
+				}
+				if(Arrays.equals(tmp, Utils.convertAddrFormat(this.Destination[i])) ) {
+					return Utils.convertAddrFormat(this.Destination[i]);
+				}
+			}
+			return drop;
 		}
 
 		private String[] removeElementFromArray(String[] arr, int index) {
