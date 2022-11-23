@@ -97,9 +97,10 @@ public class IPLayer implements BaseLayer {
 		 */
 
 		// ARP Cache Table은 getArpCacheTable로 접근가능
-
+		byte[] entry_ip = RoutingTableManager.getRoutingTable().getSubnet(Utils.convertAddrFormat(StaticRouterGUI.DEST_IP));
+		if(!entry_ip.equals(new byte[] {-1,-1,-1,-1})){
 		String dst_mac_addr = this.getArpCacheTable()
-				.getMacAddr(Utils.convertAddrFormat(Utils.convertAddrFormat(StaticRouterGUI.DEST_IP)));
+				.getMacAddr(Utils.convertAddrFormat(entry_ip));
 		System.out.println(dst_mac_addr);
 
 		if (!dst_mac_addr.equals("IsNotExist")) {
@@ -113,13 +114,14 @@ public class IPLayer implements BaseLayer {
 		else {
 
 			// set Target IP
-			this.getArpLayer().setARPHeaderDstIp(Utils.convertAddrFormat(StaticRouterGUI.DEST_IP));
+			this.getArpLayer().setARPHeaderDstIp(entry_ip);
 			this.getArpLayer().Send();
 			// wait until receiving reply from target host
 		}
 
 		return true;
-
+		}
+		return false;
 	}
 	public boolean Routing(byte[] input, int length) {
 		m_sHeader.ip_offset[0] = 0x00;
@@ -141,9 +143,10 @@ public class IPLayer implements BaseLayer {
 		 */
 
 		// ARP Cache Table은 getArpCacheTable로 접근가능
-
+		byte[] entry_ip = RoutingTableManager.getRoutingTable().getSubnet(targetIp);
+		if(!entry_ip.equals(new byte[] {-1,-1,-1,-1})){
 		String dst_mac_addr = this.getArpCacheTable()
-				.getMacAddr(Utils.convertAddrFormat(targetIp));
+				.getMacAddr(Utils.convertAddrFormat(entry_ip));
 		System.out.println(dst_mac_addr);
 
 		if (!dst_mac_addr.equals("IsNotExist")) {
@@ -157,13 +160,14 @@ public class IPLayer implements BaseLayer {
 		else {
 
 			// set Target IP
-			this.getArpLayer().setARPHeaderDstIp(targetIp);
+			this.getArpLayer().setARPHeaderDstIp(entry_ip);
 			this.getArpLayer().Send();
 			// wait until receiving reply from target host
 		}
+		
 
 		return true;
-
+		}return false;
 	}
 	public byte[] RemoveCappHeader(byte[] input, int length) {
 		byte[] remvHeader = new byte[length - IPHEADER];
