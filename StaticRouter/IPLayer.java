@@ -81,21 +81,21 @@ public class IPLayer implements BaseLayer {
       m_sHeader.ip_offset[1] = 0x03;
       byte[] bytes = ObjToByte(m_sHeader, input, length);
 
-      // Routing Table 쓽 Entry 뱾怨  Subnet  뿰 궛  썑  빐 떦 릺 뒗 Entry IP 李얘린
-   
-      /* Entry媛  議댁옱 븯 뒗 寃쎌슦 -> Arp Cache Table 뿉 꽌 IP 議고쉶
-         1. ARP Cache Table 뿉  엳 쓣 寃쎌슦 -> 李얠  MAC 二쇱냼瑜   씠 슜 빐 꽌 EthernetLayer濡  諛붾줈  쟾 넚
-         2. ARP Cache Table 뿉  뾾 쓣 寃쎌슦 Request  쟾 넚
-            2-1. Reply  삱  븣源뚯    湲 
-            2-2. Reply  삤硫  諛쏆  MAC 二쇱냼瑜   씠 슜 빐 EthernetLayer濡   쟾 넚
-      */
-      
-      
-      /* Entry媛  議댁옱 븯吏   븡 뒗 寃쎌슦 -> Default Gateway濡   쟾 넚
-         1. ARP Table 뿉 꽌 Default Gateway 뿉    븳 MAC 二쇱냼 李얘린
-         2. 諛섑솚 諛쏆  MAC 二쇱냼瑜   씠 슜 빐 꽌 packet 留뚮뱾怨  EthernetLayer濡  蹂대궡湲 
-       */
-      
+
+		// Routing Table의 Entry들과 Subnet 연산 후 해당되는 Entry IP 찾기
+
+		/* Entry가 존재하는 경우 -> Arp Cache Table에서 IP 조회
+			1. ARP Cache Table에 있을 경우 -> 찾은 MAC 주소를 이용해서 EthernetLayer로 바로 전송
+			2. ARP Cache Table에 없을 경우 Request 전송
+				2-1. Reply 올 때까지 대기
+				2-2. Reply 오면 받은 MAC 주소를 이용해 EthernetLayer로 전송
+		*/
+
+
+		/* Entry가 존재하지 않는 경우 -> Default Gateway로 전송
+			1. ARP Table에서 Default Gateway에 대한 MAC 주소 찾기
+			2. 반환 받은 MAC 주소를 이용해서 packet 만들고 EthernetLayer로 보내기
+		 */
       
       // ARP Cache Table은 getArpCacheTable로 접근가능
       String dst_mac_addr = ((ARPLayer)this.GetUnderLayer(0)).getArpCacheTable().getMacAddr(Utils.convertAddrFormat(m_sHeader.ip_dstaddr));
@@ -110,9 +110,14 @@ public class IPLayer implements BaseLayer {
 
           this.GetUnderLayer(1).Send(bytes, length + IPHEADER);
        }
-       //System.out.println(dst_mac_addr);
-       else{
-    	   System.out.println(" ");
+
+      else{
+    	  
+    	  // set Target IP
+    	  this.getArpLayer().setARPHeaderDstIp(m_sHeader.ip_dstaddr);
+    	  this.getArpLayer().Send();
+    	  
+    	  System.out.println(" ");
        }
        
       // ARP Layer의 Send 함수 호출
@@ -245,6 +250,10 @@ public class IPLayer implements BaseLayer {
       if (nindex < 0 || nindex >= nUnderLayerCount || nUnderLayerCount < 0)
          return null;
       return p_UnderLayer.get(nindex);
+   }
+   
+   public ARPLayer getArpLayer() {
+	   return ((ARPLayer)this.GetUnderLayer(0));
    }
 
 }
