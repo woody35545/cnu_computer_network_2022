@@ -103,7 +103,8 @@ public class LayerManager {
 		while(pNode != null){
 			if( pLayer == null) {
 				pLayer = GetLayer (pNode.token);
-				System.out.println("pLayer = "+ pLayer.GetLayerName() );}
+				//System.out.println("pLayer = "+ pLayer.GetLayerName() );
+				}
 			
 			else{
 				if(pNode.token.equals("(")) 

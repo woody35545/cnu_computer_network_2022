@@ -84,12 +84,16 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 		m_LayerMgr.AddLayer(new StaticRouterGUI("StaticRouterGUI"));
 
 		// Connect all currently existing layers
+//		m_LayerMgr.ConnectLayers(
+//				" NI ( *Ethernet ( *ARP ( *IP ( *StaticRouterGUI");
 		m_LayerMgr.ConnectLayers(
-				" NI ( *Ethernet ( *ARP ( *IP ( *StaticRouterGUI ");
-		
-		((IPLayer) m_LayerMgr.GetLayer("IP")).SetUnderLayer(m_LayerMgr.GetLayer("Ethernet"));
+				" NI ( *Ethernet ( *ARP ( *IP ( *StaticRouterGUI ( ) ) ) *IP ( ");
+
 		
 		// Test
+		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(0).GetLayerName());
+
+		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(1).GetLayerName());
 		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(0).GetLayerName());
 		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(1).GetLayerName());
 		System.out.println(m_LayerMgr.GetLayer("ARP").GetUpperLayer(0).GetLayerName());
