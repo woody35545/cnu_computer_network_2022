@@ -105,26 +105,16 @@ public class IPLayer implements BaseLayer {
 		if (!dst_mac_addr.equals("IsNotExist")) {
 			((EthernetLayer) this.GetUnderLayer(1))
 					.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(StaticRouterGUI.HOST_MAC_ADDR));
-
 			((EthernetLayer) this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(dst_mac_addr));
-
 			this.GetUnderLayer(1).Send(bytes, length + IPHEADER);
 		}
 
 		else {
-
 			// set Target IP
 			this.getArpLayer().setARPHeaderDstIp(Utils.convertAddrFormat(StaticRouterGUI.DEST_IP));
 			this.getArpLayer().Send();
-			// wait until receiving reply from target host
 		}
 
-		((EthernetLayer) this.GetUnderLayer(1))
-				.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(StaticRouterGUI.HOST_MAC_ADDR));
-		((EthernetLayer) this.GetUnderLayer(1))
-				.setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(StaticRouterGUI.DEST_IP));
-
-		this.GetUnderLayer(1).Send(bytes, length + IPHEADER);
 		return true;
 
 	}
@@ -139,13 +129,15 @@ public class IPLayer implements BaseLayer {
 	}
 
 	public synchronized boolean Receive(byte[] input) {
-
+		// if Reply Packet -> Mac 주소 send(Mac)
 		byte[] data = RemoveCappHeader(input, input.length);
 
 		if (me_equals_dst_Addr(input)) {
 			this.GetUpperLayer(0).Receive(data);
 			return true;
 		} else {
+			// 1. search Routing Table
+			// 2. if found -> send
 			return false;
 		}
 	}

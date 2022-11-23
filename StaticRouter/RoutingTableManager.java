@@ -111,12 +111,11 @@ public final class RoutingTableManager {
 		}
 		
 		public byte[] getSubnet(byte[] pIpByte) {
-			byte[] tmp = {0,0,0,0};
+			byte[] tmp = new byte[4];
 			byte[] drop = {-1,-1,-1,-1};
 			for(int i =0; i< this.size;i++) {
 				for(int j = 0; j<4; j++) {
-					// xor netmask&ipAddr
-					tmp[j] = (byte)((Utils.convertAddrFormat(this.NetMask[i])[j])^pIpByte[j]);
+					tmp[j] = (byte)((Utils.convertAddrFormat(this.NetMask[i])[j])&pIpByte[j]);
 				}
 				if(Arrays.equals(tmp, Utils.convertAddrFormat(this.Destination[i])) ) {
 					return Utils.convertAddrFormat(this.Destination[i]);
