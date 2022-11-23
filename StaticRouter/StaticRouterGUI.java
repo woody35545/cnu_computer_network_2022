@@ -85,9 +85,13 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 
 		// Connect all currently existing layers
 		m_LayerMgr.ConnectLayers(
-				" NI ( *Ethernet ( *ARP ( *IP ( *TCP ( *ChatApp ( *ARPGUI ( ) ) *FileApp ( *ARPGUI ) ) ) ) +IP ( -Ethernet ) ) ");
-		((ARPLayer) m_LayerMgr.GetLayer("ARP")).SetUpperLayer(m_LayerMgr.GetLayer("ARPGUI"));
-
+				" NI ( *Ethernet ( *ARP ( *IP ( *StaticRouterGUI ");
+		
+		((IPLayer) m_LayerMgr.GetLayer("IP")).SetUnderLayer(m_LayerMgr.GetLayer("Ethernet"));
+		
+		// Test
+		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(0).GetLayerName());
+		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(1).GetLayerName());
 		System.out.println(m_LayerMgr.GetLayer("ARP").GetUpperLayer(0).GetLayerName());
 
 	}
@@ -107,7 +111,7 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 		frmArpgui = new JFrame();
 		frmArpgui.setForeground(Color.BLACK);
 		frmArpgui.setTitle("ARPGUI");
-		frmArpgui.setBounds(100, 100, 1145, 746);
+		frmArpgui.setBounds(100, 100, 1145, 382);
 		frmArpgui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmArpgui.getContentPane().setLayout(null);
 		JPanel panel_ARP = new JPanel();
@@ -254,7 +258,7 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 		panel_addressSetting.setBorder(new TitledBorder(new LineBorder(Color.black, 1), "Address Setting"));
 
 		panel_addressSetting.setLayout(null);
-		panel_addressSetting.setBounds(757, 10, 362, 197);
+		panel_addressSetting.setBounds(757, 10, 362, 279);
 		frmArpgui.getContentPane().add(panel_addressSetting);
 		JLabel ARP_1_3_1_1_1_1 = new JLabel("My MAC");
 		ARP_1_3_1_1_1_1.setBounds(12, 74, 64, 15);
@@ -434,7 +438,7 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 				routingTableGUI.setVisible(true);
 			}
 		});
-		btn_routingTable.setBounds(950, 228, 169, 31);
+		btn_routingTable.setBounds(950, 299, 169, 31);
 		frmArpgui.getContentPane().add(btn_routingTable);
 		
 		JButton btn_send = new JButton("Send Packet");
@@ -443,7 +447,7 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 				((IPLayer)m_LayerMgr.GetLayer("IP")).Send(new byte[] {0x00, 0x00}, 2);
 			}
 		});
-		btn_send.setBounds(757, 228, 169, 31);
+		btn_send.setBounds(757, 299, 169, 31);
 		frmArpgui.getContentPane().add(btn_send);
 		frmArpgui.setVisible(true);
 	}
