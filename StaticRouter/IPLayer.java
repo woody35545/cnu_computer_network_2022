@@ -106,6 +106,7 @@ public class IPLayer implements BaseLayer {
 			((EthernetLayer) this.GetUnderLayer(1))
 					.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(StaticRouterGUI.HOST_MAC_ADDR));
 			((EthernetLayer) this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(dst_mac_addr));
+
 			this.GetUnderLayer(1).Send(bytes, length + IPHEADER);
 		}
 
@@ -120,7 +121,50 @@ public class IPLayer implements BaseLayer {
 		return true;
 
 	}
+	public boolean Routing(byte[] input, int length) {
+		m_sHeader.ip_offset[0] = 0x00;
+		m_sHeader.ip_offset[1] = 0x03;
+		byte[] targetIp = Arrays.copyOfRange(input, 16, 20);
+		byte[] bytes = ObjToByte(m_sHeader, input, length);
 
+		// Routing Table의 Entry들과 Subnet 연산 후 해당되는 Entry IP 찾기
+
+		/*
+		 * Entry가 존재하는 경우 -> Arp Cache Table에서 IP 조회 1. ARP Cache Table에 있을 경우 -> 찾은 MAC
+		 * 주소를 이용해서 EthernetLayer로 바로 전송 2. ARP Cache Table에 없을 경우 Request 전송 2-1. Reply
+		 * 올 때까지 대기 2-2. Reply 오면 받은 MAC 주소를 이용해 EthernetLayer로 전송
+		 */
+
+		/*
+		 * Entry가 존재하지 않는 경우 -> Default Gateway로 전송 1. ARP Table에서 Default Gateway에 대한
+		 * MAC 주소 찾기 2. 반환 받은 MAC 주소를 이용해서 packet 만들고 EthernetLayer로 보내기
+		 */
+
+		// ARP Cache Table은 getArpCacheTable로 접근가능
+
+		String dst_mac_addr = this.getArpCacheTable()
+				.getMacAddr(Utils.convertAddrFormat(targetIp));
+		System.out.println(dst_mac_addr);
+
+		if (!dst_mac_addr.equals("IsNotExist")) {
+			((EthernetLayer) this.GetUnderLayer(1))
+					.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(StaticRouterGUI.HOST_MAC_ADDR));
+			((EthernetLayer) this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(dst_mac_addr));
+
+			this.GetUnderLayer(1).Send(bytes, length + IPHEADER);
+		}
+
+		else {
+
+			// set Target IP
+			this.getArpLayer().setARPHeaderDstIp(targetIp);
+			this.getArpLayer().Send();
+			// wait until receiving reply from target host
+		}
+
+		return true;
+
+	}
 	public byte[] RemoveCappHeader(byte[] input, int length) {
 		byte[] remvHeader = new byte[length - IPHEADER];
 		for (int i = 0; i < length - IPHEADER; i++) {
@@ -135,11 +179,15 @@ public class IPLayer implements BaseLayer {
 		byte[] data = RemoveCappHeader(input, input.length);
 
 		if (me_equals_dst_Addr(input)) {
+			System.out.println("It's Packet for me.");
+
 			this.GetUpperLayer(0).Receive(data);
-			return true;
 		} else {
-			return false;
+			System.out.println("It's Reply Packet. Send to target host");
+			this.setIpHeaderDstIPAddr(Arrays.copyOfRange(input, 16, 20));
+			this.Routing(data,data.length);
 		}
+		return true;
 	}
 
 	public boolean me_equals_dst_Addr(byte[] input) {
