@@ -110,9 +110,11 @@ public class IPLayer implements BaseLayer {
 		}
 
 		else {
+
 			// set Target IP
 			this.getArpLayer().setARPHeaderDstIp(Utils.convertAddrFormat(StaticRouterGUI.DEST_IP));
 			this.getArpLayer().Send();
+			// wait until receiving reply from target host
 		}
 
 		return true;
@@ -129,15 +131,13 @@ public class IPLayer implements BaseLayer {
 	}
 
 	public synchronized boolean Receive(byte[] input) {
-		// if Reply Packet -> Mac 주소 send(Mac)
+
 		byte[] data = RemoveCappHeader(input, input.length);
 
 		if (me_equals_dst_Addr(input)) {
 			this.GetUpperLayer(0).Receive(data);
 			return true;
 		} else {
-			// 1. search Routing Table
-			// 2. if found -> send
 			return false;
 		}
 	}
