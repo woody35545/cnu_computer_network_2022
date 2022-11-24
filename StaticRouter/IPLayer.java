@@ -105,7 +105,7 @@ public class IPLayer implements BaseLayer {
 
 		if (!dst_mac_addr.equals("IsNotExist")) {
 			((EthernetLayer) this.GetUnderLayer(1))
-					.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(StaticRouterGUI.HOST_MAC_ADDR));
+					.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(StaticRouterGUI.MAC_ADDR_0));
 			((EthernetLayer) this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(dst_mac_addr));
 
 			this.GetUnderLayer(1).Send(bytes, length + IPHEADER);
@@ -151,7 +151,7 @@ public class IPLayer implements BaseLayer {
 
 		if (!dst_mac_addr.equals("IsNotExist")) {
 			((EthernetLayer) this.GetUnderLayer(1))
-					.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(StaticRouterGUI.HOST_MAC_ADDR));
+					.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(StaticRouterGUI.MAC_ADDR_0));
 			((EthernetLayer) this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(dst_mac_addr));
 
 			this.GetUnderLayer(1).Send(bytes, length + IPHEADER);

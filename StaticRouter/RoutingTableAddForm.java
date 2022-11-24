@@ -98,14 +98,14 @@ public class RoutingTableAddForm extends JFrame {
 		panel.add(chckbxNewCheckBox);
 
 		JCheckBox chckbxGateway = new JCheckBox("Gateway");
-		chckbxGateway.setBounds(187, 168, 73, 23);
+		chckbxGateway.setBounds(186, 168, 84, 23);
 		panel.add(chckbxGateway);
 
 		JCheckBox chckbxHost = new JCheckBox("Host");
-		chckbxHost.setBounds(264, 168, 55, 23);
+		chckbxHost.setBounds(274, 168, 55, 23);
 		panel.add(chckbxHost);
 
-		JComboBox comboBox = new JComboBox();
+		JComboBox comboBox = new JComboBox(new String[] {"Interface_0", "Interface_1"});
 		comboBox.setBounds(141, 214, 178, 23);
 		panel.add(comboBox);
 

@@ -1,4 +1,5 @@
 package StaticRouter;
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Desktop;
@@ -10,6 +11,7 @@ import java.util.regex.Pattern;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.sound.midi.Soundbank;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
@@ -44,6 +46,48 @@ import java.awt.SystemColor;
 
 public class StaticRouterGUI extends JFrame implements BaseLayer {
 
+	/*
+	 * For easy setting while testing # idx 0 - 4: for Address Setting # idx 5 ~ :
+	 * for Routing Table Setting
+	 *
+	 * > Usage example
+	 *
+	 * String [] setting_1 = {<Interface_0 MAC>,<Interface_0 IP>,<Interface_1MAC>,<Interface_1 IP>, <target IP>} 
+	 * 
+	 * String [] setting_2 = {<Interface_0 MAC>,<Interface_0 IP>,<Interface_1 MAC>,<Interface_1 IP>, <target IP>, <RoutingTable Entry 0>,
+	 * <RoutingTable Entry 1> ...}
+	 */
+
+	/*---- Settings ----*/
+	private static final int SETTING_NUMBER = 2; // -1: default setting
+	
+	/*-------------------- Setting #1 --------------------*/
+	String[] setting_1_addrSetting = new String[] { "1:1:1:1:1:1", "192.168.0.1", "2:2:2:2:2:2", "192.168.0.2",
+			"192.168.1.0" };
+	String[][] setting_1_routingTableData = new String[][] {
+			{ "0", "192.168.0.0", "255.255.255.0", "Gateway1", "Flag1", "Intefarce1", "Metrics1" },
+			{ "1", "192.168.1.0", "255.255.255.0", "Gateway2", "Flag2", "Intefarce2", "Metrics2" } };
+	/*----------------------------------------------------*/
+
+			
+	/*-------------------- Setting #2 --------------------*/
+	String[] setting_2_addrSetting = new String[] { "1:1:1:1:1:1", "192.168.0.1", "2:2:2:2:2:2", "192.168.0.2",
+			"192.168.1.0" };
+	String[][] setting_2_routingTableData = new String[][] {
+			{ "0", "192.168.0.0", "255.255.255.0", "Gateway1", "Flag1", "Intefarce1", "Metrics1" },
+			{ "1", "192.168.1.0", "255.255.255.0", "Gateway2", "Flag2", "Intefarce2", "Metrics2" } };
+	/*----------------------------------------------------*/
+
+			
+	/*-------------------- Setting #3 --------------------*/
+	String[] setting_3_addrSetting = new String[] { "1:1:1:1:1:1", "192.168.0.1", "2:2:2:2:2:2", "192.168.0.2",
+			"192.168.1.0" };
+	String[][] setting_3_routingTableData = new String[][] {
+			{ "0", "192.168.0.0", "255.255.255.0", "Gateway1", "Flag1", "Intefarce1", "Metrics1" },
+			{ "1", "192.168.1.0", "255.255.255.0", "Gateway2", "Flag2", "Intefarce2", "Metrics2" } };
+	/*----------------------------------------------------*/
+	
+	/*---- Variables ----*/		
 	public int nUnderLayerCount = 0;
 	public int nUpperLayerCount = 0;
 	public String pLayerName = null;
@@ -60,17 +104,39 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 	private JTextArea textField_proxyDeviceName;
 	private JTextArea textField_proxyIpAddr;
 	private JTextArea textField_proxyMacAddr;
-	private int selected_index;
-	JComboBox comboBox_nicList = new JComboBox();
+	JButton btn_addrSettingReset;
+	private int selected_index_0;// To store seleceted index for NIC comboBox 0
+	private int selected_index_1;// To store seleceted index for NIC comboBox 1
+
+	// nicList of interface 0
+	JComboBox comboBox_nicList_0 = new JComboBox();
+	// nicList of interface 1
+	JComboBox comboBox_nicList_1 = new JComboBox();
+
+	JTextArea textArea_srcMacAddr_0 = new JTextArea();
+	JTextArea textArea_srcIpAddr_0 = new JTextArea();
+	JTextArea textArea_srcMacAddr_1 = new JTextArea();
+	JTextArea textArea_srcIpAddr_1 = new JTextArea();
+	JTextArea textArea_dstIpAddr = new JTextArea();
+
 	private static JTable table_ARPTable;
 	private static JTable table_ProxyTable;
-	JButton btn_addrSettingReset;
-	
-	public static String HOST_IP_ADDR;
-	public static String HOST_MAC_ADDR;
+
+	public static String NODE_TYPE;
+	// To store IP/MAC address of Inteface 0
+	public static String IP_ADDR_0;
+	public static String MAC_ADDR_0;
+	// To store IP/MAC address of Inteface 1
+	public static String IP_ADDR_1;
+	public static String MAC_ADDR_1;
+	// To store target ip address
 	public static String DEST_IP;
 	public static String ARP_DEST_IP_ADDR;
+	// Init RoutingTableGUI
 	public RoutingTableGUI routingTableGUI = new RoutingTableGUI();
+	
+	/*----------------*/		
+
 
 	/**
 	 * Launch the application.
@@ -86,17 +152,15 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 		// Connect all currently existing layers
 //		m_LayerMgr.ConnectLayers(
 //				" NI ( *Ethernet ( *ARP ( *IP ( *StaticRouterGUI");
-		m_LayerMgr.ConnectLayers(
-				" NI ( *Ethernet ( *ARP ( *IP ( *StaticRouterGUI ( ) ) ) *IP ( ");
+		m_LayerMgr.ConnectLayers(" NI ( *Ethernet ( *ARP ( *IP ( *StaticRouterGUI ( ) ) ) *IP ( ");
 
-		
 		// Test
-		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(0).GetLayerName());
-
-		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(1).GetLayerName());
-		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(0).GetLayerName());
-		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(1).GetLayerName());
-		System.out.println(m_LayerMgr.GetLayer("ARP").GetUpperLayer(0).GetLayerName());
+//		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(0).GetLayerName());
+//
+//		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(1).GetLayerName());
+//		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(0).GetLayerName());
+//		System.out.println(m_LayerMgr.GetLayer("IP").GetUnderLayer(1).GetLayerName());
+//		System.out.println(m_LayerMgr.GetLayer("ARP").GetUpperLayer(0).GetLayerName());
 
 	}
 
@@ -105,6 +169,8 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 	 */
 	public StaticRouterGUI(String pName) {
 		this.pLayerName = pName;
+		initNicCombobox(); // initialize NIC List comboBox
+		initUserSetting();
 		initialize();
 	}
 
@@ -115,11 +181,11 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 		frmArpgui = new JFrame();
 		frmArpgui.setForeground(Color.BLACK);
 		frmArpgui.setTitle("ARPGUI");
-		frmArpgui.setBounds(100, 100, 1145, 382);
+		frmArpgui.setBounds(100, 100, 1145, 470);
 		frmArpgui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmArpgui.getContentPane().setLayout(null);
 		JPanel panel_ARP = new JPanel();
-		panel_ARP.setBounds(27, 10, 315, 320);
+		panel_ARP.setBounds(27, 10, 315, 361);
 		panel_ARP.setBorder(new TitledBorder(new LineBorder(Color.black, 1), "ARP"));
 		frmArpgui.getContentPane().add(panel_ARP);
 		panel_ARP.setLayout(null);
@@ -174,7 +240,7 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 		JPanel proxy_ARP = new JPanel();
 		proxy_ARP.setBorder(new TitledBorder(new LineBorder(Color.black, 1), "Proxy ARP"));
 
-		proxy_ARP.setBounds(383, 10, 342, 320);
+		proxy_ARP.setBounds(383, 10, 342, 361);
 		frmArpgui.getContentPane().add(proxy_ARP);
 		proxy_ARP.setLayout(null);
 		JButton btn_proxyArpAdd = new JButton("Add");
@@ -262,97 +328,99 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 		panel_addressSetting.setBorder(new TitledBorder(new LineBorder(Color.black, 1), "Address Setting"));
 
 		panel_addressSetting.setLayout(null);
-		panel_addressSetting.setBounds(757, 10, 362, 279);
+		panel_addressSetting.setBounds(757, 10, 362, 361);
 		frmArpgui.getContentPane().add(panel_addressSetting);
-		JLabel ARP_1_3_1_1_1_1 = new JLabel("My MAC");
-		ARP_1_3_1_1_1_1.setBounds(12, 74, 64, 15);
+		JLabel ARP_1_3_1_1_1_1 = new JLabel("MAC");
+		ARP_1_3_1_1_1_1.setBounds(22, 110, 64, 15);
 		panel_addressSetting.add(ARP_1_3_1_1_1_1);
-		JTextArea textArea_srcMacAddr = new JTextArea();
-		textArea_srcMacAddr.setBorder(new LineBorder(Color.gray));
-		textArea_srcMacAddr.setEnabled(false);
-		textArea_srcMacAddr.setEditable(false);
-		textArea_srcMacAddr.setColumns(10);
-		textArea_srcMacAddr.setBounds(77, 69, 201, 21);
-		textArea_srcMacAddr.setText("0:C:29:D2:99:B3");
-		panel_addressSetting.add(textArea_srcMacAddr);
+		textArea_srcMacAddr_0.setEnabled(false);
+		textArea_srcMacAddr_0.setEditable(false);
+		textArea_srcMacAddr_0.setBorder(new LineBorder(Color.gray));
+		textArea_srcMacAddr_0.setColumns(10);
+		textArea_srcMacAddr_0.setBounds(77, 106, 201, 21);
+		panel_addressSetting.add(textArea_srcMacAddr_0);
 
-		JTextArea textArea_srcIpAddr = new JTextArea();
-		textArea_srcIpAddr.setBorder(new LineBorder(Color.gray));
-
-		textArea_srcIpAddr.setEnabled(false);
-		textArea_srcIpAddr.setEditable(false);
-		textArea_srcIpAddr.setColumns(10);
-		textArea_srcIpAddr.setBounds(77, 99, 201, 21);
-		textArea_srcIpAddr.setText("169.254.217.136");
-		panel_addressSetting.add(textArea_srcIpAddr);
-		JButton btn_addrSelect = new JButton("Select");
+		textArea_srcIpAddr_0.setEnabled(false);
+		textArea_srcIpAddr_0.setEditable(false);
+		textArea_srcIpAddr_0.setBorder(new LineBorder(Color.gray));
+		textArea_srcIpAddr_0.setColumns(10);
+		textArea_srcIpAddr_0.setBounds(77, 131, 201, 21);
+		panel_addressSetting.add(textArea_srcIpAddr_0);
+		JButton btn_nicSelect1 = new JButton("Select");
+		btn_nicSelect1.setEnabled(false);
 		JButton btn_addrSettingReset = new JButton("Reset");
 		JButton btn_addrSet = new JButton("Set");
 
 		btn_addrSet.setEnabled(false);
-		JTextArea textArea_dstIpAddr = new JTextArea();
-
 		btn_addrSet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				if (!Utils.checkIsIpFormatString(textArea_srcIpAddr.getText())
-						|| !Utils.checkIsMacFormatString(textArea_srcMacAddr.getText())) {
+				if (!Utils.checkIsIpFormatString(textArea_srcIpAddr_0.getText())
+						|| !Utils.checkIsMacFormatString(textArea_srcMacAddr_0.getText())) {
 					JOptionPane.showMessageDialog(null, "Please check address format");
 				}
 
 				else {
-
-					HOST_MAC_ADDR = textArea_srcMacAddr.getText();
-					HOST_IP_ADDR = textArea_srcIpAddr.getText();
+					MAC_ADDR_0 = textArea_srcMacAddr_0.getText();
+					IP_ADDR_0 = textArea_srcIpAddr_0.getText();
 					DEST_IP = textArea_dstIpAddr.getText();
-					
-					//DEST_IP = tf_targetIp
-					String srcIP = textArea_srcIpAddr.getText();
+
+					if (NODE_TYPE == "ROUTER") {
+						MAC_ADDR_1 = textArea_srcMacAddr_1.getText();
+						IP_ADDR_1 = textArea_srcIpAddr_1.getText();
+					}
+					// DEST_IP = tf_targetIp
+					String srcIP = textArea_srcIpAddr_0.getText();
 
 					((EthernetLayer) m_LayerMgr.GetLayer("Ethernet")).setEthernetHeaderType(new byte[] { 0x08, 0x00 });
 					((EthernetLayer) m_LayerMgr.GetLayer("Ethernet"))
-							.setEthernetHeaderSrcMacAddr(Utils.convertStrFormatMacToByteFormat(HOST_MAC_ADDR));
+							.setEthernetHeaderSrcMacAddr(Utils.convertStrFormatMacToByteFormat(MAC_ADDR_0));
 					((ARPLayer) m_LayerMgr.GetLayer("ARP"))
-							.setARPHeaderSrcIp(Utils.convertStrFormatIpToByteFormat(HOST_IP_ADDR));
+							.setARPHeaderSrcIp(Utils.convertStrFormatIpToByteFormat(IP_ADDR_0));
 					((ARPLayer) m_LayerMgr.GetLayer("ARP"))
-							.setARPHeaderSrcMac(Utils.convertStrFormatMacToByteFormat(HOST_MAC_ADDR));
+							.setARPHeaderSrcMac(Utils.convertStrFormatMacToByteFormat(MAC_ADDR_0));
 					((IPLayer) m_LayerMgr.GetLayer("IP"))
-							.setIpHeaderSrcIPAddr(Utils.convertStrFormatIpToByteFormat(HOST_IP_ADDR));
-					
-					
+							.setIpHeaderSrcIPAddr(Utils.convertStrFormatIpToByteFormat(IP_ADDR_0));
+
 					getIpLayer().setIpHeaderDstIPAddr(Utils.convertAddrFormat(DEST_IP));
-					
-					((NILayer) m_LayerMgr.GetLayer("NI")).SetAdapterNumber(selected_index);
 
-					textArea_srcMacAddr.setEnabled(false);
-					textArea_srcIpAddr.setEnabled(false);
+					((NILayer) m_LayerMgr.GetLayer("NI")).SetAdapterNumber(selected_index_0);
 
+					textArea_srcMacAddr_0.setEnabled(false);
+					textArea_srcIpAddr_0.setEnabled(false);
+					textArea_srcMacAddr_1.setEnabled(false);
+					textArea_srcIpAddr_1.setEnabled(false);
 					btn_sendArpRequest.setEnabled(true);
 					btn_arpItemDelete.setEnabled(true);
 					btn_arpAllDelete.setEnabled(true);
 					btn_proxyArpAdd.setEnabled(true);
 					btn_proxyArpDelete.setEnabled(true);
 					btn_addrSettingReset.setEnabled(true);
-					comboBox_nicList.setEditable(false);
-					comboBox_nicList.setEnabled(false);
+					comboBox_nicList_0.setEditable(false);
+					comboBox_nicList_0.setEnabled(false);
+					comboBox_nicList_1.setEditable(false);
+					comboBox_nicList_1.setEnabled(false);
 					btn_addrSet.setEnabled(false);
-					btn_addrSelect.setEnabled(false);
+					btn_nicSelect1.setEnabled(false);
 				}
 			}
 		});
-		btn_addrSet.setBounds(77, 161, 96, 23);
+		btn_addrSet.setBounds(77, 328, 96, 23);
 		panel_addressSetting.add(btn_addrSet);
-		JLabel ARP_1_3_1_1_1_1_1 = new JLabel("My IP");
-		ARP_1_3_1_1_1_1_1.setBounds(12, 99, 64, 15);
+		JLabel ARP_1_3_1_1_1_1_1 = new JLabel("IP");
+		ARP_1_3_1_1_1_1_1.setBounds(22, 135, 64, 15);
 		panel_addressSetting.add(ARP_1_3_1_1_1_1_1);
-		comboBox_nicList.setBounds(12, 36, 266, 23);
-		panel_addressSetting.add(comboBox_nicList);
+		comboBox_nicList_0.setEnabled(false);
+		comboBox_nicList_0.setEditable(true);
+		comboBox_nicList_0.setBounds(12, 71, 266, 23);
+		panel_addressSetting.add(comboBox_nicList_0);
 
 		btn_addrSettingReset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				textArea_srcMacAddr.setEnabled(true);
-				textArea_srcIpAddr.setEnabled(true);
-
+				textArea_srcMacAddr_0.setEnabled(true);
+				textArea_srcIpAddr_0.setEnabled(true);
+				textArea_srcMacAddr_1.setEnabled(true);
+				textArea_srcIpAddr_1.setEnabled(true);
 				btn_sendArpRequest.setEnabled(false);
 				btn_arpItemDelete.setEnabled(false);
 				btn_arpAllDelete.setEnabled(false);
@@ -361,55 +429,56 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 				btn_addrSettingReset.setEnabled(false);
 				// btn_fileSend.setEnabled(false);
 
-				btn_addrSelect.setEnabled(true);
-				comboBox_nicList.setEditable(true);
-				comboBox_nicList.setEnabled(true);
+				btn_nicSelect1.setEnabled(true);
+				comboBox_nicList_0.setEditable(true);
+				comboBox_nicList_0.setEnabled(true);
+				comboBox_nicList_1.setEditable(true);
+				comboBox_nicList_1.setEnabled(true);
 				btn_addrSet.setEnabled(true);
 				btn_addrSettingReset.setEnabled(false);
 
 			}
 		});
 		btn_addrSettingReset.setEnabled(false);
-		btn_addrSettingReset.setBounds(182, 161, 96, 23);
+		btn_addrSettingReset.setBounds(182, 328, 96, 23);
 		panel_addressSetting.add(btn_addrSettingReset);
-		btn_addrSelect.addActionListener(new ActionListener() {
+		btn_nicSelect1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				
-				
-				String selected = comboBox_nicList.getSelectedItem().toString();
-				selected_index = comboBox_nicList.getSelectedIndex();
-				
-			
-				textArea_srcMacAddr.setText("");
+
+				String selected = comboBox_nicList_0.getSelectedItem().toString();
+				selected_index_0 = comboBox_nicList_0.getSelectedIndex();
+
+				textArea_srcMacAddr_0.setText("");
 				try {
-					byte[] MacAddress = ((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(selected_index)
+					byte[] MacAddress = ((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(selected_index_0)
 							.getHardwareAddress();
-					if(!(((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(selected_index).getAddresses().toString().length()==2)) {
-						//System.out.println("select another one");
-					
-					String hexNumber;
-					for (int i = 0; i < 6; i++) {
-						hexNumber = Integer.toHexString(0xff & MacAddress[i]);
-						textArea_srcMacAddr.append(hexNumber.toUpperCase());
-						if (i != 5)
-							textArea_srcMacAddr.append(":");
-					
-				}
+					if (!(((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(selected_index_0).getAddresses()
+							.toString().length() == 2)) {
+						// System.out.println("select another one");
+
+						String hexNumber;
+						for (int i = 0; i < 6; i++) {
+							hexNumber = Integer.toHexString(0xff & MacAddress[i]);
+							textArea_srcMacAddr_0.append(hexNumber.toUpperCase());
+							if (i != 5)
+								textArea_srcMacAddr_0.append(":");
+
+						}
 					}
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				if(((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(selected_index).getAddresses().toString().length()==2) {
-					JOptionPane.showMessageDialog(null, "Please select another device\nBecause it doesn't have MAC address.");
-				}
-				else {
-				textArea_srcMacAddr.setEditable(true);
-				textArea_srcMacAddr.setEnabled(true);
-				textArea_srcIpAddr.setEditable(true);
-				textArea_srcIpAddr.setEnabled(true);
-				btn_addrSet.setEnabled(true);
+				if (((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(selected_index_0).getAddresses().toString()
+						.length() == 2) {
+					JOptionPane.showMessageDialog(null,
+							"Please select another device\nBecause it doesn't have MAC address.");
+				} else {
+					textArea_srcMacAddr_0.setEditable(true);
+					textArea_srcMacAddr_0.setEnabled(true);
+					textArea_srcIpAddr_0.setEditable(true);
+					textArea_srcIpAddr_0.setEnabled(true);
+					btn_addrSet.setEnabled(true);
 				}
 			}
 		});
@@ -422,41 +491,157 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 				}
 			}
 		});
-		btn_addrSelect.setBounds(282, 36, 68, 23);
-		panel_addressSetting.add(btn_addrSelect);
-		
-		textArea_dstIpAddr.setBounds(77, 130, 201, 21);
+		btn_nicSelect1.setBounds(282, 71, 68, 23);
+		panel_addressSetting.add(btn_nicSelect1);
+
+		textArea_dstIpAddr.setBounds(77, 297, 201, 21);
 		panel_addressSetting.add(textArea_dstIpAddr);
-		textArea_dstIpAddr.setText("169.254.32.212");
 		textArea_dstIpAddr.setColumns(10);
 		textArea_dstIpAddr.setBorder(new LineBorder(Color.GRAY));
-		
+
 		JLabel lblNewLabel = new JLabel("Target IP");
-		lblNewLabel.setBounds(12, 134, 52, 15);
+		lblNewLabel.setBounds(22, 301, 52, 15);
 		panel_addressSetting.add(lblNewLabel);
-		SetCombobox();
-		
+
+		JButton btn_nicSelect2 = new JButton("Select");
+		btn_nicSelect2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//
+
+				String selected = comboBox_nicList_1.getSelectedItem().toString();
+				// selected_index = comboBox_nicList_1.getSelectedIndex();
+
+				textArea_srcMacAddr_1.setText("");
+				try {
+					byte[] MacAddress = ((NILayer) m_LayerMgr.GetLayer("NI"))
+							.GetAdapterObject(comboBox_nicList_1.getSelectedIndex()).getHardwareAddress();
+					if (!(((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(comboBox_nicList_1.getSelectedIndex())
+							.getAddresses().toString().length() == 2)) {
+						// System.out.println("select another one");
+
+						String hexNumber;
+						for (int i = 0; i < 6; i++) {
+							hexNumber = Integer.toHexString(0xff & MacAddress[i]);
+							textArea_srcMacAddr_1.append(hexNumber.toUpperCase());
+							if (i != 5)
+								textArea_srcMacAddr_1.append(":");
+
+						}
+					}
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				if (((NILayer) m_LayerMgr.GetLayer("NI")).GetAdapterObject(selected_index_0).getAddresses().toString()
+						.length() == 2) {
+					JOptionPane.showMessageDialog(null,
+							"Please select another device\nBecause it doesn't have MAC address.");
+				} else {
+					textArea_srcMacAddr_1.setEditable(true);
+					textArea_srcMacAddr_1.setEnabled(true);
+					textArea_srcIpAddr_1.setEditable(true);
+					textArea_srcIpAddr_1.setEnabled(true);
+					btn_addrSet.setEnabled(true);
+				}
+				//
+			}
+		});
+		btn_nicSelect2.setEnabled(false);
+		btn_nicSelect2.setBounds(282, 191, 68, 23);
+		panel_addressSetting.add(btn_nicSelect2);
+		comboBox_nicList_1.setEnabled(false);
+
+		comboBox_nicList_1.setEditable(true);
+		comboBox_nicList_1.setBounds(12, 191, 266, 23);
+		panel_addressSetting.add(comboBox_nicList_1);
+
+		textArea_srcMacAddr_1.setEnabled(false);
+		textArea_srcMacAddr_1.setEditable(false);
+		textArea_srcMacAddr_1.setColumns(10);
+		textArea_srcMacAddr_1.setBorder(new LineBorder(Color.gray));
+		textArea_srcMacAddr_1.setBounds(77, 224, 201, 21);
+		panel_addressSetting.add(textArea_srcMacAddr_1);
+
+		textArea_srcIpAddr_1.setEnabled(false);
+		textArea_srcIpAddr_1.setEditable(false);
+		textArea_srcIpAddr_1.setColumns(10);
+		textArea_srcIpAddr_1.setBorder(new LineBorder(Color.gray));
+		textArea_srcIpAddr_1.setBounds(77, 251, 201, 21);
+		panel_addressSetting.add(textArea_srcIpAddr_1);
+
+		JLabel ARP_1_3_1_1_1_1_1_1 = new JLabel("IP");
+		ARP_1_3_1_1_1_1_1_1.setBounds(22, 255, 64, 15);
+		panel_addressSetting.add(ARP_1_3_1_1_1_1_1_1);
+
+		JLabel ARP_1_3_1_1_1_1_2 = new JLabel("MAC");
+		ARP_1_3_1_1_1_1_2.setBounds(22, 230, 64, 15);
+		panel_addressSetting.add(ARP_1_3_1_1_1_1_2);
+
+		JComboBox comboBox_type = new JComboBox(new String[] { "HOST", "ROUTER" });
+		comboBox_type.setBounds(87, 24, 191, 23);
+		panel_addressSetting.add(comboBox_type);
+
+		JButton btn_typeSelect = new JButton("Select");
+		btn_typeSelect.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				String selected = comboBox_type.getSelectedItem().toString();
+				selected_index_0 = comboBox_type.getSelectedIndex();
+
+				System.out.println(selected);
+				NODE_TYPE = selected;
+
+				if (NODE_TYPE == "HOST") {
+					btn_nicSelect1.setEnabled(true);
+					btn_nicSelect2.setEnabled(false);
+					comboBox_nicList_0.setEnabled(true);
+				} else if (NODE_TYPE == "ROUTER") {
+					btn_nicSelect1.setEnabled(true);
+					btn_nicSelect2.setEnabled(true);
+					comboBox_nicList_0.setEnabled(true);
+					comboBox_nicList_1.setEnabled(true);
+
+				}
+			}
+		});
+		btn_typeSelect.setBounds(282, 24, 68, 23);
+		panel_addressSetting.add(btn_typeSelect);
+
+		JLabel ARP_1_3_1_1_1_1_3 = new JLabel("Type");
+		ARP_1_3_1_1_1_1_3.setBounds(22, 28, 64, 15);
+		panel_addressSetting.add(ARP_1_3_1_1_1_1_3);
+
+		JLabel lblNewLabel_1 = new JLabel("Interface_0");
+		lblNewLabel_1.setFont(new Font("굴림", Font.BOLD, 12));
+		lblNewLabel_1.setBounds(12, 53, 96, 15);
+		panel_addressSetting.add(lblNewLabel_1);
+
+		JLabel lblNewLabel_1_1 = new JLabel("Interface_1");
+		lblNewLabel_1_1.setFont(new Font("굴림", Font.BOLD, 12));
+		lblNewLabel_1_1.setBounds(12, 177, 96, 15);
+		panel_addressSetting.add(lblNewLabel_1_1);
+
 		JButton btn_routingTable = new JButton("Routing Table");
 		btn_routingTable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				routingTableGUI.setVisible(true);
 			}
 		});
-		btn_routingTable.setBounds(950, 299, 169, 31);
+		btn_routingTable.setBounds(937, 381, 169, 31);
 		frmArpgui.getContentPane().add(btn_routingTable);
-		
+
 		JButton btn_send = new JButton("Send Packet");
 		btn_send.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				((IPLayer)m_LayerMgr.GetLayer("IP")).Send(new byte[] {0x00, 0x00}, 2);
+				((IPLayer) m_LayerMgr.GetLayer("IP")).Send(new byte[] { 0x00, 0x00 }, 2);
 			}
 		});
-		btn_send.setBounds(757, 299, 169, 31);
+		btn_send.setBounds(767, 381, 169, 31);
 		frmArpgui.getContentPane().add(btn_send);
 		frmArpgui.setVisible(true);
 	}
 
-	private void SetCombobox() {
+	private void initNicCombobox() {
 		List<PcapIf> m_pAdapterList = new ArrayList<PcapIf>();
 		StringBuilder errbuf = new StringBuilder();
 		int r = Pcap.findAllDevs(m_pAdapterList, errbuf);
@@ -464,8 +649,39 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 			System.err.printf("Can't read list of devices, error is %s", errbuf.toString());
 			return;
 		}
-		for (int i = 0; i < m_pAdapterList.size(); i++)
-			this.comboBox_nicList.addItem(m_pAdapterList.get(i).getDescription());
+		for (int i = 0; i < m_pAdapterList.size(); i++) {
+			this.comboBox_nicList_0.addItem(m_pAdapterList.get(i).getDescription());
+			this.comboBox_nicList_1.addItem(m_pAdapterList.get(i).getDescription());
+		}
+	}
+
+	private void initUserSetting() {
+		if (SETTING_NUMBER != -1) {
+			String[] addrSetting;
+			String[][] routingTableSetting;
+			if (SETTING_NUMBER == 1) {
+				System.out.println("User setting 1");
+				addrSetting = setting_1_addrSetting;
+				routingTableSetting= setting_1_routingTableData;
+			}
+			else if (SETTING_NUMBER == 2) {
+				System.out.println("User setting 2");
+				addrSetting = setting_2_addrSetting;
+				routingTableSetting= setting_2_routingTableData;
+			}
+			else if (SETTING_NUMBER == 3) {
+				System.out.println("User setting 3");
+				addrSetting = setting_3_addrSetting;
+				routingTableSetting= setting_3_routingTableData;
+			}
+			RoutingTableManager.initTableDataSet(routingTableSetting);
+			textArea_srcMacAddr_0.setText(addrSetting[0]);
+			textArea_srcIpAddr_0.setText(addrSetting[1]);
+			textArea_srcMacAddr_1.setText(addrSetting[2]);
+			textArea_srcIpAddr_1.setText(addrSetting[3]);
+			textArea_dstIpAddr.setText(addrSetting[4]);
+
+		}
 	}
 
 	public static void initTableValue(String[] pDataArr) {
@@ -560,17 +776,17 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 			return null;
 		return p_UnderLayer.get(nindex);
 	}
-	
+
 	public IPLayer getIpLayer() {
-		return ((IPLayer)m_LayerMgr.GetLayer("IP"));
+		return ((IPLayer) m_LayerMgr.GetLayer("IP"));
 	}
-	
+
 	public ARPLayer getArpLayer() {
-		return ((ARPLayer)m_LayerMgr.GetLayer("ARP"));
+		return ((ARPLayer) m_LayerMgr.GetLayer("ARP"));
 
 	}
-	
+
 	public EthernetLayer getEthernetLayer() {
-		return ((EthernetLayer)m_LayerMgr.GetLayer("Ethernet"));
+		return ((EthernetLayer) m_LayerMgr.GetLayer("Ethernet"));
 	}
 }

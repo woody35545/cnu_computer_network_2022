@@ -140,7 +140,7 @@ class Receive_Thread implements Runnable {
 	}
 
 	@Override
-	public void run() {
+	public void run() {	
 		while (true) {
 			PcapPacketHandler<String> jpacketHandler = new PcapPacketHandler<String>() {
 				public void nextPacket(PcapPacket packet, String user) {

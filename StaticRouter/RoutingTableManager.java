@@ -35,7 +35,7 @@ public final class RoutingTableManager {
 				Metric[size] = pMetric;
 
 				size++;
-				this.showTable();
+				//this.showTable();
 				return true;
 			}
 			return false;
@@ -148,8 +148,17 @@ public final class RoutingTableManager {
 			System.out.println("----------------------------------------------------------------------------");
 			System.out.println("");
 		}
+
+	
 	}
 
+	public static void initTableDataSet(String[][] pTableDataSet) {
+		for(int i=0; i<pTableDataSet.length;i++) {
+			addElementAndRefresh(pTableDataSet[i][1],pTableDataSet[i][2],pTableDataSet[i][3],pTableDataSet[i][4],pTableDataSet[i][5],pTableDataSet[i][6]);
+		}
+		
+	}
+	
 	public static void refreshTableGUI() {
 		for (int i = 0; i < routingTable.size; i++) {
 			RoutingTableGUI.initTableValue(new String[] { Integer.toString(i), routingTable.Destination[i],

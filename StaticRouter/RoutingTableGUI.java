@@ -16,7 +16,7 @@ import javax.swing.JTable;
 public class RoutingTableGUI extends JFrame {
 	private RoutingTableAddForm routingTableAddForm = new RoutingTableAddForm();
 	private JPanel contentPane;
-	private static JTable routingTable;
+	private static JTable JTable_routingTable;
 	// static final RoutingTableManager routingTableManager = new
 	// RoutingTableManager();
 
@@ -40,6 +40,11 @@ public class RoutingTableGUI extends JFrame {
 	 * Create the frame.
 	 */
 	public RoutingTableGUI() {
+		initialize();
+	}
+	
+	
+	public void initialize() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 709, 287);
 		contentPane = new JPanel();
@@ -58,9 +63,9 @@ public class RoutingTableGUI extends JFrame {
 
 		String header[] = { "Destination", "NetMask", "Gateway", "Flag", "Interface", "Metrics" };
 		DefaultTableModel model = new DefaultTableModel(header, 30);
-		routingTable = new JTable(model);
+		JTable_routingTable = new JTable(model);
 
-		scrollPane.setViewportView(routingTable);
+		scrollPane.setViewportView(JTable_routingTable);
 
 		JButton btn_add = new JButton("add");
 		btn_add.addActionListener(new ActionListener() {
@@ -74,28 +79,29 @@ public class RoutingTableGUI extends JFrame {
 		JButton btn_delete = new JButton("delete");
 		btn_delete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int selected_row = routingTable.getSelectedRow();
-				String value = String.valueOf(routingTable.getValueAt(selected_row, 0));
+				int selected_row = JTable_routingTable.getSelectedRow();
+				String value = String.valueOf(JTable_routingTable.getValueAt(selected_row, 0));
 				System.out.println("sel row: " + selected_row);
 				RoutingTableManager.deleteTableElement(value);
 			}
 		});
 		btn_delete.setBounds(336, 207, 95, 23);
 		panel.add(btn_delete);
+		
 	}
-
+	
 	public static void initTableValue(String[] pDataArr) {
 		/*
 		 * idx 1: Destination idx 2: NetMask idx 3: Gateway idx 4: Flag idx 5: Interface
 		 * idx : Metric
 		 */
 		int idx = Integer.parseInt(pDataArr[0]);
-		routingTable.setValueAt(pDataArr[1], idx, 0);
-		routingTable.setValueAt(pDataArr[2], idx, 1);
-		routingTable.setValueAt(pDataArr[3], idx, 2);
-		routingTable.setValueAt(pDataArr[4], idx, 3);
-		routingTable.setValueAt(pDataArr[5], idx, 4);
-		routingTable.setValueAt(pDataArr[6], idx, 5);
+		JTable_routingTable.setValueAt(pDataArr[1], idx, 0);
+		JTable_routingTable.setValueAt(pDataArr[2], idx, 1);
+		JTable_routingTable.setValueAt(pDataArr[3], idx, 2);
+		JTable_routingTable.setValueAt(pDataArr[4], idx, 3);
+		JTable_routingTable.setValueAt(pDataArr[5], idx, 4);
+		JTable_routingTable.setValueAt(pDataArr[6], idx, 5);
 
 	}
 
@@ -107,7 +113,7 @@ public class RoutingTableGUI extends JFrame {
 	public static void resetTableGui() {
 		for (int i = 0; i < 30; i++) {
 			for (int j = 0; j < 6; j++) {
-				routingTable.setValueAt("", i, j);
+				JTable_routingTable.setValueAt("", i, j);
 			}
 		}
 	}
