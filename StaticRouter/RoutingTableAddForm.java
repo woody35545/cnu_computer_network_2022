@@ -93,17 +93,17 @@ public class RoutingTableAddForm extends JFrame {
 		lblNewLabel_3.setBounds(44, 171, 97, 15);
 		panel.add(lblNewLabel_3);
 
-		JCheckBox chckbxNewCheckBox = new JCheckBox("Up");
-		chckbxNewCheckBox.setBounds(141, 168, 45, 23);
-		panel.add(chckbxNewCheckBox);
+		JCheckBox checkbox_up = new JCheckBox("Up");
+		checkbox_up.setBounds(141, 168, 45, 23);
+		panel.add(checkbox_up);
 
-		JCheckBox chckbxGateway = new JCheckBox("Gateway");
-		chckbxGateway.setBounds(186, 168, 84, 23);
-		panel.add(chckbxGateway);
+		JCheckBox checkbox_gateway = new JCheckBox("Gateway");
+		checkbox_gateway.setBounds(186, 168, 84, 23);
+		panel.add(checkbox_gateway);
 
-		JCheckBox chckbxHost = new JCheckBox("Host");
-		chckbxHost.setBounds(274, 168, 55, 23);
-		panel.add(chckbxHost);
+		JCheckBox checkbox_host = new JCheckBox("Host");
+		checkbox_host.setBounds(274, 168, 55, 23);
+		panel.add(checkbox_host);
 
 		JComboBox comboBox = new JComboBox(new String[] {"Interface_0", "Interface_1"});
 		comboBox.setBounds(141, 214, 178, 23);
@@ -120,7 +120,24 @@ public class RoutingTableAddForm extends JFrame {
 				String destination = tf_destination.getText();
 				String netMask = tf_netmask.getText();
 				String gateway = tf_gateway.getText();
-				RoutingTableGUI.addElement(destination, netMask, gateway, "-", "-", "-");
+				String flag = new String("");
+				String _interface = comboBox.getSelectedItem().toString();
+
+				boolean upFlag = checkbox_up.isSelected();
+				System.out.println(upFlag);
+				boolean gatewayFlag = checkbox_gateway.isSelected();
+				boolean hostFlag = checkbox_host.isSelected();
+				if(upFlag) { 
+					flag += "U";
+				}
+				if(gatewayFlag) {
+					flag += "G";
+				}
+				if(hostFlag) {
+					flag += "H";
+				}
+
+				RoutingTableGUI.addElement(destination, netMask, gateway, flag, _interface, "-");
 				dispose();
 
 			}
