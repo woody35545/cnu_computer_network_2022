@@ -117,8 +117,14 @@ public final class RoutingTableManager {
 				for(int j = 0; j<4; j++) {
 					tmp[j] = (byte)((Utils.convertAddrFormat(this.NetMask[i])[j])&pIpByte[j]);
 				}
-				if(Arrays.equals(tmp, Utils.convertAddrFormat(this.Destination[i])) ) {
-					return Utils.convertAddrFormat(this.Destination[i]);
+				if((Arrays.equals(tmp, Utils.convertAddrFormat(this.Destination[i])) && this.Flag[i].contains("U")))  {
+					if(this.Flag[i].contains("G")) {
+						// if flag has 'G', return gateway's ip address
+						return Utils.convertAddrFormat(this.Gateway[i]);
+					}else {
+						// if flag doesn't has 'G', return real destination's ip address
+						return pIpByte;
+					}
 				}
 			}
 			return drop;
