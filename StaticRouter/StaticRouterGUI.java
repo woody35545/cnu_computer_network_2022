@@ -62,29 +62,30 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 	private static final int SETTING_NUMBER = 2; // -1: default setting
 	
 	/*-------------------- Setting #1 --------------------*/
-	String[] setting_1_addrSetting = new String[] { "1:1:1:1:1:1", "192.168.0.1", "2:2:2:2:2:2", "192.168.0.2",
-			"192.168.1.0" };
+	String[] setting_1_addrSetting = new String[] { "00:0C:29:D2:99:B3", "192.168.1.1", "00:0C:29:D2:99:BD", "192.168.2.1",
+			"0.0.0.0" };
 	String[][] setting_1_routingTableData = new String[][] {
-			{ "0", "192.168.0.0", "255.255.255.0", "Gateway1", "Flag1", "Intefarce1", "Metrics1" },
-			{ "1", "192.168.1.0", "255.255.255.0", "Gateway2", "Flag2", "Intefarce2", "Metrics2" } };
+			{ "0", "192.168.1.0", "255.255.255.0", "-", "U", "Interface_0", "-" },
+			{ "1", "192.168.2.0", "255.255.255.0", "-", "U", "Interface_1", "-" },
+			{ "2", "0.0.0.0", "0.0.0.0", "0.0.0.0", "UG", "-", "-" } };
 	/*----------------------------------------------------*/
 
 			
 	/*-------------------- Setting #2 --------------------*/
-	String[] setting_2_addrSetting = new String[] { "1:1:1:1:1:1", "192.168.0.1", "2:2:2:2:2:2", "192.168.0.2",
-			"192.168.1.0" };
+	String[] setting_2_addrSetting = new String[] { "00:0C:29:B4:EF:6F", "192.168.1.2", "0:0:0:0:0:0", "0.0.0.0",
+			"192.168.2.0" };
 	String[][] setting_2_routingTableData = new String[][] {
-			{ "0", "192.168.0.0", "255.255.255.0", "Gateway1", "Flag1", "Intefarce1", "Metrics1" },
-			{ "1", "192.168.1.0", "255.255.255.0", "Gateway2", "Flag2", "Intefarce2", "Metrics2" } };
+			{ "0", "192.168.1.0", "255.255.255.0", "-", "U", "Interface_0", "-" },
+			{ "1", "0.0.0.0", "0.0.0.0", "192.168.1.1", "UG", "Interface_0", "-" } };
 	/*----------------------------------------------------*/
 
 			
 	/*-------------------- Setting #3 --------------------*/
-	String[] setting_3_addrSetting = new String[] { "1:1:1:1:1:1", "192.168.0.1", "2:2:2:2:2:2", "192.168.0.2",
+	String[] setting_3_addrSetting = new String[] { "00:0C:29:26:BA:71", "192.168.2.2", "0:0:0:0:0:0", "0.0.0.0",
 			"192.168.1.0" };
 	String[][] setting_3_routingTableData = new String[][] {
-			{ "0", "192.168.0.0", "255.255.255.0", "Gateway1", "Flag1", "Intefarce1", "Metrics1" },
-			{ "1", "192.168.1.0", "255.255.255.0", "Gateway2", "Flag2", "Intefarce2", "Metrics2" } };
+		{ "0", "192.168.2.0", "255.255.255.0", "-", "U", "Interface_1", "-" },
+		{ "1", "0.0.0.0", "0.0.0.0", "192.168.2.1", "UG", "Interface_1", "-" } };
 	/*----------------------------------------------------*/
 	
 	/*---- Variables ----*/		
@@ -657,8 +658,10 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 
 	private void initUserSetting() {
 		if (SETTING_NUMBER != -1) {
-			String[] addrSetting;
-			String[][] routingTableSetting;
+			String[] addrSetting = new String[] {};
+			String[][] routingTableSetting = new String[][] {{}};
+			
+			
 			if (SETTING_NUMBER == 1) {
 				System.out.println("User setting 1");
 				addrSetting = setting_1_addrSetting;

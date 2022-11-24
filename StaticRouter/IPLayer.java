@@ -179,7 +179,7 @@ public class IPLayer implements BaseLayer {
 	}
 
 	public synchronized boolean Receive(byte[] input) {
-
+		
 		byte[] data = RemoveCappHeader(input, input.length);
 
 		if (me_equals_dst_Addr(input)) {
