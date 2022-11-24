@@ -180,17 +180,23 @@ public class IPLayer implements BaseLayer {
 
 	public synchronized boolean Receive(byte[] input) {
 		
-		byte[] data = RemoveCappHeader(input, input.length);
+		if(StaticRouterGUI.NODE_TYPE.equals("HOST")) {
+			// 원래하던대로 UpperLayer로 보내면 됨
+			byte[] data = RemoveCappHeader(input, input.length);
 
-		if (me_equals_dst_Addr(input)) {
-			System.out.println("It's Packet for me.");
+			if (me_equals_dst_Addr(input)) {
+				System.out.println("It's Packet for me.");
 
-			this.GetUpperLayer(0).Receive(data);
-		} else {
-			System.out.println("It's Reply Packet. Send to target host");
-			this.setIpHeaderDstIPAddr(Arrays.copyOfRange(input, 16, 20));
-			this.Routing(data,data.length);
+				this.GetUpperLayer(0).Receive(data);
+			
 		}
+		else if(StaticRouterGUI.NODE_TYPE.equals("ROUTER")) {
+			// Routing 함수 호출
+			this.Routing(input, input.length);
+		}
+		
+		
+			
 		return true;
 	}
 
