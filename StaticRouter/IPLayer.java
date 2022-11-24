@@ -179,8 +179,8 @@ public class IPLayer implements BaseLayer {
 	}
 
 	public synchronized boolean Receive(byte[] input) {
-		
-		if(StaticRouterGUI.NODE_TYPE.equals("HOST")) {
+
+		if (StaticRouterGUI.NODE_TYPE.equals("HOST")) {
 			// 원래하던대로 UpperLayer로 보내면 됨
 			byte[] data = RemoveCappHeader(input, input.length);
 
@@ -188,15 +188,12 @@ public class IPLayer implements BaseLayer {
 				System.out.println("It's Packet for me.");
 
 				this.GetUpperLayer(0).Receive(data);
-			
+
+			} else if (StaticRouterGUI.NODE_TYPE.equals("ROUTER")) {
+				// Routing 함수 호출
+				this.Routing(input, input.length);
+			}
 		}
-		else if(StaticRouterGUI.NODE_TYPE.equals("ROUTER")) {
-			// Routing 함수 호출
-			this.Routing(input, input.length);
-		}
-		
-		
-			
 		return true;
 	}
 
