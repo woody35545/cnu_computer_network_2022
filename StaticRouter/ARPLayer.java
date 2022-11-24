@@ -656,6 +656,13 @@ public class ARPLayer implements BaseLayer {
          // If I Received ARP reply packet, Then Update ARP cache table
          this.addARPCacheTableElement(Utils.convertAddrFormat(receivedSenderIP),
                Utils.convertAddrFormat(receivedSenderMAC), "Complete");
+	       if(StaticRouterGUI.NODE_TYPE == "ROUTER"){
+        	 ((IPLayer) this.GetUpperLayer(0)).setIpHeaderSrcIPAddr(Utils.convertAddrFormat(StaticRouterGUI.IP_ADDR_1));
+        	 ((EthernetLayer)this.GetUnderLayer(0)).setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(StaticRouterGUI.MAC_ADDR_1));
+        	 ((EthernetLayer)this.GetUnderLayer(0)).setEthernetHeaderDstMacAddr(receivedSenderMAC);
+        	 System.out.println("Routing to host: " + Utils.convertAddrFormat(receivedSenderMAC));
+        	((IPLayer) this.GetUpperLayer(0)).Send(new byte[] {(byte)0x00,(byte)0x00}, 2);
+         }
          return true;
       }
       return false;
