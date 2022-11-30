@@ -200,7 +200,7 @@ public final class RouterMainFrame extends JFrame {
 
 	public static void resetARPCacheTableGUI() {
 		for (int i = 0; i < ARPCacheTable.ARP_CACHE_TABLE_CAPACITY; i++) {
-			for (int j = 0; j < 6; j++) {
+			for (int j = 0; j < 3; j++) {
 				Jtable_arpCacheTable.setValueAt("", i, j);
 			}
 		}

@@ -82,20 +82,20 @@ public class IPLayer implements BaseLayer {
 		m_sHeader.ip_offset[1] = 0x03;
 		byte[] bytes = ObjToByte(m_sHeader, input, length);
 
-		// Routing Table의 Entry들과 Subnet 연산 후 해당되는 Entry IP 찾기
+		// Routing Table�쓽 Entry�뱾怨� Subnet �뿰�궛 �썑 �빐�떦�릺�뒗 Entry IP 李얘린
 
 		/*
-		 * Entry가 존재하는 경우 -> Arp Cache Table에서 IP 조회 1. ARP Cache Table에 있을 경우 -> 찾은 MAC
-		 * 주소를 이용해서 EthernetLayer로 바로 전송 2. ARP Cache Table에 없을 경우 Request 전송 2-1. Reply
-		 * 올 때까지 대기 2-2. Reply 오면 받은 MAC 주소를 이용해 EthernetLayer로 전송
+		 * Entry媛� 議댁옱�븯�뒗 寃쎌슦 -> Arp Cache Table�뿉�꽌 IP 議고쉶 1. ARP Cache Table�뿉 �엳�쓣 寃쎌슦 -> 李얠� MAC
+		 * 二쇱냼瑜� �씠�슜�빐�꽌 EthernetLayer濡� 諛붾줈 �쟾�넚 2. ARP Cache Table�뿉 �뾾�쓣 寃쎌슦 Request �쟾�넚 2-1. Reply
+		 * �삱 �븣源뚯� ��湲� 2-2. Reply �삤硫� 諛쏆� MAC 二쇱냼瑜� �씠�슜�빐 EthernetLayer濡� �쟾�넚
 		 */
 
 		/*
-		 * Entry가 존재하지 않는 경우 -> Default Gateway로 전송 1. ARP Table에서 Default Gateway에 대한
-		 * MAC 주소 찾기 2. 반환 받은 MAC 주소를 이용해서 packet 만들고 EthernetLayer로 보내기
+		 * Entry媛� 議댁옱�븯吏� �븡�뒗 寃쎌슦 -> Default Gateway濡� �쟾�넚 1. ARP Table�뿉�꽌 Default Gateway�뿉 ���븳
+		 * MAC 二쇱냼 李얘린 2. 諛섑솚 諛쏆� MAC 二쇱냼瑜� �씠�슜�빐�꽌 packet 留뚮뱾怨� EthernetLayer濡� 蹂대궡湲�
 		 */
 
-		// ARP Cache Table은 getArpCacheTable로 접근가능
+		// ARP Cache Table�� getArpCacheTable濡� �젒洹쇨��뒫
 //		byte[] entry_ip = RoutingTableManager.getRoutingTable().getSubnet(Utils.convertAddrFormat(StaticRouterGUI.DEST_IP));
 //		if(!entry_ip.equals(new byte[] {-1,-1,-1,-1})){
 //		String dst_mac_addr = this.getArpCacheTable()
@@ -123,51 +123,42 @@ public class IPLayer implements BaseLayer {
 		return false;
 	}
 	public boolean Routing(byte[] input, int length) {
-		m_sHeader.ip_offset[0] = 0x00;
-		m_sHeader.ip_offset[1] = 0x03;
 		byte[] received_srcIP= Arrays.copyOfRange(input, 12, 16);
 		byte[] received_targetIp = Arrays.copyOfRange(input, 16, 20);
-		//byte[] bytes = ObjToByte(m_sHeader, input, length);
-
-		// Routing Table의 Entry들과 Subnet 연산 후 해당되는 Entry IP 찾기
-
-		/*
-		 * Entry가 존재하는 경우 -> Arp Cache Table에서 IP 조회 1. ARP Cache Table에 있을 경우 -> 찾은 MAC
-		 * 주소를 이용해서 EthernetLayer로 바로 전송 2. ARP Cache Table에 없을 경우 Request 전송 2-1. Reply
-		 * 올 때까지 대기 2-2. Reply 오면 받은 MAC 주소를 이용해 EthernetLayer로 전송
-		 */
-
-		/*
-		 * Entry가 존재하지 않는 경우 -> Default Gateway로 전송 1. ARP Table에서 Default Gateway에 대한
-		 * MAC 주소 찾기 2. 반환 받은 MAC 주소를 이용해서 packet 만들고 EthernetLayer로 보내기
-		 */
-
-		// ARP Cache Table은 getArpCacheTable로 접근가능
-		byte[] entryNotFound = new byte[] {-1,-1,-1,-1};
-		byte[] entry_ip = RoutingTable.getSubnet(received_targetIp);
+		System.out.println("Received Packte's Destination IP: " + Utils.convertAddrFormat(received_targetIp));
+	
+		byte[] entry_ip = RoutingTable.findMatchEntry(received_targetIp);
 		String network_interface;
-		if(!entry_ip.equals(entryNotFound)){
+		if(entry_ip != null){
 		
 			 // If an entry that matches is found, Get the value of which interface
-			network_interface = RoutingTable.getInterface(Utils.convertAddrFormat(entry_ip));
+			//network_interface = RoutingTable.getInterface(Utils.convertAddrFormat(entry_ip));
+//			if(Utils.convertAddrFormat(entry_ip).equals("192.168.1.2")){
+//				network_interface = "Interface_1";
+//
+//			}else {network_interface = "Interface_2";}
 			String dst_mac_addr = ARPCacheTable.getMacAddr(Utils.convertAddrFormat(entry_ip));
-			System.out.println(dst_mac_addr);
-
+		network_interface = "Interface_2";
 		if (dst_mac_addr != null) {
 		// if MAC for 'Destination IP' is exist in ARP Cache Table Send Packet
 			//this.setIpHeaderDstIPAddr(entry_ip);
+		System.out.println("Send to destination: " + dst_mac_addr + " with using Network Interface: "+network_interface);
 		if (network_interface == "Interface_1") {
 			((EthernetLayer) this.GetUnderLayer(1))
 					.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(RouterGUI.MAC_ADDR_PORT1));
+//			((EthernetLayer) this.GetUnderLayer(1))
+//			.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat("00:0c:29:c2:b1:50"));
 			((EthernetLayer) this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(dst_mac_addr));
-
-			this.GetUnderLayer(1).Send(input, length + IPHEADER, network_interface);
+			//System.out.println("IPLayer send to Ethernet with "+ network_interface);
+			((EthernetLayer)this.GetUnderLayer(1)).Send(input, length + IPHEADER, network_interface);
 		} else if (network_interface == "Interface_2") {
 			((EthernetLayer) this.GetUnderLayer(1))
 					.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(RouterGUI.MAC_ADDR_PORT2));
+//			((EthernetLayer) this.GetUnderLayer(1))
+//			.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat("00:0c:29:c7:d1:3e"));
 			((EthernetLayer) this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(dst_mac_addr));
-
-			this.GetUnderLayer(1).Send(input, length + IPHEADER, network_interface);
+			//System.out.println("IPLayer send to Ethernet with "+ network_interface);
+			((EthernetLayer)this.GetUnderLayer(1)).Send(input, length + IPHEADER, network_interface);
 		}
 			}
 
@@ -194,9 +185,9 @@ public class IPLayer implements BaseLayer {
 
 	
 	public boolean Receive(byte[] input) {
-		System.out.println(RouterGUI.NODE_TYPE);
+		//System.out.println(RouterGUI.NODE_TYPE);
 		if (RouterGUI.NODE_TYPE == "ROUTER") {
-			 System.out.println("Call Routing(..)");
+			// System.out.println("Call Routing(..)");
 			 this.Routing(input, input.length);
 		}
 

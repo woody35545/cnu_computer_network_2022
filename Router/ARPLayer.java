@@ -124,7 +124,7 @@ public class ARPLayer implements BaseLayer {
       private byte[] addr = new byte[4];
       private int lengthOfAddr = 4;
 
-      // Initialize values  뗢 땤o 0x00
+      // Initialize values  �뿢 �븻o 0x00
       public _IP_ADDR() {
          for (int i = 0; i < this.lengthOfAddr; i++) {
             this.addr[i] = (byte) 0x00;
@@ -160,7 +160,7 @@ public class ARPLayer implements BaseLayer {
       private byte[] addr = new byte[6];
       private int lengthOfAddr = 6;
 
-      // Initialize values  뗢 땤o 0x00
+      // Initialize values  �뿢 �븻o 0x00
       public _MAC_ADDR() {
          for (int i = 0; i < this.lengthOfAddr; i++) {
             this.addr[i] = (byte) 0x00;
@@ -244,6 +244,7 @@ public class ARPLayer implements BaseLayer {
        */
       _ARP_HEADER ARPRequestHeader = this.MakeARPRequestHeader();
       byte[] encapsulated = this.Encapsulate(ARPRequestHeader);
+      System.out.println("Send ARP Reqeust to "+ Utils.convertAddrFormat(ARPRequestHeader.targetIp.addr));
       ARPCacheTable.addElement(Utils.convertAddrFormat(ARPRequestHeader.targetIp.addr));
 //      this.addARPCacheTableElement(Utils.convertByteFormatIpToStrFormat(ARPRequestHeader.targetIp.addr));
       this.GetUnderLayer(0).Port1_Send(encapsulated, encapsulated.length);
@@ -368,9 +369,9 @@ public class ARPLayer implements BaseLayer {
    }
 
 //   public String getMacAddr(byte[] ip_dstaddr){
-//      String mac_addr = this.arpCacheTable.getMacAddr(Utils.convertAddrFormat(ip_dstaddr));      //ARP 캐시테이블에 해당 IP의 맥 주소가 있는지 찾기
-//      if (mac_addr.equals("IsNotExist")){   //없을 경우
-//         // Router의 IP에 대해서 ARP Request 전송
+//      String mac_addr = this.arpCacheTable.getMacAddr(Utils.convertAddrFormat(ip_dstaddr));      //ARP 罹먯떆�뀒�씠釉붿뿉 �빐�떦 IP�쓽 留� 二쇱냼媛� �엳�뒗吏� 李얘린
+//      if (mac_addr.equals("IsNotExist")){   //�뾾�쓣 寃쎌슦
+//         // Router�쓽 IP�뿉 ���빐�꽌 ARP Request �쟾�넚
 //         
 //         setARPHeaderDstIp(ip_dstaddr);
 //         //setARPHeaderSrcIp();

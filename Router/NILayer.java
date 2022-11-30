@@ -82,6 +82,8 @@ public class NILayer implements BaseLayer {
 			System.err.println(m_AdapterObject_port1.getErr());
 			return false;
 		}
+		System.out.println("Port 1 Send packet");
+
 		return true;
 	}
 	public boolean Port2_Send(byte[] input, int length) {
@@ -92,6 +94,8 @@ public class NILayer implements BaseLayer {
 			System.err.println(m_AdapterObject_port2.getErr());
 			return false;
 		}
+		System.out.println("Port 2 Send packet");
+		//Utils.showPacket(input);
 		return true;
 	}
 	public boolean Port1_Receive() {
@@ -183,6 +187,7 @@ class Port1_Receive_Thread implements Runnable {
 					//System.out.printf("Capture >> Time: %s, Length: %d\n", new Date(packet.getCaptureHeader().timestampInMillis()), packet.getCaptureHeader().caplen());
 					data = packet.getByteArray(0, packet.size());
 					UpperLayer.Receive(data);
+				//	System.out.println("Port 1 Received");
 				}
 			};
 
@@ -211,6 +216,8 @@ class Port2_Receive_Thread implements Runnable {
 					//System.out.printf("Capture >> Time: %s, Length: %d\n", new Date(packet.getCaptureHeader().timestampInMillis()), packet.getCaptureHeader().caplen());
 					data = packet.getByteArray(0, packet.size());
 					UpperLayer.Receive(data);
+					//System.out.println("Port 2 Received");
+
 				}
 			};
 

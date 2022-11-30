@@ -103,29 +103,57 @@ public final class RoutingTable {
 
 	}
 	
-	public static byte[] getSubnet(byte[] pIpByte) {
-		byte[] tmp = new byte[4];
-		byte[] drop = {-1,-1,-1,-1};
-		for(int i =0; i< size;i++) {
-			for(int j = 0; j<4; j++) {
-				tmp[j] = (byte)((Utils.convertAddrFormat(NetMask[i])[j])&pIpByte[j]);
-			}
-			if((Arrays.equals(tmp, Utils.convertAddrFormat(Destination[i])) && Flag[i].contains("U")))  {
-				if(Flag[i].contains("G")) {
-					// if flag has 'G', return gateway's ip address
-					return Utils.convertAddrFormat(Gateway[i]);
-				}else {
-					// if flag doesn't has 'G', return real destination's ip address
-					return pIpByte;
-				}
-			}
-		}
-		return drop;
-	}
+//	public static byte[] getSubnet(byte[] pIpByte) {
+//		System.out.println("with IP: "+Utils.convertAddrFormat(pIpByte)+" Subnet Operation start");
+//		byte[] tmp = new byte[4];
+//		byte[] drop = {-1,-1,-1,-1};
+//		for(int i =0; i< size;i++) {
+//			for(int j = 0; j<4; j++) {
+//				tmp[j] = (byte)((Utils.convertAddrFormat(NetMask[i])[j])&pIpByte[j]);
+//			}
+//			if((Arrays.equals(tmp, Utils.convertAddrFormat(Destination[i])) && Flag[i].contains("U")))  {
+//				if(Flag[i].contains("G")) {
+//					// if flag has 'G', return gateway's ip address
+//					return Utils.convertAddrFormat(Gateway[i]);
+//				}else {
+//					// if flag doesn't has 'G', return real destination's ip address
+//					System.out.println("Find match entry: "+Utils.convertAddrFormat(pIpByte));
+//
+//					return pIpByte;
+//				}
+//			}
+//		}
+//		return drop;
+//	}
+	
+	 public static byte[] findMatchEntry(byte[] pIpByte){
+		 for (int i=0; i<size; i++){
+			 String subnetResult =Utils.convertAddrFormat(Utils.subnetOperation(pIpByte, Utils.convertAddrFormat(NetMask[i])));
+			 //System.out.println("Destination["+i+"]:" + Destination[i]);
+			 //System.out.println("SubnetResult["+i+"]:" + subnetResult );
+			 
+			 //if(Destination[i] == Utils.convertAddrFormat(Utils.subnetOperation(pIpByte, Utils.convertAddrFormat(NetMask[i]))) && Flag[i].contains("U")){
+			 if(Destination[i].equals(subnetResult)&& Flag[i].contains("U")){
+			 if(Flag[i].contains("G")){
+					 //System.out.println("Entry found: " + Gateway[i]);
+					 return Utils.convertAddrFormat(Gateway[i]);
+				 }else{
+					 //System.out.println("Entry found: " + Destination[i]);
+					 return Utils.convertAddrFormat(Destination[i]);		 
+				 }
+			
+			 }
+			 }
+		 //System.out.println("Entry not found :(");
+
+		 return null;
+	 }
 	 public static String getInterface(String pIpAddr) {
 	        if (isExist(pIpAddr)) {
 	           for (int i = 0; i < size; i++) {
 	              if (Destination[i].equals(pIpAddr))
+						 System.out.println("Match Interface: " + Interface[i]);
+
 	                 return Interface[i];
 	           }
 	        }

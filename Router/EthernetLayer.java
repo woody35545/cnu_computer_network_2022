@@ -171,21 +171,45 @@ public class EthernetLayer implements BaseLayer {
 //			Utils.showPacket(encapsulated);
 		
 		if(networkInterface == "Interface_1") {
-		this.GetUnderLayer(0).Port1_Send(encapsulated, length);
+			//System.out.println("Ehternet Send to NI(Interface_1)");
+			((NILayer)this.GetUnderLayer(0)).Port1_Send(encapsulated, length);
 		}
-		else if(networkInterface == "Interface_1") {
-			this.GetUnderLayer(0).Port1_Send(encapsulated, length);
+		else if(networkInterface == "Interface_2") {
+			//System.out.println("Ehternet Send to NI(Interface_2)");
+			((NILayer)this.GetUnderLayer(0)).Port2_Send(encapsulated, length);
 			}
 		return true;
 	}
 
 	public boolean Receive(byte[] input) {
-		
-		
-		if(this.getRouterGUI().NODE_TYPE== "ROUTER") {
-			this.getIPLayer().Receive(input);
-			return true;
+		byte[] receivedDstMacAddr = Arrays.copyOfRange(input, 0, 6);
+		byte[] receivedSrcMacAddr = Arrays.copyOfRange(input, 6, 12);
+		byte[] receivedType = Arrays.copyOfRange(input, 12, 14);
+		boolean isFrameISent = false;
+		if (Utils.compareBytes(this.m_sHeader.enet_srcaddr.addr, receivedSrcMacAddr)) {
+			isFrameISent = true;
 		}
+		if(!(isFrameISent)){
+		if(this.getRouterGUI().NODE_TYPE== "ROUTER") {
+			
+			if (Utils.compareBytes(receivedType, TYPE_IPv4)) {
+
+				// if protocol type == IPv4 : 1
+				byte[] decapsulated = this.Decapsulate(input);
+
+				// call IPLayer.receive(..);
+				this.GetUpperLayer(1).Receive(decapsulated);
+			}
+
+			else if (Utils.compareBytes(receivedType, TYPE_ARP)) {
+			//	System.out.println("Ethernet >> This is ARP Packet!!!");
+				// if protocol type == ARP : 0
+				byte[] decapsulated = this.Decapsulate(input);
+				// call ARPLayer.Recevie(..);
+				this.GetUpperLayer(0).Receive(decapsulated);
+			}
+			return true;
+		}}
 		
 		else if(this.getRouterGUI().NODE_TYPE== "HOST") {
 		/*-- for host type device --*/
@@ -195,10 +219,8 @@ public class EthernetLayer implements BaseLayer {
 		 * <!> additional implementation required later Temporarily implemented to test
 		 * whether the inter-layer data forwarding function is performed smoothly
 		 */
-		byte[] receivedDstMacAddr = Arrays.copyOfRange(input, 0, 6);
-		byte[] receivedSrcMacAddr = Arrays.copyOfRange(input, 6, 12);
-		byte[] receivedType = Arrays.copyOfRange(input, 12, 14);
-		boolean isFrameISent = false;
+		
+		//boolean isFrameISent = false;
 		boolean isFrameForMe = false;
 		boolean isBroadcastFrame = true;
 
@@ -209,9 +231,6 @@ public class EthernetLayer implements BaseLayer {
 			}
 			/* Check whether received frame is the frame I sent */
 			// if (this.GetEthernetHeader().get_source_address().addr[i] != input[i+6]) {
-			if (Utils.compareBytes(this.m_sHeader.enet_srcaddr.addr, receivedSrcMacAddr)) {
-				isFrameISent = true;
-			}
 
 			/* Check whether I am the destination of this frame */
 			// if (this.GetEthernetHeader().get_source_address().addr[i] != input[i]) {

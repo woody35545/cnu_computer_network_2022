@@ -80,7 +80,7 @@ public final class Utils {
 		return strFormatIpAddr;
 	}
 
-	public static String convertByteFormatMacToStrFormat(byte[] pMacByte) { // mac 占쎌젟癰귨옙 占쎈뼖占쏙옙 獄쏅뗄�뵠占쎈뱜 獄쏄퀣肉� String 癰귨옙占쎌넎
+	public static String convertByteFormatMacToStrFormat(byte[] pMacByte) { // mac �뜝�럩�젧�솻洹⑥삕 �뜝�럥堉뽩뜝�룞�삕 �뛾�룆�뾼占쎈턄�뜝�럥諭� �뛾�룄�ｈ굢占� String �솻洹⑥삕�뜝�럩�꼶
 		// byte[] mac addr ->"0:0:0:0:0:0"
 
 		String strFormatMacAddr = "";
@@ -201,4 +201,15 @@ public final class Utils {
         System.arraycopy(arr, index + 1, removed_arr, index, arr.length - index - 1);
         return removed_arr;
      }
+	public static byte[] subnetOperation(byte[] pIpAddress, byte[] pSubnetMask){
+		//System.out.println("subnet " + Utils.convertAddrFormat(pIpAddress) + " with " + Utils.convertAddrFormat(pSubnetMask));
+		byte[] subnetMaskResult = new byte[4];
+		for (int i=0; i<subnetMaskResult.length; i++){
+			subnetMaskResult[i]= (byte)(pIpAddress[i]&pSubnetMask[i]);
+		}
+		//System.out.println("subnet result = " + Utils.convertAddrFormat(subnetMaskResult));
+
+        return subnetMaskResult;
+	
+}
 }
