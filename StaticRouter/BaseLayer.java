@@ -1,7 +1,7 @@
 package StaticRouter;
 import java.util.ArrayList;
 
-interface BaseLayer {
+public interface BaseLayer {
 	public final int m_nUpperLayerCount = 0;
 	public final int m_nUnderLayerCount = 0;
 	public final String m_pLayerName = null;

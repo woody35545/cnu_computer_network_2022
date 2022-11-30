@@ -1,19 +1,24 @@
 package Router;
 
+import java.util.Arrays;
+
+import Router.Utils;
+
 public final class RoutingTable {
 	public final static int ROUTING_TABLE_CAPACITY = 20;
-	private static int size = 0;
-	private static String[] Destination = new String[ROUTING_TABLE_CAPACITY];
-	private static String[] NetMask = new String[ROUTING_TABLE_CAPACITY];
-	private static String[] Gateway = new String[ROUTING_TABLE_CAPACITY];
-	private static String[] Flag = new String[ROUTING_TABLE_CAPACITY];
-	private static String[] Interface = new String[ROUTING_TABLE_CAPACITY];
-	private static String[] Metric = new String[ROUTING_TABLE_CAPACITY];
+	public static int size = 0;
+	public static String[] Destination = new String[ROUTING_TABLE_CAPACITY];
+	public static String[] NetMask = new String[ROUTING_TABLE_CAPACITY];
+	public static String[] Gateway = new String[ROUTING_TABLE_CAPACITY];
+	public static String[] Flag = new String[ROUTING_TABLE_CAPACITY];
+	public static String[] Interface = new String[ROUTING_TABLE_CAPACITY];
+	public static String[] Metric = new String[ROUTING_TABLE_CAPACITY];
 
 	public static boolean addElement(String pDestination, String pNetMask, String pGateway, String pFlag,
 			String pInterface, String pMetric) {
 		if (isExist(pDestination)) {
 			updateElement(pDestination, pNetMask, pGateway, pFlag, pInterface, pMetric);
+			
 			return true;
 		}
 		if (size < ROUTING_TABLE_CAPACITY && !isExist(pDestination)) {
@@ -25,6 +30,9 @@ public final class RoutingTable {
 			Metric[size] = pMetric;
 
 			size++;
+			
+			RouterMainFrame.refreshRoutingTableGUI();
+
 			return true;
 		}
 		return false;
@@ -42,6 +50,8 @@ public final class RoutingTable {
 				Flag[size] = pFlag;
 				Interface[size] = pInterface;
 				Metric[size] = pMetric;
+				RouterMainFrame.refreshRoutingTableGUI();
+
 				return true;
 			}
 		}
@@ -64,6 +74,9 @@ public final class RoutingTable {
 			Metric = Utils.removeElementFromArray(Metric, idx);
 
 			size--;
+		
+			RouterMainFrame.refreshRoutingTableGUI();
+
 			return true;
 		}
 		return false;
@@ -86,8 +99,38 @@ public final class RoutingTable {
 		Flag = new String[ROUTING_TABLE_CAPACITY];
 		Interface = new String[ROUTING_TABLE_CAPACITY];
 		Metric = new String[ROUTING_TABLE_CAPACITY];
-	}
+		RouterMainFrame.refreshRoutingTableGUI();
 
+	}
+	
+	public static byte[] getSubnet(byte[] pIpByte) {
+		byte[] tmp = new byte[4];
+		byte[] drop = {-1,-1,-1,-1};
+		for(int i =0; i< size;i++) {
+			for(int j = 0; j<4; j++) {
+				tmp[j] = (byte)((Utils.convertAddrFormat(NetMask[i])[j])&pIpByte[j]);
+			}
+			if((Arrays.equals(tmp, Utils.convertAddrFormat(Destination[i])) && Flag[i].contains("U")))  {
+				if(Flag[i].contains("G")) {
+					// if flag has 'G', return gateway's ip address
+					return Utils.convertAddrFormat(Gateway[i]);
+				}else {
+					// if flag doesn't has 'G', return real destination's ip address
+					return pIpByte;
+				}
+			}
+		}
+		return drop;
+	}
+	 public static String getInterface(String pIpAddr) {
+	        if (isExist(pIpAddr)) {
+	           for (int i = 0; i < size; i++) {
+	              if (Destination[i].equals(pIpAddr))
+	                 return Interface[i];
+	           }
+	        }
+	        return null;
+	     }
 	public static void showTable() {
 		System.out.println("[ ROUTING TABLE ] - (size: " + size + ")");
 		for (int i = 0; i < size; i++) {
@@ -102,5 +145,5 @@ public final class RoutingTable {
 		System.out.println("----------------------------------------------------------------------------");
 		System.out.println("");
 	}
-
+	
 }

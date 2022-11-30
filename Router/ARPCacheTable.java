@@ -1,18 +1,20 @@
 package Router;
 
+import javax.swing.JTable;
+
 public final class ARPCacheTable {
 	/** fields for ARP Cache Table **/
 	
 	// max size of ARP cache table
 	public final static int ARP_CACHE_TABLE_CAPACITY = 20;
 	// field for current size of ARP cache table
-	private static int size = 0;
+	public static int size = 0;
 	// field for ip address of entries
-    private static String[] ipAddress = new String[ARP_CACHE_TABLE_CAPACITY];
+	public static String[] ipAddress = new String[ARP_CACHE_TABLE_CAPACITY];
 	// field for mac address of entries
-    private static String[] macAddress = new String[ARP_CACHE_TABLE_CAPACITY];
+	public static String[] macAddress = new String[ARP_CACHE_TABLE_CAPACITY];
 	// field for arp state of entries. (Complete or Incomplete)
-    private static String[] state = new String[ARP_CACHE_TABLE_CAPACITY];
+	public static String[] state = new String[ARP_CACHE_TABLE_CAPACITY];
 	
     public static boolean isExist(String pIpAddr) {
         for (int i = 0; i < size; i++) {
@@ -33,12 +35,13 @@ public final class ARPCacheTable {
         	macAddress[size] = pMacAddress;
            state[size] = pState;
            size++;
+           RouterMainFrame.refreshARPCacheTableGUI();
            return true;
         }
         return false;
      }
     
-    public boolean addElement(String pIpAddr) {
+    public static boolean addElement(String pIpAddr) {
         if (size < ARP_CACHE_TABLE_CAPACITY && !isExist(pIpAddr)) {
         	ipAddress[size] = pIpAddr;
         	macAddress[size] = "??:??:??:??:??:??";
@@ -57,6 +60,7 @@ public final class ARPCacheTable {
            if (ipAddress[i].equals(pIpAddress)) {
         	   macAddress[i] = pMacAddress;
               state[i] = pState;
+              RouterMainFrame.refreshARPCacheTableGUI();
               return true;
            }
         }
@@ -75,6 +79,7 @@ public final class ARPCacheTable {
            macAddress = Utils.removeElementFromArray(macAddress, idx);
            state = Utils.removeElementFromArray(state, idx);
            size--;
+           RouterMainFrame.refreshARPCacheTableGUI();
 
            return true;
         }
@@ -86,8 +91,18 @@ public final class ARPCacheTable {
         ipAddress = new String[ARP_CACHE_TABLE_CAPACITY];
         macAddress = new String[ARP_CACHE_TABLE_CAPACITY];
         state = new String[ARP_CACHE_TABLE_CAPACITY];
+        RouterMainFrame.refreshARPCacheTableGUI();
+
      }
-    
+    public static String getMacAddr(String pIpAddr) {
+        if (isExist(pIpAddr)) {
+           for (int i = 0; i < size; i++) {
+              if (ipAddress[i].equals(pIpAddr))
+                 return macAddress[i];
+           }
+        }
+        return null;
+     }
     public static void showArpTable() {
         System.out.println("[ ARP CACHE TABLE ] - (current size: " + size + ")");
         for (int i = 0; i < size; i++) {

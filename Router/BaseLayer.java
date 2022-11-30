@@ -32,7 +32,7 @@ interface BaseLayer {
 		return false;
 	}
 	
-	public default boolean Send(byte[] input, int length) {
+	public default boolean Port1_Send(byte[] input, int length) {
 		return false;
 	}
 
