@@ -1,7 +1,7 @@
 package Router;
 
 public final class RoutingTable {
-	private final static int ROUTING_TABLE_CAPACITY = 30;
+	public final static int ROUTING_TABLE_CAPACITY = 20;
 	private static int size = 0;
 	private static String[] Destination = new String[ROUTING_TABLE_CAPACITY];
 	private static String[] NetMask = new String[ROUTING_TABLE_CAPACITY];

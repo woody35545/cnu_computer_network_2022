@@ -4,7 +4,7 @@ public final class ARPCacheTable {
 	/** fields for ARP Cache Table **/
 	
 	// max size of ARP cache table
-	private final static int ARP_CACHE_TABLE_CAPACITY = 30;
+	public final static int ARP_CACHE_TABLE_CAPACITY = 20;
 	// field for current size of ARP cache table
 	private static int size = 0;
 	// field for ip address of entries

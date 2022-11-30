@@ -17,7 +17,8 @@ public class main {
 		ARPCacheTable.addElement("192.168.1.3", "AA:BB:CC", "Complete");
 
 		ARPCacheTable.showArpTable();
-
+		
+		RouterMainFrame _router_main_frame = new RouterMainFrame();
 
 	}
 
