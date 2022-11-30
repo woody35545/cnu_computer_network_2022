@@ -58,6 +58,14 @@ public class StaticRouterGUI extends JFrame implements BaseLayer {
 	 * <RoutingTable Entry 1> ...}
 	 */
 
+	/* 
+	 * Environment #1
+	 * Host A MAC: 00:0C:29:C7:D7:3E
+	 * Host B MAC: 00:0C:29:C2:B1:50
+	 * Router Interface_1 MAC: 00:0C:29:13:E4:39
+	 * Router Interface_2 MAC: 00:0C:29:13:E4:4D
+	 */
+	
 	/*---- Settings ----*/
 	private static final int SETTING_NUMBER = 2; // -1: default setting
 	
