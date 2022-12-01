@@ -90,9 +90,10 @@ public class IPLayer implements BaseLayer {
 		System.out.println("Received Packet's Target IP: " + Utils.convertAddrFormat(received_targetIp));
 		
 		String[] matchEntry =  RoutingTable.findMatchEntry(received_targetIp);
-		String entry_ip = matchEntry[0];
-		String entry_network_interface =matchEntry[0];
-		if(entry_ip != null){
+		
+		String entry_ip = new String(matchEntry[0]);
+		String entry_network_interface = matchEntry[1];
+		if(entry_ip != "-1"){
 		
 			 // If an entry that matches is found, Get the value of which interface
 			//network_interface = RoutingTable.getInterface(Utils.convertAddrFormat(entry_ip));
@@ -123,12 +124,16 @@ public class IPLayer implements BaseLayer {
 		}
 
 		else {
-			// if MAC for 'Destination IP' is not exist in ARP Cache Table, Send ARP Request
-			// set Target IP
-			this.getArpLayer().setARPHeaderDstIp(Utils.convertAddrFormat(entry_ip));
-			this.getArpLayer().SendARPRequest();
-			// wait until receiving reply from target host
-		}
+				// if MAC for 'Destination IP' is not exist in ARP Cache Table,
+				// Send ARP Request
+				// set Target IP
+				if (Utils.checkIsIpFormatString((entry_ip))) {
+					this.getArpLayer().setARPHeaderDstIp(
+							Utils.convertAddrFormat(entry_ip));
+					this.getArpLayer().SendARPRequest();
+					// wait until receiving reply from target host
+				}
+			}
 
 		return true;
 	}

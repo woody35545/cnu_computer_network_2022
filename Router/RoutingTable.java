@@ -157,7 +157,7 @@ public final class RoutingTable {
 			 }
 		 //System.out.println("Entry not found :(");
 
-		 return null;
+		 return new String[]{"-1","-1"};
 	 }
 	 public static String getInterface(String pIpAddr) {
 	        if (isExist(pIpAddr)) {

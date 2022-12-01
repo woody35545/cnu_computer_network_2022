@@ -250,8 +250,8 @@ public class RouterGUI extends JFrame implements BaseLayer{
 		((ARPLayer)m_LayerMgr.GetLayer("ARP")).SetUpperLayer(m_LayerMgr.GetLayer("RouterGUI"));
 
 		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(2).GetLayerName());
-		//ARPCacheTable.addElement("192.168.2.2","00:0c:29:c2:b1:50","Complete");
-		//ARPCacheTable.addElement("192.168.1.2","00:0c:29:c7:d1:3e","Complete");
+		ARPCacheTable.addElement("192.168.2.2","00:0c:29:c2:b1:50","Complete");
+		ARPCacheTable.addElement("192.168.1.2","00:0c:29:c7:d1:3e","Complete");
 
 		RoutingTable.addElement("192.168.1.0", "255.255.255.0", "192.168.1.2", "UG", "Interface_1", "-");
 		RoutingTable.addElement("192.168.2.0", "255.255.255.0", "192.168.2.2", "UG", "Interface_2", "-");
