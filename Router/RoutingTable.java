@@ -103,28 +103,28 @@ public final class RoutingTable {
 
 	}
 	
-//	public static byte[] getSubnet(byte[] pIpByte) {
-//		System.out.println("with IP: "+Utils.convertAddrFormat(pIpByte)+" Subnet Operation start");
-//		byte[] tmp = new byte[4];
-//		byte[] drop = {-1,-1,-1,-1};
-//		for(int i =0; i< size;i++) {
-//			for(int j = 0; j<4; j++) {
-//				tmp[j] = (byte)((Utils.convertAddrFormat(NetMask[i])[j])&pIpByte[j]);
-//			}
-//			if((Arrays.equals(tmp, Utils.convertAddrFormat(Destination[i])) && Flag[i].contains("U")))  {
-//				if(Flag[i].contains("G")) {
-//					// if flag has 'G', return gateway's ip address
-//					return Utils.convertAddrFormat(Gateway[i]);
-//				}else {
-//					// if flag doesn't has 'G', return real destination's ip address
-//					System.out.println("Find match entry: "+Utils.convertAddrFormat(pIpByte));
-//
-//					return pIpByte;
-//				}
-//			}
-//		}
-//		return drop;
-//	}
+	public static byte[] getSubnet(byte[] pIpByte) {
+		System.out.println("with IP: "+Utils.convertAddrFormat(pIpByte)+" Subnet Operation start");
+		byte[] tmp = new byte[4];
+		byte[] drop = {-1,-1,-1,-1};
+		for(int i =0; i< size;i++) {
+			for(int j = 0; j<4; j++) {
+				tmp[j] = (byte)((Utils.convertAddrFormat(NetMask[i])[j])&pIpByte[j]);
+			}
+			if((Arrays.equals(tmp, Utils.convertAddrFormat(Destination[i])) && Flag[i].contains("U")))  {
+				if(Flag[i].contains("G")) {
+					// if flag has 'G', return gateway's ip address
+					return Utils.convertAddrFormat(Gateway[i]);
+				}else {
+					// if flag doesn't has 'G', return real destination's ip address
+					System.out.println("Find match entry: "+Utils.convertAddrFormat(pIpByte));
+
+					return pIpByte;
+				}
+			}
+		}
+		return drop;
+	}
 	
 	 public static String[] findMatchEntry(byte[] pIpByte){
 		 
