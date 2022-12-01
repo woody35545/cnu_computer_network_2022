@@ -53,7 +53,8 @@ public final class RouterMainFrame extends JFrame {
 	JCheckBox checkbox_upFlag = new JCheckBox("Up");
 	JCheckBox checkbox_gatewayFlag = new JCheckBox("Gateway");
 	JCheckBox checkbox_hostFlag = new JCheckBox("Host");
-	JComboBox comboBox_interface =new JComboBox(new String[] {"Interface 1", "Interface 2"});
+	JComboBox comboBox_interface =new JComboBox(new String[] {"Interface_1", "Interface_2"});
+	private JTextField textField_ARPTargetIp;
 
 	public RouterMainFrame() {
 		this.initialize();
@@ -192,6 +193,20 @@ public final class RouterMainFrame extends JFrame {
 		textfield_destination.setColumns(10);
 		textfield_destination.setBounds(109, 33, 176, 21);
 		panel.add(textfield_destination);
+		
+		textField_ARPTargetIp = new JTextField();
+		textField_ARPTargetIp.setBounds(1040, 86, 190, 21);
+		getContentPane().add(textField_ARPTargetIp);
+		textField_ARPTargetIp.setColumns(10);
+		
+		JButton btnNewButton = new JButton("Send ARP Request");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			RouterGUI.sendARPReqeust(textField_ARPTargetIp.getText());
+			}
+		});
+		btnNewButton.setBounds(1040, 117, 190, 23);
+		getContentPane().add(btnNewButton);
 	
 		// set frame's visibility to "True" for display
 		// setVisible must be call after placing all the components

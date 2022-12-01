@@ -47,6 +47,7 @@ public final class ARPCacheTable {
         	macAddress[size] = "??:??:??:??:??:??";
            state[size] = "incomplete";
            size++;
+           RouterMainFrame.refreshARPCacheTableGUI();
            return true;
         }
         return false;
@@ -80,7 +81,6 @@ public final class ARPCacheTable {
            state = Utils.removeElementFromArray(state, idx);
            size--;
            RouterMainFrame.refreshARPCacheTableGUI();
-
            return true;
         }
         return false;

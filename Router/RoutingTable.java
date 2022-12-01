@@ -126,20 +126,31 @@ public final class RoutingTable {
 //		return drop;
 //	}
 	
-	 public static byte[] findMatchEntry(byte[] pIpByte){
+	 public static String[] findMatchEntry(byte[] pIpByte){
+		 
+		 /* Return -> String[]
+		  *
+		  */
+		 String [] res = new String[2]; // res[0]: Match Destination IP, res[1]: Match Destination Interface
+		 
 		 for (int i=0; i<size; i++){
 			 String subnetResult =Utils.convertAddrFormat(Utils.subnetOperation(pIpByte, Utils.convertAddrFormat(NetMask[i])));
 			 //System.out.println("Destination["+i+"]:" + Destination[i]);
 			 //System.out.println("SubnetResult["+i+"]:" + subnetResult );
 			 
-			 //if(Destination[i] == Utils.convertAddrFormat(Utils.subnetOperation(pIpByte, Utils.convertAddrFormat(NetMask[i]))) && Flag[i].contains("U")){
 			 if(Destination[i].equals(subnetResult)&& Flag[i].contains("U")){
 			 if(Flag[i].contains("G")){
-					 //System.out.println("Entry found: " + Gateway[i]);
-					 return Utils.convertAddrFormat(Gateway[i]);
+				 	// If Gateway flag is on, Return Gateway IP Address as Match IP Address
+				 	//System.out.println("Entry found: " + Gateway[i]);
+				 		res[0] = Gateway[i];
+				 		res[1] = Interface[i];
+ 					 return res;
 				 }else{
+					 // If only Up flag is on, Return Destination IP address
+					 res[0] = Destination[i];
+				 		res[1] = Interface[i];
 					 //System.out.println("Entry found: " + Destination[i]);
-					 return Utils.convertAddrFormat(Destination[i]);		 
+					 return res; 	 
 				 }
 			
 			 }

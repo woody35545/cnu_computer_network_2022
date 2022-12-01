@@ -127,32 +127,20 @@ public class EthernetLayer implements BaseLayer {
 		return decapsulated;
 	}
 
-	public boolean Send(byte[] input, int length, String networkInterface) {
+	public synchronized boolean Send(byte[] input, int length, String networkInterface) {
 		/*
 		 * <!> additional implementation required later Temporarily implemented to test
 		 * whether the inter-layer data forwarding function is performed smoothly
 		 */
-		boolean isFromARPLayer = true;
-		byte[] arrToCompare = new byte[] { 0x00, 0x01, 0x08, 0x00 };
-		// boolean isFromIPLayer = true;
-
+		boolean isFromARPLayer = false;
 		/* Check which upper layer the packet came from */
 		if (input.length > 4)
-			for (int i = 0; i < 4; i++) {
-				if (input[i] != arrToCompare[i]) {
-					isFromARPLayer = false;
-				}
-			}
-
-		/*
-		 * if ARP Layer, The first 4 bytes will have the same value as this. {0x00,
-		 * 0x01, 0x08, 0x00}
-		 */
+			isFromARPLayer = Utils.compareBytes(Arrays.copyOfRange(input, 0, 4), new byte[] { 0x00, 0x01, 0x08, 0x00 });
+		
 		if (isFromARPLayer) {
 
 			// ARP Request Packet should be sent as broadcast
 			// Make BroadCast Frame
-
 			this.m_sHeader.set_enet_type(new byte[] { 0x08, 0x06 });
 			this.m_sHeader.set_destination_address(
 					new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff });
@@ -164,52 +152,58 @@ public class EthernetLayer implements BaseLayer {
 		}
 		
 		
-		byte[] encapsulated = Encapsulate(this.m_sHeader, input);
 
 //			System.out.println("Ethernet Send: ");
-//
 //			Utils.showPacket(encapsulated);
+
 		
-		if(networkInterface == "Interface_1") {
-			//System.out.println("Ehternet Send to NI(Interface_1)");
-			((NILayer)this.GetUnderLayer(0)).Port1_Send(encapsulated, length);
+		byte[] encapsulated = Encapsulate(this.m_sHeader, input);
+
+		if (networkInterface.equals("Interface_1")) {
+			((NILayer) this.GetUnderLayer(0)).Port1_Send(encapsulated, encapsulated.length);
+		} else if (networkInterface.equals("Interface_2")) {
+			((NILayer) this.GetUnderLayer(0)).Port2_Send(encapsulated, encapsulated.length);
 		}
-		else if(networkInterface == "Interface_2") {
-			//System.out.println("Ehternet Send to NI(Interface_2)");
-			((NILayer)this.GetUnderLayer(0)).Port2_Send(encapsulated, length);
-			}
 		return true;
 	}
 
-	public boolean Receive(byte[] input) {
-		byte[] receivedDstMacAddr = Arrays.copyOfRange(input, 0, 6);
+	public synchronized boolean Receive(byte[] input) {
+		
 		byte[] receivedSrcMacAddr = Arrays.copyOfRange(input, 6, 12);
-		byte[] receivedType = Arrays.copyOfRange(input, 12, 14);
 		boolean isFrameISent = false;
-		if (Utils.compareBytes(this.m_sHeader.enet_srcaddr.addr, receivedSrcMacAddr)) {
-			isFrameISent = true;
-		}
-		if(!(isFrameISent)){
-		if(this.getRouterGUI().NODE_TYPE== "ROUTER") {
+		byte[] receivedType = Arrays.copyOfRange(input, 12, 14);
+
+		if(this.getRouterGUI().NODE_TYPE.equals("ROUTER")) {
+		
+			/*---- check if received frame is frame that I sent ----*/
 			
-			if (Utils.compareBytes(receivedType, TYPE_IPv4)) {
-
-				// if protocol type == IPv4 : 1
-				byte[] decapsulated = this.Decapsulate(input);
-
-				// call IPLayer.receive(..);
-				this.GetUpperLayer(1).Receive(decapsulated);
+			// check if received frame is Sent from me (NIC port #1)
+			if (Utils.compareBytes(Utils.convertAddrFormat(RouterGUI.MAC_ADDR_PORT1), receivedSrcMacAddr)) {
+				isFrameISent = true;
 			}
-
-			else if (Utils.compareBytes(receivedType, TYPE_ARP)) {
-			//	System.out.println("Ethernet >> This is ARP Packet!!!");
-				// if protocol type == ARP : 0
-				byte[] decapsulated = this.Decapsulate(input);
-				// call ARPLayer.Recevie(..);
-				this.GetUpperLayer(0).Receive(decapsulated);
+			// check if received frame is Sent from me (NIC port #2)
+			if (Utils.compareBytes(Utils.convertAddrFormat(RouterGUI.MAC_ADDR_PORT2), receivedSrcMacAddr)){
+				isFrameISent = true;
 			}
+			if(isFrameISent == false) {
+				// if it's not frame that I sent, send frame to IP or ARP Layer according to value of type field
+				
+				// if it's IP Packet, Call IP Layer's Receive
+				if (Utils.compareBytes(receivedType, TYPE_IPv4)) {
+					byte[] decapsulated = this.Decapsulate(input);
+
+					// call IPLayer.Routing(..);
+					this.getIPLayer().Routing(decapsulated, decapsulated.length);
+				}
+				// if it's ARP Packet, Call ARP Layer's Receive
+				else if (Utils.compareBytes(receivedType, TYPE_ARP)) {
+					byte[] decapsulated = this.Decapsulate(input);
+					// call ARPLayer.Recevie(..);
+					((ARPLayer)this.GetUpperLayer(0)).Receive(decapsulated);
+				}
 			return true;
-		}}
+			}
+		}
 		
 		else if(this.getRouterGUI().NODE_TYPE== "HOST") {
 		/*-- for host type device --*/
@@ -219,50 +213,9 @@ public class EthernetLayer implements BaseLayer {
 		 * <!> additional implementation required later Temporarily implemented to test
 		 * whether the inter-layer data forwarding function is performed smoothly
 		 */
-		
-		//boolean isFrameISent = false;
-		boolean isFrameForMe = false;
-		boolean isBroadcastFrame = true;
 
-		for (int i = 0; i < 6; i++) {
-			/* Check whether received frame is Broadcast Frame */
-			if (input[i] != (byte) 0xff) {
-				isBroadcastFrame = false;
-			}
-			/* Check whether received frame is the frame I sent */
-			// if (this.GetEthernetHeader().get_source_address().addr[i] != input[i+6]) {
+			return false;
 
-			/* Check whether I am the destination of this frame */
-			// if (this.GetEthernetHeader().get_source_address().addr[i] != input[i]) {
-			if (Utils.compareBytes(this.m_sHeader.enet_srcaddr.addr, receivedDstMacAddr)) {
-				isFrameForMe = true;
-			}
-		}
-
-		if (!(isFrameISent) && (isBroadcastFrame || isFrameForMe)) {
-			/*
-			 * Receive only when the above conditions are satisfied If the above conditions
-			 * are satisfied, the sending layer is determined according to the protocol type
-			 * in the frame.
-			 */
-
-			if (Utils.compareBytes(receivedType, TYPE_IPv4)) {
-
-				// if protocol type == IPv4 : 1
-				byte[] decapsulated = this.Decapsulate(input);
-
-				// call IPLayer.receive(..);
-				this.GetUpperLayer(1).Receive(decapsulated);
-			}
-
-			else if (Utils.compareBytes(receivedType, TYPE_ARP)) {
-				// if protocol type == ARP : 0
-				byte[] decapsulated = this.Decapsulate(input);
-				// call ARPLayer.Recevie(..);
-				this.GetUpperLayer(0).Receive(decapsulated);
-			}
-			return true;
-		}
 		}
 		return false;
 		

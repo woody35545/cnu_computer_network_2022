@@ -201,8 +201,8 @@ public class RouterGUI extends JFrame implements BaseLayer{
 		lblNewLabel_1_1_1.setBounds(375, 78, 96, 15);
 		panel_addressSetting.add(lblNewLabel_1_1_1);
 		
-		JButton btn_typeSelect_1 = new JButton("Set");
-		btn_typeSelect_1.addActionListener(new ActionListener() {
+		JButton btn_set = new JButton("Set");
+		btn_set.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
 				NODE_TYPE = comboBox_type.getSelectedItem().toString();
@@ -225,11 +225,12 @@ public class RouterGUI extends JFrame implements BaseLayer{
 				comboBox_nicList_1.setEnabled(false);
 				comboBox_nicList_2.setEnabled(false);
 				comboBox_type.setEnabled(false);
+				btn_set.setEnabled(false);
 			}
 			
 		});
-		btn_typeSelect_1.setBounds(10, 259, 110, 34);
-		getContentPane().add(btn_typeSelect_1);
+		btn_set.setBounds(10, 259, 110, 34);
+		getContentPane().add(btn_set);
 		this.setVisible(true);
 	}
 
@@ -249,8 +250,8 @@ public class RouterGUI extends JFrame implements BaseLayer{
 		((ARPLayer)m_LayerMgr.GetLayer("ARP")).SetUpperLayer(m_LayerMgr.GetLayer("RouterGUI"));
 
 		System.out.println(m_LayerMgr.GetLayer("Ethernet").GetUpperLayer(2).GetLayerName());
-		ARPCacheTable.addElement("192.168.2.2","00:0c:29:c2:b1:50","Complete");
-		ARPCacheTable.addElement("192.168.1.2","00:0c:29:c7:d1:3e","Complete");
+		//ARPCacheTable.addElement("192.168.2.2","00:0c:29:c2:b1:50","Complete");
+		//ARPCacheTable.addElement("192.168.1.2","00:0c:29:c7:d1:3e","Complete");
 
 		RoutingTable.addElement("192.168.1.0", "255.255.255.0", "192.168.1.2", "UG", "Interface_1", "-");
 		RoutingTable.addElement("192.168.2.0", "255.255.255.0", "192.168.2.2", "UG", "Interface_2", "-");
@@ -317,9 +318,20 @@ public class RouterGUI extends JFrame implements BaseLayer{
 		for (int i = 0; i < m_pAdapterList.size(); i++) {
 			//this.comboBox_nicList_1.addItem(m_pAdapterList.get(i).getDescription());
 			//this.comboBox_nicList_2.addItem(m_pAdapterList.get(i).getDescription());
+			/*
+			 * There are cases where the description is the same even though it is different
+			 * NIC, so it was modified to receive it as a NIC Name(Identifier) value rather than a
+			 * description.
+			 */
 			this.comboBox_nicList_1.addItem(m_pAdapterList.get(i).getName());
 			this.comboBox_nicList_2.addItem(m_pAdapterList.get(i).getName());
 		}
+	}
+	
+	public static void sendARPReqeust(String pTargetIP) {
+		((ARPLayer)m_LayerMgr.GetLayer("ARP")).setARPHeaderDstIp(Utils.convertAddrFormat(pTargetIP));
+		((ARPLayer)m_LayerMgr.GetLayer("ARP")).SendARPRequest();
+		ARPCacheTable.showArpTable();
 	}
 	
 }

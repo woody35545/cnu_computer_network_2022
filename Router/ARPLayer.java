@@ -237,7 +237,7 @@ public class ARPLayer implements BaseLayer {
       return arpHeader;
    }
 
-   public boolean Send() {
+   public boolean SendARPRequest() {
       /*
        * If there is no Mac address for the destination IP in the ARP cache table,
        * then Send ARP Request
@@ -253,58 +253,6 @@ public class ARPLayer implements BaseLayer {
    }
 
 
-
-   public void setARPHeaderSrcIp(byte[] pSrcIP) {
-      this.m_sHeader.senderIp.addr = pSrcIP;
-   }
-
-   public void setARPHeaderDstIp(byte[] pTargetIP) {
-      this.m_sHeader.targetIp.addr = pTargetIP;
-   }
-
-   public void setARPHeaderSrcMac(byte[] pSrcMac) {
-      this.m_sHeader.senderMac.addr = pSrcMac;
-   }
-
-   public void setARPHeaderDstMac(byte[] pTargetMac) {
-      this.m_sHeader.targetMac.addr = pTargetMac;
-   }
-
-   public void setARPHeaderOpcode(byte[] pOpcode) {
-      this.m_sHeader.opCode = pOpcode;
-   }
-
-//   public void resetPROXYCacheTableGUI() {
-//      StaticRouterGUI.resetProxyTable();
-//   }
-//
-//   public void refreshPROXYCacheTableGUI() {
-//      for (int i = 0; i < this.proxyCacheTable.size; i++) {
-//         StaticRouterGUI.initProxyTableValue(new String[] { Integer.toString(i), this.proxyCacheTable.deviceName[i],
-//               this.proxyCacheTable.ipAddr[i], this.proxyCacheTable.macAddr[i] });
-//      }
-//   }
-//
-//   public void addPROXYCacheTableElement(String pDeviceName, String pIpAddr, String pMacAddr) {
-//      this.proxyCacheTable.addProxyCacheTableElement(pDeviceName, pIpAddr, pMacAddr);
-//      this.refreshPROXYCacheTableGUI();
-//   }
-//
-//   public void addPROXYCacheTableElement(String pIpAddr) {
-//      this.proxyCacheTable.addProxyCacheTableElement(pIpAddr);
-//      this.refreshPROXYCacheTableGUI();
-//   }
-//
-//   public void deletePROXYCacheTableElement(String pIpAddr) {
-//      // this.resetPROXYCacheTableGUI();
-//      this.proxyCacheTable.deleteProxyCacheTable(pIpAddr);
-//      this.refreshPROXYCacheTableGUI();
-//   }
-//
-//   public void deleteAllPROXYCacheTableElement() {
-//      this.proxyCacheTable.resetProxyCacheTable();
-//      this.resetPROXYCacheTableGUI();
-//   }
 
    public boolean Receive(byte[] input) {
       byte[] receivedSenderMAC = Arrays.copyOfRange(input, 8, 14);
@@ -330,64 +278,40 @@ public class ARPLayer implements BaseLayer {
             // send Reply Packet to ethernet
             // this.GetUnderLayer(0).Send(replyPacket, replyPacket.length);
          }
-
-         // If I'm not target of this request packet, Searching my proxy table (Proxy
-         // ARP)
-//         else if (proxyCacheTable.isExist(Utils.convertAddrFormat(receivedTargetIP))) {
-//            // if target IP exists in my proxy table
-//            // Create a reply packet by adding my MAC address instead
-//            _ARP_HEADER arpReplyHeader = new _ARP_HEADER(DEFAULT_HARDWARE_TYPE, DEFAULT_PROTOCOL_TYPE,
-//                  DEFAULT_LENGTH_OF_HARDWARE_ADDRESS, DEFAULT_LENGTH_OF_PROTOCOL_ADDRESS, OPCODE_ARP_REPLY,
-//                  this.m_sHeader.senderMac, new _IP_ADDR(Arrays.copyOfRange(input, 24, 28)),
-//                  new _MAC_ADDR(Arrays.copyOfRange(input, 8, 14)),
-//                  new _IP_ADDR(Arrays.copyOfRange(input, 14, 18)));
-//
-//            // make packet(byte type)
-//            byte[] replyPacket = this.Encapsulate(arpReplyHeader);
-//
-//            // send Proxy-Reply to ethernet
-//            this.GetUnderLayer(0).Send(replyPacket, replyPacket.length);
-//         }
          return true;
       }
 
       else if (Utils.compareBytes(receivedOpcode, OPCODE_ARP_REPLY)) {
          // If I Received ARP reply packet, Then Update ARP cache table
     	 ARPCacheTable.addElement(Utils.convertAddrFormat(receivedSenderIP),Utils.convertAddrFormat(receivedSenderMAC),"Complete");
-//         this.addARPCacheTableElement(Utils.convertAddrFormat(receivedSenderIP),
-//               Utils.convertAddrFormat(receivedSenderMAC), "Complete");
+
 	       if(this.getRouterGUI().NODE_TYPE == "ROUTER"){
-//        	 ((IPLayer) this.GetUpperLayer(0)).setIpHeaderSrcIPAddr(Utils.convertAddrFormat(this.getRouterGUI().IP_ADDR_1));
-//        	 ((EthernetLayer)this.GetUnderLayer(0)).setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(this.getRouterGUI().MAC_ADDR_1));
-//        	 ((EthernetLayer)this.GetUnderLayer(0)).setEthernetHeaderDstMacAddr(receivedSenderMAC);
-//        	 System.out.println("Routing to host: " + Utils.convertAddrFormat(receivedSenderMAC));
-//        	((IPLayer) this.GetUpperLayer(0)).Send(new byte[] {(byte)0x00,(byte)0x00}, 2);
          }
          return true;
       }
       return false;
    }
-
-//   public String getMacAddr(byte[] ip_dstaddr){
-//      String mac_addr = this.arpCacheTable.getMacAddr(Utils.convertAddrFormat(ip_dstaddr));      //ARP 罹먯떆�뀒�씠釉붿뿉 �빐�떦 IP�쓽 留� 二쇱냼媛� �엳�뒗吏� 李얘린
-//      if (mac_addr.equals("IsNotExist")){   //�뾾�쓣 寃쎌슦
-//         // Router�쓽 IP�뿉 ���빐�꽌 ARP Request �쟾�넚
-//         
-//         setARPHeaderDstIp(ip_dstaddr);
-//         //setARPHeaderSrcIp();
-//         
-//         this.Send();      //send ARP Request
-//         
-//         //thread
-//         
-//         
-//      }
-//      return mac_addr;
-//   }
    
-//   public _ARP_CACHE_TABLE getArpCacheTable(){
-//	   return this.arpCacheTable;
-//   }
+   public void setARPHeaderSrcIp(byte[] pSrcIP) {
+	      this.m_sHeader.senderIp.addr = pSrcIP;
+	   }
+
+	   public void setARPHeaderDstIp(byte[] pTargetIP) {
+	      this.m_sHeader.targetIp.addr = pTargetIP;
+	   }
+
+	   public void setARPHeaderSrcMac(byte[] pSrcMac) {
+	      this.m_sHeader.senderMac.addr = pSrcMac;
+	   }
+
+	   public void setARPHeaderDstMac(byte[] pTargetMac) {
+	      this.m_sHeader.targetMac.addr = pTargetMac;
+	   }
+
+	   public void setARPHeaderOpcode(byte[] pOpcode) {
+	      this.m_sHeader.opCode = pOpcode;
+	   }
+
    
    @Override
    public void SetUnderLayer(BaseLayer pUnderLayer) {

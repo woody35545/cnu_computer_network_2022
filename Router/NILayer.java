@@ -40,13 +40,13 @@ public class NILayer implements BaseLayer {
 	public void Port1_PacketStartDriver() {
 		int snaplen = 64 * 1024; // Capture all packets, no trucation
 		int flags = Pcap.MODE_PROMISCUOUS; // capture all packets
-		int timeout = 10 * 1000; // 10 seconds in millis
+		int timeout = 2 * 1000; // (timeout/1000) seconds
 		m_AdapterObject_port1 = Pcap.openLive(m_pAdapterList.get(m_iNumAdapter_port1).getName(), snaplen, flags, timeout, errbuf);
 	}
 	public void Port2_PacketStartDriver() {
 		int snaplen = 64 * 1024; // Capture all packets, no trucation
 		int flags = Pcap.MODE_PROMISCUOUS; // capture all packets
-		int timeout = 10 * 1000; // 10 seconds in millis
+		int timeout = 2 * 1000; // (timeout/1000) seconds
 		m_AdapterObject_port2 = Pcap.openLive(m_pAdapterList.get(m_iNumAdapter_port2).getName(), snaplen, flags, timeout, errbuf);
 	}
 
@@ -191,7 +191,9 @@ class Port1_Receive_Thread implements Runnable {
 				}
 			};
 
-			AdapterObject.loop(100000, jpacketHandler, "");
+			//AdapterObject.loop(100000, jpacketHandler, "");
+			AdapterObject.loop(1000, jpacketHandler, "");
+
 		}
 	}
 	
@@ -220,8 +222,9 @@ class Port2_Receive_Thread implements Runnable {
 
 				}
 			};
+			AdapterObject.loop(1000, jpacketHandler, "");
 
-			AdapterObject.loop(100000, jpacketHandler, "");
+			//AdapterObject.loop(100000, jpacketHandler, "");
 		}
 	}	
 }

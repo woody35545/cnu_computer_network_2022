@@ -77,58 +77,21 @@ public class IPLayer implements BaseLayer {
 		return buf;
 	}
 
-	public boolean Send(byte[] input, int length) {
+	public synchronized boolean Send(byte[] input, int length) {
 		m_sHeader.ip_offset[0] = 0x00;
 		m_sHeader.ip_offset[1] = 0x03;
 		byte[] bytes = ObjToByte(m_sHeader, input, length);
 
-		// Routing Table�쓽 Entry�뱾怨� Subnet �뿰�궛 �썑 �빐�떦�릺�뒗 Entry IP 李얘린
-
-		/*
-		 * Entry媛� 議댁옱�븯�뒗 寃쎌슦 -> Arp Cache Table�뿉�꽌 IP 議고쉶 1. ARP Cache Table�뿉 �엳�쓣 寃쎌슦 -> 李얠� MAC
-		 * 二쇱냼瑜� �씠�슜�빐�꽌 EthernetLayer濡� 諛붾줈 �쟾�넚 2. ARP Cache Table�뿉 �뾾�쓣 寃쎌슦 Request �쟾�넚 2-1. Reply
-		 * �삱 �븣源뚯� ��湲� 2-2. Reply �삤硫� 諛쏆� MAC 二쇱냼瑜� �씠�슜�빐 EthernetLayer濡� �쟾�넚
-		 */
-
-		/*
-		 * Entry媛� 議댁옱�븯吏� �븡�뒗 寃쎌슦 -> Default Gateway濡� �쟾�넚 1. ARP Table�뿉�꽌 Default Gateway�뿉 ���븳
-		 * MAC 二쇱냼 李얘린 2. 諛섑솚 諛쏆� MAC 二쇱냼瑜� �씠�슜�빐�꽌 packet 留뚮뱾怨� EthernetLayer濡� 蹂대궡湲�
-		 */
-
-		// ARP Cache Table�� getArpCacheTable濡� �젒洹쇨��뒫
-//		byte[] entry_ip = RoutingTableManager.getRoutingTable().getSubnet(Utils.convertAddrFormat(StaticRouterGUI.DEST_IP));
-//		if(!entry_ip.equals(new byte[] {-1,-1,-1,-1})){
-//		String dst_mac_addr = this.getArpCacheTable()
-//				.getMacAddr(Utils.convertAddrFormat(entry_ip));
-//		System.out.println(dst_mac_addr);
-//
-//		if (!dst_mac_addr.equals("IsNotExist")) {
-//			((EthernetLayer) this.GetUnderLayer(1))
-//					.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(StaticRouterGUI.MAC_ADDR_0));
-//			((EthernetLayer) this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(dst_mac_addr));
-//
-//			this.GetUnderLayer(1).Send(bytes, length + IPHEADER);
-//		}
-//
-//		else {
-//
-//			// set Target IP
-//			this.getArpLayer().setARPHeaderDstIp(entry_ip);
-//			this.getArpLayer().Send();
-//			// wait until receiving reply from target host
-//		}
-//
-//		return true;
-//		}
 		return false;
 	}
-	public boolean Routing(byte[] input, int length) {
-		byte[] received_srcIP= Arrays.copyOfRange(input, 12, 16);
+	public synchronized boolean Routing(byte[] input, int length) {
+		//byte[] received_srcIP= Arrays.copyOfRange(input, 12, 16);
 		byte[] received_targetIp = Arrays.copyOfRange(input, 16, 20);
-		System.out.println("Received Packte's Destination IP: " + Utils.convertAddrFormat(received_targetIp));
-	
-		byte[] entry_ip = RoutingTable.findMatchEntry(received_targetIp);
-		String network_interface;
+		System.out.println("Received Packet's Target IP: " + Utils.convertAddrFormat(received_targetIp));
+		
+		String[] matchEntry =  RoutingTable.findMatchEntry(received_targetIp);
+		String entry_ip = matchEntry[0];
+		String entry_network_interface =matchEntry[0];
 		if(entry_ip != null){
 		
 			 // If an entry that matches is found, Get the value of which interface
@@ -137,54 +100,42 @@ public class IPLayer implements BaseLayer {
 //				network_interface = "Interface_1";
 //
 //			}else {network_interface = "Interface_2";}
-			String dst_mac_addr = ARPCacheTable.getMacAddr(Utils.convertAddrFormat(entry_ip));
-		network_interface = "Interface_2";
+			String dst_mac_addr = ARPCacheTable.getMacAddr(entry_ip);
 		if (dst_mac_addr != null) {
 		// if MAC for 'Destination IP' is exist in ARP Cache Table Send Packet
-			//this.setIpHeaderDstIPAddr(entry_ip);
-		System.out.println("Send to destination: " + dst_mac_addr + " with using Network Interface: "+network_interface);
-		if (network_interface == "Interface_1") {
+		System.out.println("** Route packet to destination: " + dst_mac_addr + ", with using Network Interface<"+entry_network_interface+">");
+		
+		if (entry_network_interface == "Interface_1") {
 			((EthernetLayer) this.GetUnderLayer(1))
 					.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(RouterGUI.MAC_ADDR_PORT1));
-//			((EthernetLayer) this.GetUnderLayer(1))
-//			.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat("00:0c:29:c2:b1:50"));
-			((EthernetLayer) this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(dst_mac_addr));
-			//System.out.println("IPLayer send to Ethernet with "+ network_interface);
-			((EthernetLayer)this.GetUnderLayer(1)).Send(input, length + IPHEADER, network_interface);
-		} else if (network_interface == "Interface_2") {
+		} else if (entry_network_interface == "Interface_2") {
 			((EthernetLayer) this.GetUnderLayer(1))
 					.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat(RouterGUI.MAC_ADDR_PORT2));
-//			((EthernetLayer) this.GetUnderLayer(1))
-//			.setEthernetHeaderSrcMacAddr(Utils.convertAddrFormat("00:0c:29:c7:d1:3e"));
-			((EthernetLayer) this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(dst_mac_addr));
-			//System.out.println("IPLayer send to Ethernet with "+ network_interface);
-			((EthernetLayer)this.GetUnderLayer(1)).Send(input, length + IPHEADER, network_interface);
+		
+		
 		}
-			}
+		//System.out.println("IPLayer send to Ethernet with "+ network_interface);
+		// Set the destination MAC address to the MAC address of the route found in the entry.
+		((EthernetLayer) this.GetUnderLayer(1)).setEthernetHeaderDstMacAddr(Utils.convertAddrFormat(dst_mac_addr));
+		// Send to Ethernet Layer
+		((EthernetLayer)this.GetUnderLayer(1)).Send(input, length + IPHEADER, entry_network_interface);
+
+		}
 
 		else {
-
+			// if MAC for 'Destination IP' is not exist in ARP Cache Table, Send ARP Request
 			// set Target IP
-			this.getArpLayer().setARPHeaderDstIp(entry_ip);
-			this.getArpLayer().Send();
+			this.getArpLayer().setARPHeaderDstIp(Utils.convertAddrFormat(entry_ip));
+			this.getArpLayer().SendARPRequest();
 			// wait until receiving reply from target host
 		}
-		
 
 		return true;
-		}return false;
 	}
-	public byte[] RemoveCappHeader(byte[] input, int length) {
-		byte[] remvHeader = new byte[length - IPHEADER];
-		for (int i = 0; i < length - IPHEADER; i++) {
-			remvHeader[i] = input[i + IPHEADER];
-		}
-		return remvHeader;
-
+	return false;
 	}
-
 	
-	public boolean Receive(byte[] input) {
+	public synchronized boolean Receive(byte[] input) {
 		//System.out.println(RouterGUI.NODE_TYPE);
 		if (RouterGUI.NODE_TYPE == "ROUTER") {
 			// System.out.println("Call Routing(..)");
@@ -204,6 +155,14 @@ public class IPLayer implements BaseLayer {
 		return true;
 	}
 
+	public byte[] RemoveCappHeader(byte[] input, int length) {
+		byte[] remvHeader = new byte[length - IPHEADER];
+		for (int i = 0; i < length - IPHEADER; i++) {
+			remvHeader[i] = input[i + IPHEADER];
+		}
+		return remvHeader;
+
+	}
 	public boolean me_equals_dst_Addr(byte[] input) {
 														
 		for (int i = 0; i < 4; i++) {
